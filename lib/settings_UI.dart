@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//위젯 설정 페이지 구성 어케 할지 생각해봐야됨
+
 class SettingsUI extends StatefulWidget {
   const SettingsUI({super.key});
 

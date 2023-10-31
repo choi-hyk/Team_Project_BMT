@@ -4,6 +4,9 @@ import 'star_UI.dart';
 import 'menu_UI.dart';
 import 'settings_UI.dart';
 
+//배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
+//그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
+
 //InterFace 클래스
 class InterFace extends StatefulWidget {
   const InterFace({super.key});
