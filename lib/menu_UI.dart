@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//스토어, 분실물 게시판 페이지 어케할지 생각해야됨
 class MenuUI extends StatefulWidget {
   const MenuUI({super.key});
 
