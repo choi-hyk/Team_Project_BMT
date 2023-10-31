@@ -17,22 +17,57 @@ class _StarUIState extends State<StarUI> {
       ),
       width: 379.5,
       height: 640.0,
-      child: const Padding(
-        padding: EdgeInsets.all(20),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TextField(
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 20,
+            Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(10.0)),
+              width: 500,
+              height: 200,
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "집(회사, 학교)",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
-                  ),
+              ),
+            ),
+            const SizedBox(
+              height: 6.5,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(10.0)),
+              width: 500,
+              height: 100,
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "즐겨찾기 경로",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                hintText: 'star',
+              ),
+            ),
+            const SizedBox(
+              height: 6.5,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(10.0)),
+              width: 500,
+              height: 100,
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "즐겨찾기 역(호선)",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
