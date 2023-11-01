@@ -14,7 +14,9 @@
 
 *flutter*
 
-😺*E-Mail*🐶
+😺*Notion*🐶
+
+*https://www.notion.so/Team_Project_1-9af4cee7f0124195835356ef3313e67a*
 
 ![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)
 
