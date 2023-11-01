@@ -15,9 +15,8 @@
 😺*사용 언어*🐶
 
 
-*dart*
+*dart with flutter*
 
-*flutter*
 
 😺*Notion*🐶
 
