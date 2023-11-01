@@ -3,7 +3,7 @@
 
 <div align="center">
   
-![header](https://capsule-render.vercel.app/api?color=gradient&customColorList=0,2,4,5,30&text=2023_2_Team_Project)
+![header](https://capsule-render.vercel.app/api?color=gradient&customColorList=0,2,4,5,30&text=2023_2_Team_Project&textColor=000000)
 
 *팀프로젝트 MJU_2023_2_BMT*
 
