@@ -5,9 +5,9 @@
   
 ![header](https://capsule-render.vercel.app/api?color=gradient&customColorList=0,2,4,5,30&text=2023_2_Team_Project)
 
-*This is Team_Project profile!!*
+*팀프로젝트 MJU_2023_2_BMT*
 
-😺*LANGUAGE*🐶
+😺*사용 언어*🐶
 
 
 *dart*
