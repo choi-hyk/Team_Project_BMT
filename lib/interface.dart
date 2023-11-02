@@ -3,6 +3,7 @@ import 'search_UI.dart';
 import 'star_UI.dart';
 import 'menu_UI.dart';
 import 'settings_UI.dart';
+import 'Account_UI.dart';
 
 //배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
 //그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
@@ -47,6 +48,15 @@ class _InterFaceState extends State<InterFace> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      width: 40,
+                      height: 43.5,
+                      child: const Icon(Icons.menu),
+                    ),
                     UIButton(
                       icon: const Icon(Icons.search),
                       onTap: () => switchMenu("search"),
@@ -56,8 +66,8 @@ class _InterFaceState extends State<InterFace> {
                       onTap: () => switchMenu("star"),
                     ),
                     UIButton(
-                      icon: const Icon(Icons.menu),
-                      onTap: () => switchMenu("menu"),
+                      icon: const Icon(Icons.account_box),
+                      onTap: () => switchMenu("account"),
                     ),
                     UIButton(
                       icon: const Icon(Icons.settings),
@@ -135,8 +145,8 @@ class _DataUIState extends State<DataUI> {
         return const SearchUI();
       case "star":
         return const StarUI();
-      case "menu":
-        return const MenuUI();
+      case "account":
+        return const AccountUI();
       case "settings":
         return const SettingsUI();
       default:
@@ -160,7 +170,7 @@ class UIButton extends StatelessWidget {
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(10.0)),
-        width: 90.0,
+        width: 70.0,
         height: 43.5,
         child: icon,
       ),
