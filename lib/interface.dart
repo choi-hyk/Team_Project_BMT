@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:test1/menu_widgets/bulletin_board.dart';
+import 'package:test1/menu_widgets/store_page.dart';
 import 'search_UI.dart';
 import 'star_UI.dart';
-import 'menu_UI.dart';
-import 'settings_UI.dart';
-import 'Account_UI.dart';
+import 'settings_widgets/settings_UI.dart';
+import 'user_widgets/Account_UI.dart';
 
 //배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
 //그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
@@ -20,11 +21,16 @@ class InterFace extends StatefulWidget {
 class _InterFaceState extends State<InterFace> {
   //디폴트 메뉴 search
   String currentUI = "search";
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   void switchMenu(String selectedMenu) {
     setState(() {
       currentUI = selectedMenu;
     });
+  }
+
+//드로어 함수
+  void menuDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
   }
 
   @override
@@ -38,7 +44,8 @@ class _InterFaceState extends State<InterFace> {
             top: 77,
             left: 6.5,
             right: 6.5,
-            child: Image.asset("assets/images/노선도.png"),
+            child: InteractiveViewer(
+                constrained: true, child: Image.asset("assets/images/노선도.png")),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 33.5),
@@ -48,15 +55,21 @@ class _InterFaceState extends State<InterFace> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      width: 40,
-                      height: 43.5,
-                      child: const Icon(Icons.menu),
-                    ),
+                    Builder(builder: (BuildContext builderContext) {
+                      return GestureDetector(
+                        onTap: () {
+                          Scaffold.of(builderContext).openDrawer();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10.0)),
+                          width: 40.0,
+                          height: 43.5,
+                          child: const Icon(Icons.menu),
+                        ),
+                      );
+                    }),
                     UIButton(
                       icon: const Icon(Icons.search),
                       onTap: () => switchMenu("search"),
@@ -66,12 +79,24 @@ class _InterFaceState extends State<InterFace> {
                       onTap: () => switchMenu("star"),
                     ),
                     UIButton(
-                      icon: const Icon(Icons.account_box),
-                      onTap: () => switchMenu("account"),
+                      icon: const Icon(Icons.person),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AccountUI()),
+                        );
+                      },
                     ),
                     UIButton(
                       icon: const Icon(Icons.settings),
-                      onTap: () => switchMenu("settings"),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsUI()),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -97,6 +122,98 @@ class _InterFaceState extends State<InterFace> {
             ),
           ),
         ],
+      ),
+//__________드로어____________________________________________________________________
+//사용자 프로필, 설정, 스토어, 게시판 이동가능
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              currentAccountPicture: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountUI(),
+                    ),
+                  );
+                },
+                child: const CircleAvatar(
+                  backgroundImage: AssetImage("assets/images/사용자 프로필.png"),
+                  backgroundColor: Colors.white,
+                ),
+              ),
+              accountName: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AccountUI()),
+                  );
+                },
+                child: const Text("CHOI_HYUK"),
+              ),
+              accountEmail: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountUI(),
+                      ),
+                    );
+                  },
+                  child: const Text("8176chhk@naver.com")),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              otherAccountsPictures: <Widget>[
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsUI()),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.settings,
+                  ),
+                ),
+              ],
+            ),
+            ListTile(
+              title: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StorePage()),
+                    );
+                  },
+                  child: const Text('스토어')),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BulletinBoardPage(),
+                    ),
+                  );
+                },
+                child: const Text('게시판'),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -145,10 +262,6 @@ class _DataUIState extends State<DataUI> {
         return const SearchUI();
       case "star":
         return const StarUI();
-      case "account":
-        return const AccountUI();
-      case "settings":
-        return const SettingsUI();
       default:
         return const SearchUI();
     }
