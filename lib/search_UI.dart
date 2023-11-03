@@ -27,7 +27,7 @@ class _SearchUIState extends State<SearchUI> {
             const TextField(
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
-                  vertical: 20,
+                  vertical: 15,
                   horizontal: 20,
                 ),
                 border: OutlineInputBorder(
@@ -35,11 +35,28 @@ class _SearchUIState extends State<SearchUI> {
                     Radius.circular(20),
                   ),
                 ),
-                hintText: 'search',
+                hintText: '출발',
               ),
             ),
             const SizedBox(
-              height: 18,
+              height: 6.5,
+            ),
+            const TextField(
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 20,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+                hintText: '도착',
+              ),
+            ),
+            const SizedBox(
+              height: 13.0,
             ),
 //-------------경로 컨테이너---------------------------------------------------------------//
             Container(
@@ -99,7 +116,7 @@ class _SearchUIState extends State<SearchUI> {
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10.0)),
               width: 500,
-              height: 200,
+              height: 130,
               child: const Align(
                 alignment: Alignment.center,
                 child: Text(
