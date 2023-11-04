@@ -14,9 +14,12 @@ class _SearchUIState extends State<SearchUI> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(20.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(13.0),
+          topRight: Radius.circular(13.0),
+        ),
       ),
       width: 379.5,
       height: 640.0,
@@ -56,7 +59,7 @@ class _SearchUIState extends State<SearchUI> {
               ),
             ),
             const SizedBox(
-              height: 13.0,
+              height: 30.0,
             ),
 //-------------경로 컨테이너---------------------------------------------------------------//
             Container(

@@ -11,9 +11,12 @@ class _StarUIState extends State<StarUI> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(20.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(13.0),
+          topRight: Radius.circular(13.0),
+        ),
       ),
       width: 379.5,
       height: 640.0,
@@ -27,7 +30,7 @@ class _StarUIState extends State<StarUI> {
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10.0)),
               width: 500,
-              height: 200,
+              height: 110,
               child: const Align(
                 alignment: Alignment.center,
                 child: Text(
@@ -37,14 +40,14 @@ class _StarUIState extends State<StarUI> {
               ),
             ),
             const SizedBox(
-              height: 6.5,
+              height: 13,
             ),
             Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10.0)),
               width: 500,
-              height: 100,
+              height: 110,
               child: const Align(
                 alignment: Alignment.center,
                 child: Text(
@@ -54,14 +57,14 @@ class _StarUIState extends State<StarUI> {
               ),
             ),
             const SizedBox(
-              height: 6.5,
+              height: 13,
             ),
             Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10.0)),
               width: 500,
-              height: 100,
+              height: 110,
               child: const Align(
                 alignment: Alignment.center,
                 child: Text(

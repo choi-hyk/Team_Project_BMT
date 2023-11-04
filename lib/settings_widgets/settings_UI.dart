@@ -28,7 +28,7 @@ class _SettingsUIState extends State<SettingsUI> {
           '설정',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColorLight,
         centerTitle: true,
       ),
       body: Padding(

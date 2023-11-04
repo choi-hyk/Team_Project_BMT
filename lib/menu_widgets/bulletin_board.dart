@@ -25,8 +25,11 @@ class _BulletinBoardPageState extends State<BulletinBoardPage> {
           '게시판',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColorLight,
         centerTitle: true,
+      ),
+      body: const Column(
+        children: [],
       ),
     );
   }

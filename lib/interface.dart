@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:test1/login_widgets/login_ui.dart';
 import 'package:test1/menu_widgets/bulletin_board.dart';
 import 'package:test1/menu_widgets/store_page.dart';
-import 'search_UI.dart';
-import 'star_UI.dart';
+import 'search_widgets/search_UI.dart';
+import 'bookmark_widgets/star_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
 
@@ -41,7 +42,7 @@ class _InterFaceState extends State<InterFace> {
       body: Stack(
         children: [
           Positioned(
-            top: 77,
+            top: 90,
             left: 6.5,
             right: 6.5,
             child: InteractiveViewer(
@@ -62,7 +63,7 @@ class _InterFaceState extends State<InterFace> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
+                              color: Theme.of(context).colorScheme.background,
                               borderRadius: BorderRadius.circular(10.0)),
                           width: 40.0,
                           height: 43.5,
@@ -164,8 +165,11 @@ class _InterFaceState extends State<InterFace> {
                   },
                   child: const Text("8176chhk@naver.com")),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10.0),
+                color: Theme.of(context).colorScheme.background,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(5.0),
+                  bottomRight: Radius.circular(5.0),
+                ),
               ),
               otherAccountsPictures: <Widget>[
                 InkWell(
@@ -212,6 +216,22 @@ class _InterFaceState extends State<InterFace> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              title: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginUI(),
+                    ),
+                  );
+                },
+                child: const Text('로그아웃'),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
@@ -244,7 +264,7 @@ class _DataUIState extends State<DataUI> {
       child: DraggableScrollableSheet(
         initialChildSize: 0.6,
         maxChildSize: 0.99,
-        minChildSize: 0.15,
+        minChildSize: 0.22,
         builder: (BuildContext context, ScrollController scrollController) {
           return SingleChildScrollView(
             controller: scrollController,
@@ -281,7 +301,7 @@ class UIButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10.0)),
         width: 70.0,
         height: 43.5,
