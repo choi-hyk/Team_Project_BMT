@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test1/settings_widgets/setting_account_page.dart';
-
+import 'package:test1/login_widgets/login_ui.dart';
 //계정 정보에서 포인트, 스토어, 자기가 작성한 게시글, 즐겨찾기, 리워드 목록을 볼수있게 구현해야됨
 
 //사용자 프로필 위젯
@@ -20,8 +20,12 @@ class UserProfileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(10.0)),
+        color: Theme.of(context).colorScheme.background,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0),
+        ),
+      ),
       width: double.infinity,
       height: 260,
       child: Column(
@@ -80,11 +84,21 @@ class UserProfileWidget extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               //로그아웃 버튼으로 구현해야됨
-              const Text(
-                "로그아웃",
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginUI(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "로그아웃",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ],
@@ -120,7 +134,7 @@ class AccountUIState extends State<AccountUI> {
           '계정 정보',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColorLight,
         centerTitle: true,
       ),
       body: Column(
@@ -130,11 +144,14 @@ class AccountUIState extends State<AccountUI> {
             email: "8176chhk@naver.com",
             profileImageUrl: "assets/images/사용자 프로필.png",
           ),
+          const SizedBox(
+            height: 6.5,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 width: 500,
