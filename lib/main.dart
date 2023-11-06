@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 import 'firebase_options.dart';
 import 'login_widgets/auth_service.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // 상태 표시줄 배경색을 투명하게 설정
+    ));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       //앱 테마

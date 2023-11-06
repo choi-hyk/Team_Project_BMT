@@ -6,6 +6,8 @@ import 'search_widgets/search_UI.dart';
 import 'bookmark_widgets/star_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 //배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
 //그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
@@ -20,6 +22,8 @@ class InterFace extends StatefulWidget {
 
 //InterFaceState클래스 -> Button을 누르면 해당 UI로 스위치
 class _InterFaceState extends State<InterFace> {
+  //파이어베이스 데이터베이스 연결 코드 FirebaseFirestore가 연결해주는 클래스임 ㅇㅇ
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   //디폴트 메뉴 search
   String currentUI = "search";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
