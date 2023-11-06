@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.20'
     repositories {
         google()
         mavenCentral()
@@ -8,8 +8,17 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.0'
     }
 }
+
+/*이거 넣으라는데 빼야지 실행이 됨;;
+plugins{
+    //Firebase SDK가 google-services.json 구성 값에 액세스할 수 있도록 하려면
+    //Google 서비스 Gradle 플러그인이 필요
+    id 'com.google.gms.google-services' version '4.4.0' apply false
+}*/
+
 
 allprojects {
     repositories {

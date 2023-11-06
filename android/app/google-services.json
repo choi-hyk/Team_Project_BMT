@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "224499335698",
+    "project_id": "forbmt",
+    "storage_bucket": "forbmt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:224499335698:android:664292631d1c54a9f14ecb",
+        "android_client_info": {
+          "package_name": "com.example.test1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYtnzrPnBs4SyZXIHJDLqKLchnxOUUrYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

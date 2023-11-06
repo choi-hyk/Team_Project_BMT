@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';
 
@@ -9,8 +10,24 @@ class LoginUI extends StatefulWidget {
 }
 
 class _LogInState extends State<LoginUI> {
-  TextEditingController controller = TextEditingController();
-  TextEditingController controller2 = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Future<User?> _handleSignIn() async {
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      final User? user = userCredential.user;
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +59,14 @@ class _LogInState extends State<LoginUI> {
                           return Column(
                             children: [
                               TextField(
-                                controller: controller,
+                                controller: _emailController,
                                 autofocus: true,
                                 decoration: const InputDecoration(
                                     labelText: 'Enter email'),
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               TextField(
-                                controller: controller2,
+                                controller: _passwordController,
                                 decoration: const InputDecoration(
                                     labelText: 'Enter password'),
                                 keyboardType: TextInputType.text,
@@ -62,39 +79,16 @@ class _LogInState extends State<LoginUI> {
                                 minWidth: 100.0,
                                 height: 50.0,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    if (controller.text ==
-                                            '8167chhk@naver.com' &&
-                                        controller2.text == 'chhk8167') {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              const InterFace(),
-                                        ),
-                                      );
-                                    } else if (controller.text ==
-                                            'thswnsrb467@naver.com' &&
-                                        controller2.text != '1234') {
-                                      showSnackBar(context,
-                                          const Text('Wrong password'));
-                                    } else if (controller.text !=
-                                            'thswnsrb467@naver.com' &&
-                                        controller2.text == '1234') {
-                                      showSnackBar(
-                                        context,
-                                        const Text('Wrong email'),
-                                      );
+                                  onPressed: () async {
+                                    User? user = await _handleSignIn();
+                                    if (user != null) {
+                                      // 로그인 성공
+                                      print('로그인 성공: ${user.email}');
                                     } else {
-                                      showSnackBar(
-                                        context,
-                                        const Text('Check your info again'),
-                                      );
+                                      // 로그인 실패
+                                      print('로그인 실패');
                                     }
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColorDark),
                                   child: const Icon(
                                     Icons.login_sharp,
                                     color: Colors.white,
@@ -134,6 +128,6 @@ class NextPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return InterFace();
   }
 }
