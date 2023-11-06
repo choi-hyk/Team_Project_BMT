@@ -6,8 +6,6 @@ import 'search_widgets/search_UI.dart';
 import 'bookmark_widgets/star_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 //배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
 //그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
@@ -22,8 +20,6 @@ class InterFace extends StatefulWidget {
 
 //InterFaceState클래스 -> Button을 누르면 해당 UI로 스위치
 class _InterFaceState extends State<InterFace> {
-  //파이어베이스 데이터베이스 연결 코드 FirebaseFirestore가 연결해주는 클래스임 ㅇㅇ
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   //디폴트 메뉴 search
   String currentUI = "search";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -46,84 +42,81 @@ class _InterFaceState extends State<InterFace> {
       body: Stack(
         children: [
           Positioned(
-            top: 90,
+            top: 100,
             left: 6.5,
             right: 6.5,
             child: InteractiveViewer(
                 constrained: true, child: Image.asset("assets/images/노선도.png")),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 33.5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Builder(builder: (BuildContext builderContext) {
-                      return GestureDetector(
-                        onTap: () {
-                          Scaffold.of(builderContext).openDrawer();
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.background,
-                              borderRadius: BorderRadius.circular(10.0)),
-                          width: 40.0,
-                          height: 43.5,
-                          child: const Icon(Icons.menu),
+          Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorDark,
+                    borderRadius: BorderRadius.circular(10.0)),
+                width: double.infinity,
+                height: 90,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Builder(builder: (BuildContext builderContext) {
+                        return GestureDetector(
+                          onTap: () {
+                            Scaffold.of(builderContext).openDrawer();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColorLight,
+                                borderRadius: BorderRadius.circular(10.0)),
+                            width: 40.0,
+                            height: 43.5,
+                            child: const Icon(Icons.menu),
+                          ),
+                        );
+                      }),
+                      const SizedBox(
+                        width: 300,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 13,
+                              horizontal: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                            ),
+                            hintText: '역을 입력하세요',
+                          ),
                         ),
-                      );
-                    }),
-                    UIButton(
-                      icon: const Icon(Icons.search),
-                      onTap: () => switchMenu("search"),
-                    ),
-                    UIButton(
-                      icon: const Icon(Icons.star),
-                      onTap: () => switchMenu("star"),
-                    ),
-                    UIButton(
-                      icon: const Icon(Icons.person),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AccountUI()),
-                        );
-                      },
-                    ),
-                    UIButton(
-                      icon: const Icon(Icons.settings),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SettingsUI()),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                //DataUI 컨테이너
-                SingleChildScrollView(
-                  child: DataUI(currentUI: currentUI),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    //광고배너 컨테이너
-                    width: double.infinity,
-                    height: 60.0,
-                    color: Colors.green,
-                    child: const Center(
-                      child: Text("광고 배너"),
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
+              //DataUI 컨테이너
+              SingleChildScrollView(
+                child: DataUI(currentUI: currentUI),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              //광고배너 컨테이너
+              width: double.infinity,
+              height: 60.0,
+              color: Colors.green,
+              child: const Center(
+                child: Text("광고 배너"),
+              ),
             ),
           ),
         ],
@@ -268,7 +261,7 @@ class _DataUIState extends State<DataUI> {
       child: DraggableScrollableSheet(
         initialChildSize: 0.6,
         maxChildSize: 0.99,
-        minChildSize: 0.22,
+        minChildSize: 0.55,
         builder: (BuildContext context, ScrollController scrollController) {
           return SingleChildScrollView(
             controller: scrollController,
@@ -289,28 +282,5 @@ class _DataUIState extends State<DataUI> {
       default:
         return const SearchUI();
     }
-  }
-}
-
-//UIButton클래스
-class UIButton extends StatelessWidget {
-  final Icon icon;
-  final VoidCallback? onTap;
-
-  const UIButton({super.key, required this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(10.0)),
-        width: 70.0,
-        height: 43.5,
-        child: icon,
-      ),
-    );
   }
 }
