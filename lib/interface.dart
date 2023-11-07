@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:test1/login_widgets/login_ui.dart';
-import 'package:test1/menu_widgets/bulletin_board.dart';
+import 'package:test1/menu_widgets/lost_and_found.dart';
+import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
-import 'search_widgets/search_UI.dart';
+import 'search_widgets/stationdata_UI.dart';
 import 'bookmark_widgets/star_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
@@ -52,12 +54,12 @@ class _InterFaceState extends State<InterFace> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColorDark,
-                    borderRadius: BorderRadius.circular(10.0)),
+                  color: Theme.of(context).primaryColor,
+                ),
                 width: double.infinity,
                 height: 90,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+                  padding: const EdgeInsets.only(top: 15.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -68,7 +70,7 @@ class _InterFaceState extends State<InterFace> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColorLight,
+                                color: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(10.0)),
                             width: 40.0,
                             height: 43.5,
@@ -100,10 +102,15 @@ class _InterFaceState extends State<InterFace> {
                 ),
               ),
               //DataUI 컨테이너
-              SingleChildScrollView(
-                child: DataUI(currentUI: currentUI),
-              ),
             ],
+          ),
+          Positioned(
+            bottom: 59,
+            left: 0,
+            right: 0,
+            child: SingleChildScrollView(
+              child: DataUI(currentUI: currentUI),
+            ),
           ),
           Positioned(
             bottom: 0,
@@ -185,14 +192,25 @@ class _InterFaceState extends State<InterFace> {
             ),
             ListTile(
               title: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const StorePage()),
-                    );
-                  },
-                  child: const Text('스토어')),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StorePage()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.store,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('스토어'),
+                  ],
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -203,11 +221,70 @@ class _InterFaceState extends State<InterFace> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const BulletinBoardPage(),
+                      builder: (context) => const StationBulletin(),
                     ),
                   );
                 },
-                child: const Text('게시판'),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.comment,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('역별 게시판'),
+                  ],
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LostAndFound()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.comment,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('분실물 게시판'),
+                  ],
+                ),
+              ),
+            ),
+            ListTile(
+              title: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BookMark()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('즐겨찾기'),
+                  ],
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -223,7 +300,18 @@ class _InterFaceState extends State<InterFace> {
                     ),
                   );
                 },
-                child: const Text('로그아웃'),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.logout,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('로그아웃'),
+                  ],
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -261,7 +349,7 @@ class _DataUIState extends State<DataUI> {
       child: DraggableScrollableSheet(
         initialChildSize: 0.6,
         maxChildSize: 0.99,
-        minChildSize: 0.55,
+        minChildSize: 0.50,
         builder: (BuildContext context, ScrollController scrollController) {
           return SingleChildScrollView(
             controller: scrollController,

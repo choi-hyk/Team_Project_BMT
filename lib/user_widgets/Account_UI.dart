@@ -134,7 +134,7 @@ class AccountUIState extends State<AccountUI> {
           '계정 정보',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Theme.of(context).primaryColorLight,
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
       ),
       body: Column(

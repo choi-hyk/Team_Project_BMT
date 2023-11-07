@@ -38,7 +38,45 @@ class _SearchUIState extends State<SearchUI> {
                   height: 25,
                 ),
                 const SizedBox(
-                  width: 240,
+                  width: 140,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.0),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
+                      width: 2.0, // 테두리 두께
+                    ),
+                  ),
+                  width: 60,
+                  height: 35,
+                  child: const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "출발",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.0),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
+                      width: 2.0, // 테두리 두께
+                    ),
+                  ),
+                  width: 60,
+                  height: 35,
+                  child: const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "도착",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
                 const Icon(
                   Icons.star_border_outlined, // 아이콘 종류
@@ -132,16 +170,68 @@ class _SearchUIState extends State<SearchUI> {
               ],
             ),
             const SizedBox(
-              height: 15,
+              height: 10,
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 212, 215, 216),
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-              width: double.infinity,
-              height: 150,
+            const Align(
+              alignment: Alignment.center,
+              child: Text("열차 도착 정보"),
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                      width: 1.0, // 테두리 두께
+                    ),
+                  ),
+                  width: 160,
+                  height: 120,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                      width: 1.0, // 테두리 두께
+                    ),
+                  ),
+                  width: 160,
+                  height: 120,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              height: 1, // 구분선의 높이
+              thickness: 1, // 구분선의 두께
+              color: Colors.grey, // 구분선의 색상
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text("시설정보"),
+            const SizedBox(
+              height: 100,
+            ),
+            const Divider(
+              height: 1, // 구분선의 높이
+              thickness: 1, // 구분선의 두께
+              color: Colors.grey, // 구분선의 색상
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text("역 게시판"),
           ],
         ),
       ),

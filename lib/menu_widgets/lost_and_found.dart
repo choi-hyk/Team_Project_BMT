@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class StorePage extends StatefulWidget {
-  const StorePage({super.key});
+class LostAndFound extends StatefulWidget {
+  const LostAndFound({super.key});
 
   @override
-  State<StorePage> createState() => _StorePageState();
+  State<LostAndFound> createState() => _LostAndFoundState();
 }
 
-class _StorePageState extends State<StorePage> {
+class _LostAndFoundState extends State<LostAndFound> {
   bool _isSearching = false;
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _StorePageState extends State<StorePage> {
                 },
               )
             : const Text(
-                '스토어',
+                '분실물 게시판',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
@@ -44,8 +44,8 @@ class _StorePageState extends State<StorePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(
-              _isSearching ? Icons.cancel : Icons.search,
+            icon: const Icon(
+              Icons.search,
               color: Colors.black,
             ),
             onPressed: () {
@@ -59,78 +59,9 @@ class _StorePageState extends State<StorePage> {
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(children: [
-          //편의점,카페,상품권을 누를수있는 버튼 로우
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  //역이름 들어가는 곳
-                  child: Text(
-                    "편의점",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 6.5,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  //역이름 들어가는 곳
-                  child: Text(
-                    "카페",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 6.5,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  //역이름 들어가는 곳
-                  child: Text(
-                    "상품권",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
           const SizedBox(
             height: 10,
           ),
-
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
