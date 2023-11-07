@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:test1/bookmark_widgets/bookmark_page.dart';
+import 'package:test1/home_UI.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 import 'package:test1/menu_widgets/lost_and_found.dart';
 import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
 import 'search_widgets/stationdata_UI.dart';
-import 'bookmark_widgets/star_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
 
@@ -44,11 +44,18 @@ class _InterFaceState extends State<InterFace> {
       body: Stack(
         children: [
           Positioned(
-            top: 100,
+            top: 95,
             left: 6.5,
             right: 6.5,
-            child: InteractiveViewer(
-                constrained: true, child: Image.asset("assets/images/노선도.png")),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.asset(
+                "assets/images/노선도.png",
+                width: 500,
+                height: 560,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Column(
             children: [
@@ -349,7 +356,7 @@ class _DataUIState extends State<DataUI> {
       child: DraggableScrollableSheet(
         initialChildSize: 0.6,
         maxChildSize: 0.99,
-        minChildSize: 0.50,
+        minChildSize: 0.10,
         builder: (BuildContext context, ScrollController scrollController) {
           return SingleChildScrollView(
             controller: scrollController,
@@ -365,10 +372,10 @@ class _DataUIState extends State<DataUI> {
     switch (currentUI) {
       case "search":
         return const SearchUI();
-      case "star":
-        return const StarUI();
+      case "home":
+        return const HomeUI();
       default:
-        return const SearchUI();
+        return const HomeUI();
     }
   }
 }
