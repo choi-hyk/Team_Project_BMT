@@ -47,13 +47,15 @@ class _InterFaceState extends State<InterFace> {
             top: 95,
             left: 6.5,
             right: 6.5,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(
-                "assets/images/노선도.png",
-                width: 500,
-                height: 560,
-                fit: BoxFit.cover,
+            child: GestureDetector(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.asset(
+                  "assets/images/노선도.png",
+                  width: 500,
+                  height: 560,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -115,9 +117,7 @@ class _InterFaceState extends State<InterFace> {
             bottom: 59,
             left: 0,
             right: 0,
-            child: SingleChildScrollView(
-              child: DataUI(currentUI: currentUI),
-            ),
+            child: DataUI(currentUI: currentUI),
           ),
           Positioned(
             bottom: 0,
@@ -370,12 +370,12 @@ class _DataUIState extends State<DataUI> {
 //버튼을 눌렀을때 UI상태를 스위치하는 위젯
   Widget buildContentWidget(String currentUI) {
     switch (currentUI) {
-      case "search":
-        return const SearchUI();
       case "home":
         return const HomeUI();
+      case "search":
+        return const StationData();
       default:
-        return const HomeUI();
+        return const StationData();
     }
   }
 }

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 //길찾기 UI
 //최단 시간, 최소 비용, 최적 경로 제공 -> 사용자 설정으로 순서 변경 가능
 //사용자 설정 UI 제공 -> default 즐겨찾기 경로, 사용자 설정으로 변경 가능
-class SearchUI extends StatefulWidget {
-  const SearchUI({super.key});
+class StationData extends StatefulWidget {
+  const StationData({super.key});
 
   @override
-  State<SearchUI> createState() => _SearchUIState();
+  State<StationData> createState() => _StationDataState();
 }
 
-class _SearchUIState extends State<SearchUI> {
+class _StationDataState extends State<StationData> {
   @override
   Widget build(BuildContext context) {
     return Container(
