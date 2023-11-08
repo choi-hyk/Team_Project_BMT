@@ -23,7 +23,8 @@ class InterFace extends StatefulWidget {
 //InterFaceState클래스 -> Button을 누르면 해당 UI로 스위치
 class _InterFaceState extends State<InterFace> {
   //디폴트 메뉴 search
-  String currentUI = "search";
+  String currentUI = "stationdata";
+  bool searchRouteMode = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   void switchMenu(String selectedMenu) {
     setState(() {
@@ -47,77 +48,39 @@ class _InterFaceState extends State<InterFace> {
             top: 95,
             left: 6.5,
             right: 6.5,
-            child: GestureDetector(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: Image.asset(
-                  "assets/images/노선도.png",
-                  width: 500,
-                  height: 560,
-                  fit: BoxFit.cover,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20), color: Colors.white),
+              width: 500,
+              height: 560,
+              child: InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 4.5,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                    right: 20.0,
+                  ),
+                  child: ClipRRect(
+                    child: Image.asset("assets/images/노선도.png",
+                        width: 500, height: 560, fit: BoxFit.contain),
+                  ),
                 ),
               ),
             ),
           ),
-          Column(
+          const Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                width: double.infinity,
-                height: 90,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Builder(builder: (BuildContext builderContext) {
-                        return GestureDetector(
-                          onTap: () {
-                            Scaffold.of(builderContext).openDrawer();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(10.0)),
-                            width: 40.0,
-                            height: 43.5,
-                            child: const Icon(Icons.menu),
-                          ),
-                        );
-                      }),
-                      const SizedBox(
-                        width: 300,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            fillColor: Colors.white,
-                            filled: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 13,
-                              horizontal: 10,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                            ),
-                            hintText: '역을 입력하세요',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              SearchBar(
+                isSearchMode: false,
               ),
-              //DataUI 컨테이너
             ],
           ),
           Positioned(
             bottom: 59,
             left: 0,
             right: 0,
-            child: DataUI(currentUI: currentUI),
+            child: DataUI(currentUI: currentUI), //DataUI 컨테이너
           ),
           Positioned(
             bottom: 0,
@@ -331,6 +294,135 @@ class _InterFaceState extends State<InterFace> {
   }
 }
 
+class SearchBar extends StatelessWidget {
+  final bool isSearchMode;
+  const SearchBar({super.key, this.isSearchMode = false});
+
+  @override
+  Widget build(BuildContext context) {
+    if (isSearchMode) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+        ),
+        width: double.infinity,
+        height: 90,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 15.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Builder(builder: (BuildContext builderContext) {
+                return GestureDetector(
+                  onTap: () {
+                    Scaffold.of(builderContext).openDrawer();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(10.0)),
+                    width: 40.0,
+                    height: 43.5,
+                    child: const Icon(Icons.swap_horiz),
+                  ),
+                );
+              }),
+              const SizedBox(
+                width: 150,
+                child: TextField(
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    hintText: '출발역',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 150,
+                child: TextField(
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    hintText: '도착역',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+        ),
+        width: double.infinity,
+        height: 90,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 15.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Builder(builder: (BuildContext builderContext) {
+                return GestureDetector(
+                  onTap: () {
+                    Scaffold.of(builderContext).openDrawer();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(10.0)),
+                    width: 40.0,
+                    height: 43.5,
+                    child: const Icon(Icons.menu),
+                  ),
+                );
+              }),
+              const SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    hintText: '역을 입력하세요',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+}
+
 //DataUI 클래스 -> 버튼을 누르면 해당 상태로 UI변경
 class DataUI extends StatefulWidget {
   final String currentUI;
@@ -350,9 +442,8 @@ class _DataUIState extends State<DataUI> {
     Widget contentWidget = buildContentWidget(widget.currentUI);
 
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.825,
-      ),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.825),
       child: DraggableScrollableSheet(
         initialChildSize: 0.6,
         maxChildSize: 0.99,
@@ -372,7 +463,7 @@ class _DataUIState extends State<DataUI> {
     switch (currentUI) {
       case "home":
         return const HomeUI();
-      case "search":
+      case "stationdata":
         return const StationData();
       default:
         return const StationData();
