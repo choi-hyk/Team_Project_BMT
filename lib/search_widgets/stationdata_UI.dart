@@ -1,10 +1,28 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 
 //길찾기 UI
 //최단 시간, 최소 비용, 최적 경로 제공 -> 사용자 설정으로 순서 변경 가능
 //사용자 설정 UI 제공 -> default 즐겨찾기 경로, 사용자 설정으로 변경 가능
 class StationData extends StatefulWidget {
-  const StationData({super.key});
+  final String stationId; //전달받은 역 id
+  final String name; //전달받은 역 이름
+  final String next; //전달받은 다음역
+  final String prev; //전달받은 전역
+  final bool toilet;
+  final bool cStore;
+  final bool nursingRoom;
+
+  const StationData({
+    super.key,
+    required this.stationId,
+    required this.name,
+    required this.next,
+    required this.prev,
+    required this.toilet,
+    required this.cStore,
+    required this.nursingRoom,
+  });
 
   @override
   State<StationData> createState() => _StationDataState();
@@ -58,7 +76,7 @@ class _StationDataState extends State<StationData> {
                     child: const Align(
                       alignment: Alignment.center,
                       child: Text(
-                        "출발",
+                        '출발',
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold),
                       ),
@@ -111,34 +129,34 @@ class _StationDataState extends State<StationData> {
                       borderRadius: BorderRadius.circular(50.0)),
                   width: 400,
                   height: 40,
-                  child: const Align(
+                  child: Align(
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.keyboard_arrow_left, // 아이콘 종류
                           size: 24.0, // 아이콘 크기 설정
                           color: Colors.white, // 아이콘 색상 설정
                         ),
                         Text(
-                          "전역",
-                          style: TextStyle(
+                          widget.prev,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 230,
                         ),
                         Text(
-                          "다음 역",
-                          style: TextStyle(
+                          widget.next,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
                               fontWeight: FontWeight.bold),
                         ),
-                        Icon(
+                        const Icon(
                           Icons.keyboard_arrow_right, // 아이콘 종류
                           size: 24.0, // 아이콘 크기 설정
                           color: Colors.white, // 아이콘 색상 설정
@@ -163,13 +181,13 @@ class _StationDataState extends State<StationData> {
                       borderRadius: BorderRadius.circular(50.0)),
                   width: 120,
                   height: 50,
-                  child: const Align(
+                  child: Align(
                     alignment: Alignment.center,
                     //역이름 들어가는 곳
                     child: Text(
-                      "역이름",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      widget.name,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -226,8 +244,31 @@ class _StationDataState extends State<StationData> {
               height: 10,
             ),
             const Text("시설정보"),
-            const SizedBox(
+            SizedBox(
               height: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (widget.toilet)
+                    Icon(
+                      FontAwesomeIcons.toilet, // 화장실 아이콘
+                      color: Theme.of(context).primaryColorDark, // 원하는 색상
+                      size: 45.0, // 원하는 크기
+                    ),
+                  if (widget.cStore)
+                    Icon(
+                      FontAwesomeIcons.store, // 화장실 아이콘
+                      color: Theme.of(context).primaryColorDark, // 원하는 색상
+                      size: 45.0, // 원하는 크기
+                    ),
+                  if (widget.nursingRoom)
+                    Icon(
+                      FontAwesomeIcons.personBreastfeeding, // 화장실 아이콘
+                      color: Theme.of(context).primaryColorDark, // 원하는 색상
+                      size: 45.0, // 원하는 크기
+                    ),
+                ],
+              ),
             ),
             const Divider(
               height: 1, // 구분선의 높이

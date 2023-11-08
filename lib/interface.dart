@@ -8,6 +8,8 @@ import 'package:test1/menu_widgets/store_page.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 //배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
 //그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
@@ -20,21 +22,73 @@ class InterFace extends StatefulWidget {
   State<InterFace> createState() => _InterFaceState();
 }
 
-//InterFaceState클래스 -> Button을 누르면 해당 UI로 스위치
 class _InterFaceState extends State<InterFace> {
-  //디폴트 메뉴 search
-  String currentUI = "stationdata";
-  bool searchRouteMode = false;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  void switchMenu(String selectedMenu) {
-    setState(() {
-      currentUI = selectedMenu;
-    });
+  String _stationId = ""; //StationData에 들어가는 매개 변수
+  String name = ""; //name에 들어가는 매개 변수
+  String next = ""; //next에 들어가는 매개 변수
+  String prev = ""; //prev에 들어가는 매개 변수
+  bool cStore = false;
+  bool nursingRoom = false;
+  bool toilet = false;
+
+  String currentUI = "home"; //현재 드래그 UI
+  final TextEditingController station = TextEditingController(); //검색되는 역
+
+//검색바에 입력되는 역번호 가져오기
+  void getData(String searchStation) async {
+    try {
+      final DocumentSnapshot stationData =
+          await firestore.collection('Stations').doc(searchStation).get();
+
+      if (stationData.exists) {
+        // 일치하는 ID를 가진 문서를 찾았습니다.
+        String documentId = stationData.id;
+
+        print('일치하는 문서 ID: $documentId');
+        // 이제 문서 ID를 추가 작업에 사용할 수 있습니다.
+        setState(() {
+          currentUI = 'stationdata';
+          _stationId = documentId;
+          name = stationData.get('name');
+          next = stationData.get('next');
+          prev = stationData.get('previous'); // 검색된 역번호의 ID를 저장
+          cStore = stationData.get('cStore');
+          nursingRoom = stationData.get('nursingRoom');
+          toilet = stationData.get('toilet');
+        });
+      } else {
+        print('$searchStation ID에 해당하는 문서를 찾을 수 없습니다.');
+      }
+    } catch (e) {
+      print('검색 중 오류 발생: $e');
+    }
   }
 
 //드로어 함수
   void menuDrawer() {
     _scaffoldKey.currentState?.openDrawer();
+  }
+
+//현재 스크롤어블 위젯 표시 컨테이너
+  Widget buildContentWidget(String currentUI) {
+    switch (currentUI) {
+      case "home":
+        return const HomeUI();
+      case "stationdata":
+        return StationData(
+          stationId: _stationId,
+          name: name,
+          next: next,
+          prev: prev,
+          toilet: toilet,
+          cStore: cStore,
+          nursingRoom: nursingRoom,
+        );
+      default:
+        return const HomeUI();
+    }
   }
 
   @override
@@ -69,10 +123,67 @@ class _InterFaceState extends State<InterFace> {
               ),
             ),
           ),
-          const Column(
+          Column(
             children: [
-              SearchBar(
-                isSearchMode: false,
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                ),
+                width: double.infinity,
+                height: 90,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Builder(builder: (BuildContext builderContext) {
+                        return GestureDetector(
+                          onTap: () {
+                            Scaffold.of(builderContext).openDrawer();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(10.0)),
+                            width: 40.0,
+                            height: 43.5,
+                            child: const Icon(Icons.menu),
+                          ),
+                        );
+                      }),
+                      SizedBox(
+                        width: 285,
+                        child: TextField(
+                          keyboardType: TextInputType.text,
+                          controller: station,
+                          onSubmitted: (String searchStation) {
+                            getData(searchStation);
+                          },
+                          decoration: const InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 13,
+                              horizontal: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            hintText: '역을 입력하세요',
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          station.clear(); // 입력된 텍스트 지우기
+                        },
+                        icon: const Icon(Icons.cancel),
+                      )
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -80,7 +191,21 @@ class _InterFaceState extends State<InterFace> {
             bottom: 59,
             left: 0,
             right: 0,
-            child: DataUI(currentUI: currentUI), //DataUI 컨테이너
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.825),
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.6,
+                maxChildSize: 0.99,
+                minChildSize: 0.10,
+                builder:
+                    (BuildContext context, ScrollController scrollController) {
+                  return SingleChildScrollView(
+                      controller: scrollController,
+                      child: buildContentWidget(currentUI));
+                },
+              ),
+            ),
           ),
           Positioned(
             bottom: 0,
@@ -291,182 +416,5 @@ class _InterFaceState extends State<InterFace> {
         ),
       ),
     );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  final bool isSearchMode;
-  const SearchBar({super.key, this.isSearchMode = false});
-
-  @override
-  Widget build(BuildContext context) {
-    if (isSearchMode) {
-      return Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-        ),
-        width: double.infinity,
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Builder(builder: (BuildContext builderContext) {
-                return GestureDetector(
-                  onTap: () {
-                    Scaffold.of(builderContext).openDrawer();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(10.0)),
-                    width: 40.0,
-                    height: 43.5,
-                    child: const Icon(Icons.swap_horiz),
-                  ),
-                );
-              }),
-              const SizedBox(
-                width: 150,
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    hintText: '출발역',
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 150,
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    hintText: '도착역',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-        ),
-        width: double.infinity,
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Builder(builder: (BuildContext builderContext) {
-                return GestureDetector(
-                  onTap: () {
-                    Scaffold.of(builderContext).openDrawer();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(10.0)),
-                    width: 40.0,
-                    height: 43.5,
-                    child: const Icon(Icons.menu),
-                  ),
-                );
-              }),
-              const SizedBox(
-                width: 300,
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    hintText: '역을 입력하세요',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-  }
-}
-
-//DataUI 클래스 -> 버튼을 누르면 해당 상태로 UI변경
-class DataUI extends StatefulWidget {
-  final String currentUI;
-
-  const DataUI({super.key, required this.currentUI});
-
-  @override
-  State<DataUI> createState() => _DataUIState(currentUI: currentUI);
-}
-
-class _DataUIState extends State<DataUI> {
-  final String currentUI;
-
-  _DataUIState({required this.currentUI});
-  @override
-  Widget build(BuildContext context) {
-    Widget contentWidget = buildContentWidget(widget.currentUI);
-
-    return ConstrainedBox(
-      constraints:
-          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.825),
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.99,
-        minChildSize: 0.10,
-        builder: (BuildContext context, ScrollController scrollController) {
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: contentWidget,
-          );
-        },
-      ),
-    );
-  }
-
-//버튼을 눌렀을때 UI상태를 스위치하는 위젯
-  Widget buildContentWidget(String currentUI) {
-    switch (currentUI) {
-      case "home":
-        return const HomeUI();
-      case "stationdata":
-        return const StationData();
-      default:
-        return const StationData();
-    }
   }
 }

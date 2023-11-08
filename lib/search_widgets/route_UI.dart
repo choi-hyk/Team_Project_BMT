@@ -20,6 +20,16 @@ class _RouteSearchState extends State<RouteSearch> {
             ),
             width: double.infinity,
             height: 90,
+            child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "앱 추천 경로",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  Text("최단 시간"),
+                  Text("최소 비용"),
+                ]),
           )
         ],
       ),
