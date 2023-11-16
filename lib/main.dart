@@ -1,14 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:test1/interface.dart';
-// import 'package:test1/home_UI.dart';
-// import 'package:test1/interface.dart';
-// import 'package:test1/login_widgets/login_ui.dart';
-// import 'package:test1/interface.dart';
-// import 'package:test1/login_widgets/login_ui.dart';
-import 'firebase_options.dart';
+//import 'package:test1/algorithm_code/graph.dart';
+//import 'package:test1/interface.dart';
+import 'package:test1/login_widgets/login_ui.dart';
 import 'login_widgets/auth_service.dart';
+// import 'package:test1/home_UI.dart';
+import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 // import 'test.dart';
 
@@ -54,7 +52,7 @@ class MyApp extends StatelessWidget {
         cardColor: const Color.fromARGB(255, 233, 255, 243),
       ),
       //InterFace 호출
-      home: const InterFace(),
+      home: const LoginUI(),
     );
   }
 }
