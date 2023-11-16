@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // 추가된 부분
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';
@@ -5,7 +6,7 @@ import 'package:test1/login_widgets/find_account.dart';
 import 'package:test1/login_widgets/join_account.dart';
 
 class LoginUI extends StatefulWidget {
-  const LoginUI({super.key});
+  const LoginUI({Key? key}) : super(key: key);
 
   @override
   State<LoginUI> createState() => _LogInState();
@@ -42,6 +43,20 @@ class _LogInState extends State<LoginUI> {
       showSnackBar(context, const Text("아이디 또는 비밀번호가 올바르지 않습니다."));
       return null;
     }
+  }
+
+  Future<List<Map<String, dynamic>>> _getAllDocuments() async {
+    // Firestore에서 데이터 가져오기
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Lines') // 여기에 컬렉션 이름을 넣어주세요
+        .get();
+
+    // 각 문서의 데이터를 List<Map>으로 변환
+    List<Map<String, dynamic>> documentDataList = querySnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    return documentDataList;
   }
 
   @override
@@ -85,7 +100,7 @@ class _LogInState extends State<LoginUI> {
                                 decoration: const InputDecoration(
                                     labelText: 'Enter password'),
                                 keyboardType: TextInputType.text,
-                                obscureText: true, // 비밀번호 안보이도록 하는 것
+                                obscureText: true,
                               ),
                               const SizedBox(
                                 height: 30.0,
@@ -97,13 +112,14 @@ class _LogInState extends State<LoginUI> {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Theme.of(context)
-                                                .primaryColorDark), // 버튼의 배경색
+                                      Theme.of(context).primaryColorDark,
+                                    ),
                                     shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                            16.0), // 버튼의 모서리를 둥글게 만듭니다.
+                                          16.0,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -112,11 +128,18 @@ class _LogInState extends State<LoginUI> {
                                     if (user != null) {
                                       // 로그인 성공
                                       print('로그인 성공: ${user.email}');
+                                      List<Map<String, dynamic>>
+                                          documentDataList =
+                                          await _getAllDocuments();
                                       Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const NextPage()));
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => NextPage(
+                                            currentUser: user,
+                                            documentDataList: documentDataList,
+                                          ),
+                                        ),
+                                      );
                                     } else {
                                       // 로그인 실패
                                       print('로그인 실패');
@@ -140,14 +163,16 @@ class _LogInState extends State<LoginUI> {
                                     height: 50.0,
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty
-                                            .all<Color>(Theme.of(context)
-                                                .primaryColorDark), // 버튼의 배경색
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                          Theme.of(context).primaryColorDark,
+                                        ),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                                16.0), // 버튼의 모서리를 둥글게 만듭니다.
+                                              16.0,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -173,14 +198,16 @@ class _LogInState extends State<LoginUI> {
                                     height: 50.0,
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty
-                                            .all<Color>(Theme.of(context)
-                                                .primaryColorDark), // 버튼의 배경색
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                          Theme.of(context).primaryColorDark,
+                                        ),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                                16.0), // 버튼의 모서리를 둥글게 만듭니다.
+                                              16.0,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -222,16 +249,26 @@ void showSnackBar(BuildContext context, Text text) {
     backgroundColor: const Color.fromARGB(255, 112, 48, 48),
   );
 
-// Find the ScaffoldMessenger in the widget tree
-// and use it to show a SnackBar.
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
 class NextPage extends StatelessWidget {
-  const NextPage({Key? key}) : super(key: key);
+  final User currentUser;
+  final List<Map<String, dynamic>> documentDataList;
+
+  const NextPage({
+    Key? key,
+    required this.currentUser,
+    required this.documentDataList,
+  }) : super(key: key);
 
   @override
+  //로그인 진입하면서 노선도 정보 불러오고 인터페이스에서 데이터 구조화 및 노선도 그래프 그림,
+  //그래프는 3개 존재 -> 시간 그래프, 비용 그래프, 최적 가중치 설정 그래프
   Widget build(BuildContext context) {
-    return const InterFace();
+    return InterFace(
+      currentUser: currentUser,
+      documentDataList: documentDataList,
+    );
   }
 }
