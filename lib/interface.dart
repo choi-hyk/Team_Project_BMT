@@ -8,62 +8,131 @@ import 'package:test1/menu_widgets/store_page.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-
-//배경화면 노선 이미지 확대 및 버튼 설정 구현 아직 안함
-//그리고 노선 이미지 밑에 남는공간 어케할지 생각해야됨
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:test1/algorithm_code/graph.dart';
 
 //InterFace 클래스
 class InterFace extends StatefulWidget {
-  const InterFace({super.key});
+  final User currentUser;
+  final List<Map<String, dynamic>> documentDataList;
 
+  const InterFace({
+    super.key,
+    required this.currentUser, //유저 정보
+    required this.documentDataList, //호선도 정보
+  });
   @override
   State<InterFace> createState() => _InterFaceState();
 }
 
 class _InterFaceState extends State<InterFace> {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _stationId = ""; //StationData에 들어가는 매개 변수
-  String name = ""; //name에 들어가는 매개 변수
-  String next = ""; //next에 들어가는 매개 변수
-  String prev = ""; //prev에 들어가는 매개 변수
+  String name = "";
+  bool nRoom = false;
   bool cStore = false;
-  bool nursingRoom = false;
-  bool toilet = false;
-
+  List<String> nName = [];
+  List<String> pName = [];
+  List<String> nCong = [];
+  List<String> pCong = [];
+  List<int> line = [];
   String currentUI = "home"; //현재 드래그 UI
-  final TextEditingController station = TextEditingController(); //검색되는 역
 
-//검색바에 입력되는 역번호 가져오기
-  void getData(String searchStation) async {
-    try {
-      final DocumentSnapshot stationData =
-          await firestore.collection('Stations').doc(searchStation).get();
+  final TextEditingController station = TextEditingController();
+  //검색되는 역
+  void showSnackBar(BuildContext context, Text text) {
+    final snackBar = SnackBar(
+      content: text,
+      backgroundColor: const Color.fromARGB(255, 112, 48, 48),
+    );
 
-      if (stationData.exists) {
-        // 일치하는 ID를 가진 문서를 찾았습니다.
-        String documentId = stationData.id;
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
-        print('일치하는 문서 ID: $documentId');
-        // 이제 문서 ID를 추가 작업에 사용할 수 있습니다.
-        setState(() {
-          currentUI = 'stationdata';
-          _stationId = documentId;
-          name = stationData.get('name');
-          next = stationData.get('next');
-          prev = stationData.get('previous'); // 검색된 역번호의 ID를 저장
-          cStore = stationData.get('cStore');
-          nursingRoom = stationData.get('nursingRoom');
-          toilet = stationData.get('toilet');
-        });
-      } else {
-        print('$searchStation ID에 해당하는 문서를 찾을 수 없습니다.');
+//Lines컬렉션 의 다큐먼트 호선 리스트를 역별 데이터로 변환
+//i : 다큐먼트 리스트 순회 i + 1 : 호선 번호
+//j : 각 필드의 배열 번호  Ex) widget.documentDataList[0]['station'][1] : 1호선의 첫번쨰 역 이름
+  void searchData(int searchStation) {
+    name = "";
+    nRoom = false;
+    cStore = false;
+    nCong.clear();
+    pCong.clear();
+    line.clear();
+    nName.clear();
+    pName.clear();
+    bool found = false;
+
+    for (int i = 0; i < 9; i++) {
+      int leng = widget.documentDataList[i]['station'].length;
+      print(leng - 1);
+
+      for (int j = 0; j < leng; j++) {
+        if (widget.documentDataList[i]['station'][j] == searchStation) {
+          name = widget.documentDataList[i]['station'][j].toString();
+          nRoom = widget.documentDataList[i]['nRoom'][j];
+          cStore = widget.documentDataList[i]['cStore'][j];
+          nCong
+              .add(widget.documentDataList[i]['next_congestion'][j].toString());
+          pCong
+              .add(widget.documentDataList[i]['prev_congestion'][j].toString());
+          line.add(i + 1);
+          //순환하는 호선인 1호선과 6호선 처리 과정
+          //순환하는 호선이면 맨처음 역과 마지막역을 이어줘야함
+          if (i == 0 || i == 5) {
+            if (j == 0) {
+              nName
+                  .add(widget.documentDataList[i]['station'][j + 1].toString());
+              pName.add(
+                  widget.documentDataList[i]['station'][leng - 1].toString());
+            } else if (j == leng - 1) {
+              nName.add(widget.documentDataList[i]['station'][0].toString());
+              pName
+                  .add(widget.documentDataList[i]['station'][j - 1].toString());
+            } else {
+              nName
+                  .add(widget.documentDataList[i]['station'][j + 1].toString());
+              pName
+                  .add(widget.documentDataList[i]['station'][j - 1].toString());
+            }
+            //순환하지 않는 호선인 경우
+          } else {
+            if (j == 0) {
+              nName
+                  .add(widget.documentDataList[i]['station'][j + 1].toString());
+              pName.add("종점역");
+            } else if (j == leng - 1) {
+              nName.add("종점역");
+              pName
+                  .add(widget.documentDataList[i]['station'][j - 1].toString());
+            } else {
+              nName
+                  .add(widget.documentDataList[i]['station'][j + 1].toString());
+              pName
+                  .add(widget.documentDataList[i]['station'][j - 1].toString());
+            }
+          }
+          found = true;
+          break;
+        }
       }
-    } catch (e) {
-      print('검색 중 오류 발생: $e');
     }
+    if (!found) {
+      showSnackBar(
+        context,
+        const Text("존재하지 않는 역입니다."),
+      );
+      currentUI = "home";
+    } else {
+      currentUI = "stationdata";
+    }
+  }
+
+//그래프 그리는 메소드
+  void setGraph() {
+    Graph cost = Graph(143);
+    Graph time = Graph(143);
+    cost.makeGraph(widget.documentDataList, 'cost');
+    time.makeGraph(widget.documentDataList, 'time');
   }
 
 //드로어 함수
@@ -72,20 +141,23 @@ class _InterFaceState extends State<InterFace> {
   }
 
 //현재 스크롤어블 위젯 표시 컨테이너
-  Widget buildContentWidget(String currentUI) {
+  Widget buildContentWidget(
+    String currentUI,
+  ) {
     switch (currentUI) {
       case "home":
         return const HomeUI();
       case "stationdata":
         return StationData(
-          stationId: _stationId,
-          name: name,
-          next: next,
-          prev: prev,
-          toilet: toilet,
-          cStore: cStore,
-          nursingRoom: nursingRoom,
-        );
+            name: name,
+            nRoom: nRoom,
+            cStore: cStore,
+            nCong: nCong,
+            pCong: pCong,
+            line: line,
+            nName: nName,
+            pName: pName,
+            i: 0);
       default:
         return const HomeUI();
     }
@@ -141,23 +213,41 @@ class _InterFaceState extends State<InterFace> {
                           onTap: () {
                             Scaffold.of(builderContext).openDrawer();
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(10.0)),
+                          child: const SizedBox(
                             width: 40.0,
                             height: 43.5,
-                            child: const Icon(Icons.menu),
+                            child: Icon(Icons.menu),
                           ),
                         );
                       }),
+                      Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: currentUI == 'home'
+                                ? Theme.of(context).primaryColorDark
+                                : Theme.of(context).primaryColor,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              currentUI = 'home'; // 입력된 텍스트 지우기
+                            },
+                            icon: const Icon(Icons.home),
+                          )),
+                      const SizedBox(
+                        width: 6.5,
+                      ),
                       SizedBox(
-                        width: 285,
+                        width: 240,
                         child: TextField(
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           controller: station,
-                          onSubmitted: (String searchStation) {
-                            getData(searchStation);
+                          onSubmitted: (String value) {
+                            int? searchStation = int.tryParse(value);
+                            if (searchStation != null) {
+                              searchData(searchStation);
+                            }
                           },
                           decoration: const InputDecoration(
                             fillColor: Colors.white,
@@ -180,7 +270,7 @@ class _InterFaceState extends State<InterFace> {
                           station.clear(); // 입력된 텍스트 지우기
                         },
                         icon: const Icon(Icons.cancel),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -195,7 +285,7 @@ class _InterFaceState extends State<InterFace> {
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.825),
               child: DraggableScrollableSheet(
-                initialChildSize: 0.6,
+                initialChildSize: 0.10,
                 maxChildSize: 0.99,
                 minChildSize: 0.10,
                 builder:
