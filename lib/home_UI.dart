@@ -35,14 +35,7 @@ class _HomeUIState extends State<HomeUI> {
               height: 10,
             ),
             const SizedBox(
-              height: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
+              height: 35,
             ),
             const Divider(
               height: 1, // 구분선의 높이
