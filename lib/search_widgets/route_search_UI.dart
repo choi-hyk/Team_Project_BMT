@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RouteSearch extends StatefulWidget {
-  const RouteSearch({super.key});
+  final String? startStation;
+  final String? arrivStation;
+
+  const RouteSearch({super.key, this.startStation, this.arrivStation});
 
   @override
   State<RouteSearch> createState() => _RouteSearchState();
@@ -20,7 +23,7 @@ class _RouteSearchState extends State<RouteSearch> {
               color: Theme.of(context).primaryColor,
             ),
             width: double.infinity,
-            height: 140,
+            height: 130,
             child: Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: Column(
