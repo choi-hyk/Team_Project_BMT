@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:test1/home_UI.dart';
 import 'package:test1/login_widgets/login_ui.dart';
+import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/lost_and_found.dart';
 import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
@@ -149,15 +150,15 @@ class _InterFaceState extends State<InterFace> {
         return const HomeUI();
       case "stationdata":
         return StationData(
-            name: name,
-            nRoom: nRoom,
-            cStore: cStore,
-            nCong: nCong,
-            pCong: pCong,
-            line: line,
-            nName: nName,
-            pName: pName,
-            i: 0);
+          name: name,
+          nRoom: nRoom,
+          cStore: cStore,
+          nCong: nCong,
+          pCong: pCong,
+          line: line,
+          nName: nName,
+          pName: pName,
+        );
       default:
         return const HomeUI();
     }
