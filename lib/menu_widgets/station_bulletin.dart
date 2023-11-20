@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 class StationBulletin extends StatefulWidget {
@@ -9,6 +11,180 @@ class StationBulletin extends StatefulWidget {
 
 class _StationBulletinState extends State<StationBulletin> {
   bool _isSearching = false;
+  int selectedStation = 101; // Initial selected station
+
+  CollectionReference product =
+      FirebaseFirestore.instance.collection('Bulletin_Board');
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController contentController = TextEditingController();
+  final TextEditingController userController = TextEditingController();
+  final TextEditingController stationController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
+
+  Future<void> _update(DocumentSnapshot documentSnapshot) async {
+    titleController.text = documentSnapshot['title'];
+    contentController.text = documentSnapshot['content'];
+    userController.text = documentSnapshot['User_ID'];
+    stationController.text = documentSnapshot['station_ID'];
+
+    await showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 20,
+              left: 20,
+              right: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: '제목'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: contentController,
+                  decoration: const InputDecoration(labelText: '내용'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: stationController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: '호선'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: userController,
+                  decoration: const InputDecoration(labelText: '작성자'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final String title = titleController.text;
+                    final String content = contentController.text;
+                    final String station = stationController.text;
+                    final String user = userController.text;
+
+                    await product.doc(documentSnapshot.id).update(
+                      {
+                        "title": title,
+                        "content": content,
+                        "station_ID": station,
+                        "User_ID": user,
+                        "updated_at": FieldValue.serverTimestamp(),
+                      },
+                    );
+
+                    titleController.text = "";
+                    contentController.text = "";
+                    stationController.text = "";
+                    userController.text = "";
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('수정'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _create() async {
+    await showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 20,
+              left: 20,
+              right: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: '제목'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: contentController,
+                  decoration: const InputDecoration(labelText: '내용'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: stationController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: '호선'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: userController,
+                  decoration: const InputDecoration(labelText: '작성자'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final String title = titleController.text;
+                    final String content = contentController.text;
+                    final String station = stationController.text;
+                    final String user = userController.text;
+
+                    await product.add({
+                      'title': title,
+                      'content': content,
+                      'station_ID': station,
+                      'User_ID': user,
+                      'created_at': FieldValue.serverTimestamp(),
+                    });
+
+                    titleController.text = "";
+                    contentController.text = "";
+                    stationController.text = "";
+                    userController.text = "";
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('작성'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _delete(String productId) async {
+    await product.doc(productId).delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,23 +193,20 @@ class _StationBulletinState extends State<StationBulletin> {
           icon: const Icon(
             Icons.arrow_back_ios_new,
             color: Colors.black,
-          ), // 뒤로 가기 아이콘
+          ),
           onPressed: () {
             _isSearching = false;
-            Navigator.pop(context); // 뒤로 가기 버튼을 누르면 현재 화면에서 빠져나감
+            Navigator.pop(context);
           },
         ),
         title: _isSearching
             ? TextField(
-                // 검색 모드에서는 검색 창을 표시
                 style: const TextStyle(color: Colors.black),
                 decoration: const InputDecoration(
                   hintText: '검색어를 입력하세요',
                   hintStyle: TextStyle(color: Colors.black),
                 ),
-                onChanged: (searchQuery) {
-                  // 검색어 입력 시 동작할 작업 추가
-                },
+                onChanged: (searchQuery) {},
               )
             : const Text(
                 '게시판',
@@ -43,82 +216,142 @@ class _StationBulletinState extends State<StationBulletin> {
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         actions: [
-          IconButton(
+          _isSearching
+              ? Container() // Empty container when searching
+              : DropdownButton<int>(
+                  value: selectedStation,
+                  items: const [
+                    DropdownMenuItem<int>(
+                      value: 101,
+                      child: Text('101호'),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 102,
+                      child: Text('102호'),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 104,
+                      child: Text('104호'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedStation = value!;
+                    });
+                  },
+                ),
+          /*IconButton(
             icon: const Icon(
               Icons.search,
               color: Colors.black,
             ),
             onPressed: () {
               setState(() {
-                _isSearching = !_isSearching; // 검색 버튼을 누를 때 검색 모드 토글
+                _isSearching = !_isSearching;
               });
             },
-          ),
+          ),*/
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(children: [
-          //편의점,카페,상품권을 누를수있는 버튼 로우
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //역이름, 호선 색
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadius.circular(50.0),
-                ),
-                width: 200,
-                height: 40,
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "역이름",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
+      body: StreamBuilder(
+        stream:
+            product.where('station_ID', isEqualTo: selectedStation).snapshots(),
+        builder: (BuildContext context,
+            AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+          if (streamSnapshot.hasData) {
+            return ListView.builder(
+              itemCount: streamSnapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot =
+                    streamSnapshot.data!.docs[index];
 
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  Column(
+                DateTime createdAt =
+                    (documentSnapshot['created_at'] as Timestamp).toDate();
+
+                String formattedDate =
+                    DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                        .format(createdAt);
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      for (var i = 0; i < 10; i++)
-                        Column(
+                      /*Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          '${documentSnapshot['station_ID']}호',
+                          style: const TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),*/
+                      const SizedBox(height: 5),
+                      ListTile(
+                        title: Text(
+                          documentSnapshot['title'],
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                  color: Colors.grey, // 테두리 색상
-                                  width: 1.0, // 테두리 두께
-                                ),
-                              ),
-                              width: double.infinity,
-                              height: 160,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 5),
+                            Text(documentSnapshot['content']),
+                            const SizedBox(height: 5),
+                            Text('사용자: ${documentSnapshot['User_ID']}'),
+                            const SizedBox(height: 5),
+                            Text('작성일: $formattedDate'),
+                            const SizedBox(height: 5),
                           ],
                         ),
+                        trailing: SizedBox(
+                          width: 100,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  _update(documentSnapshot);
+                                },
+                                icon: const Icon(Icons.edit),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  _delete(documentSnapshot.id);
+                                },
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        width: double.infinity,
+                        color: Colors.black,
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-        ]),
+                );
+              },
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          _create();
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: const Text('글쓰기'),
       ),
     );
   }

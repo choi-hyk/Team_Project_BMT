@@ -6,9 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 import 'login_widgets/auth_service.dart';
-//import 'package:test1/interface.dart';
-// import 'package:test1/home_UI.dart';
+import 'package:flutter/services.dart';
+import 'package:test1/menu_widgets/station_bulletin.dart';
+import 'package:test1/bookmark_widgets/bookmark_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
 //import 'package:test1/algorithm_code/graph.dart';
+// import 'package:test1/home_UI.dart';
 
 int array = 0; //역 정보 데이터 배열
 String currentUI = "home"; //home, stationdata, routesearch, routeresult
@@ -51,7 +54,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); //db 연동
+  ); //즐겨찾기, 게시판 db 연동
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting();
   runApp(
     MultiProvider(
       providers: [
