@@ -30,31 +30,6 @@ class StationData extends StatefulWidget {
 }
 
 class _StationDataState extends State<StationData> {
-  Color perlinedata(int currentLine) {
-    switch (currentLine) {
-      case 1:
-        return Colors.green;
-      case 2:
-        return const Color.fromARGB(255, 14, 67, 111);
-      case 3:
-        return Colors.brown;
-      case 4:
-        return Colors.red;
-      case 5:
-        return const Color.fromARGB(255, 24, 99, 134);
-      case 6:
-        return const Color.fromARGB(255, 218, 206, 95);
-      case 7:
-        return const Color.fromARGB(255, 115, 216, 118);
-      case 8:
-        return const Color.fromARGB(255, 54, 181, 240);
-      case 9:
-        return Colors.purple;
-      default:
-        return Colors.white;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,8 +57,8 @@ class _StationDataState extends State<StationData> {
                   InkWell(
                     onTap: () {
                       setState(() {
-                        i = 0; // 또는 다른 값으로 변경
-                      }); // 또는 다른 값으로 변경
+                        array = 0;
+                      });
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -112,7 +87,7 @@ class _StationDataState extends State<StationData> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          i = 1; // 또는 다른 값으로 변경
+                          array = 1; // 또는 다른 값으로 변경
                         }); // 또는 다른 값으로 변경
                       },
                       child: Container(
@@ -235,7 +210,7 @@ class _StationDataState extends State<StationData> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: perlinedata(widget.line[i]),
+                    color: perlinedata(widget.line[array]),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                   width: 400,
@@ -251,7 +226,7 @@ class _StationDataState extends State<StationData> {
                           color: Colors.white,
                         ),
                         Text(
-                          widget.pName[i],
+                          widget.pName[array],
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -262,7 +237,7 @@ class _StationDataState extends State<StationData> {
                           width: 230,
                         ),
                         Text(
-                          widget.nName[i],
+                          widget.nName[array],
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -280,7 +255,7 @@ class _StationDataState extends State<StationData> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: perlinedata(widget.line[i]),
+                    color: perlinedata(widget.line[array]),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                   width: 160,
@@ -336,7 +311,7 @@ class _StationDataState extends State<StationData> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      widget.pCong[i],
+                      widget.pCong[array],
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -358,7 +333,7 @@ class _StationDataState extends State<StationData> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      widget.nCong[i],
+                      widget.nCong[array],
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
