@@ -10,7 +10,7 @@ import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:test1/algorithm_code/graph.dart';
+//import 'package:test1/algorithm_code/graph.dart';
 
 //InterFace 클래스
 class InterFace extends StatefulWidget {
@@ -36,23 +36,15 @@ class _InterFaceState extends State<InterFace> {
   List<String> nCong = [];
   List<String> pCong = [];
   List<int> line = [];
-  String currentUI = "home"; //현재 드래그 UI
 
   final TextEditingController station = TextEditingController();
   //검색되는 역
-  void showSnackBar(BuildContext context, Text text) {
-    final snackBar = SnackBar(
-      content: text,
-      backgroundColor: const Color.fromARGB(255, 112, 48, 48),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
 //Lines컬렉션 의 다큐먼트 호선 리스트를 역별 데이터로 변환
 //i : 다큐먼트 리스트 순회 i + 1 : 호선 번호
 //j : 각 필드의 배열 번호  Ex) widget.documentDataList[0]['station'][1] : 1호선의 첫번쨰 역 이름
   void searchData(int searchStation) {
+    bool found = false;
     name = "";
     nRoom = false;
     cStore = false;
@@ -61,7 +53,6 @@ class _InterFaceState extends State<InterFace> {
     line.clear();
     nName.clear();
     pName.clear();
-    bool found = false;
 
     for (int i = 0; i < 9; i++) {
       int leng = widget.documentDataList[i]['station'].length;
@@ -113,27 +104,20 @@ class _InterFaceState extends State<InterFace> {
             }
           }
           found = true;
+          array = 0;
           break;
         }
       }
     }
     if (!found) {
+      currentUI = 'home';
       showSnackBar(
         context,
         const Text("존재하지 않는 역입니다."),
       );
-      currentUI = "home";
     } else {
       currentUI = "stationdata";
     }
-  }
-
-//그래프 그리는 메소드
-  void setGraph() {
-    Graph cost = Graph(143);
-    Graph time = Graph(143);
-    cost.makeGraph(widget.documentDataList, 'cost');
-    time.makeGraph(widget.documentDataList, 'time');
   }
 
 //드로어 함수
@@ -142,9 +126,7 @@ class _InterFaceState extends State<InterFace> {
   }
 
 //현재 스크롤어블 위젯 표시 컨테이너
-  Widget buildContentWidget(
-    String currentUI,
-  ) {
+  Widget buildContentWidget() {
     switch (currentUI) {
       case "home":
         return const HomeUI();
@@ -250,27 +232,33 @@ class _InterFaceState extends State<InterFace> {
                               searchData(searchStation);
                             }
                           },
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                               vertical: 13,
                               horizontal: 10,
                             ),
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(10),
                               ),
                             ),
                             hintText: '역을 입력하세요',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.cancel,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
+                              onPressed: () {
+                                station.clear();
+                              },
+                            ),
                           ),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          station.clear(); // 입력된 텍스트 지우기
-                        },
-                        icon: const Icon(Icons.cancel),
+                      const SizedBox(
+                        width: 23.5,
                       ),
                     ],
                   ),
@@ -293,7 +281,7 @@ class _InterFaceState extends State<InterFace> {
                     (BuildContext context, ScrollController scrollController) {
                   return SingleChildScrollView(
                       controller: scrollController,
-                      child: buildContentWidget(currentUI));
+                      child: buildContentWidget());
                 },
               ),
             ),
