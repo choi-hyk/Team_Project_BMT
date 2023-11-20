@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RouteResults extends StatefulWidget {
-  const RouteResults({super.key});
+  final String startStation;
+  final String arrivStation;
+  const RouteResults(
+      {super.key, required this.startStation, required this.arrivStation});
 
   @override
   State<RouteResults> createState() => _RouteResultsState();

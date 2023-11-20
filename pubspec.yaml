@@ -40,7 +40,7 @@ dependencies:
   firebase_auth: ^4.12.1
   firebase_core: ^2.21.0
   cloud_firestore: ^4.12.2
-  provider: ^6.0.5
+  provider: ^6.1.1
   firebase_database: ^10.3.3
   dijkstra: ^0.0.4
   chinese_postman: ^0.1.4

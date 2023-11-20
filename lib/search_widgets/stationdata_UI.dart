@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test1/main.dart';
 import 'route_search_UI.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,9 +12,8 @@ class StationData extends StatefulWidget {
   final List pName;
   final List nCong;
   final List pCong;
-  int i;
 
-  StationData({
+  const StationData({
     Key? key,
     required this.line,
     required this.name,
@@ -23,7 +23,6 @@ class StationData extends StatefulWidget {
     required this.pCong,
     required this.nName,
     required this.pName,
-    required this.i,
   }) : super(key: key);
 
   @override
@@ -31,31 +30,6 @@ class StationData extends StatefulWidget {
 }
 
 class _StationDataState extends State<StationData> {
-  Color perlinedata(int currentLine) {
-    switch (currentLine) {
-      case 1:
-        return Colors.green;
-      case 2:
-        return const Color.fromARGB(255, 14, 67, 111);
-      case 3:
-        return Colors.brown;
-      case 4:
-        return Colors.red;
-      case 5:
-        return const Color.fromARGB(255, 24, 99, 134);
-      case 6:
-        return const Color.fromARGB(255, 218, 206, 95);
-      case 7:
-        return const Color.fromARGB(255, 115, 216, 118);
-      case 8:
-        return const Color.fromARGB(255, 54, 181, 240);
-      case 9:
-        return Colors.purple;
-      default:
-        return Colors.white;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,8 +57,8 @@ class _StationDataState extends State<StationData> {
                   InkWell(
                     onTap: () {
                       setState(() {
-                        widget.i = 0; // 또는 다른 값으로 변경
-                      }); // 또는 다른 값으로 변경
+                        array = 0;
+                      });
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -113,7 +87,7 @@ class _StationDataState extends State<StationData> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          widget.i = 1; // 또는 다른 값으로 변경
+                          array = 1; // 또는 다른 값으로 변경
                         }); // 또는 다른 값으로 변경
                       },
                       child: Container(
@@ -144,7 +118,10 @@ class _StationDataState extends State<StationData> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RouteSearch(),
+                          builder: (context) => RouteSearch(
+                            startStation: widget.name,
+                            arrivStation: null,
+                          ),
                         ),
                       );
                     },
@@ -178,7 +155,10 @@ class _StationDataState extends State<StationData> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RouteSearch(),
+                          builder: (context) => RouteSearch(
+                            startStation: null,
+                            arrivStation: widget.name,
+                          ),
                         ),
                       );
                     },
@@ -230,7 +210,7 @@ class _StationDataState extends State<StationData> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: perlinedata(widget.line[widget.i]),
+                    color: perlinedata(widget.line[array]),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                   width: 400,
@@ -246,7 +226,7 @@ class _StationDataState extends State<StationData> {
                           color: Colors.white,
                         ),
                         Text(
-                          widget.pName[widget.i],
+                          widget.pName[array],
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -257,7 +237,7 @@ class _StationDataState extends State<StationData> {
                           width: 230,
                         ),
                         Text(
-                          widget.nName[widget.i],
+                          widget.nName[array],
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -275,7 +255,7 @@ class _StationDataState extends State<StationData> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: perlinedata(widget.line[widget.i]),
+                    color: perlinedata(widget.line[array]),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                   width: 160,
@@ -331,7 +311,7 @@ class _StationDataState extends State<StationData> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      widget.pCong[widget.i],
+                      widget.pCong[array],
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -353,7 +333,7 @@ class _StationDataState extends State<StationData> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      widget.nCong[widget.i],
+                      widget.nCong[array],
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
