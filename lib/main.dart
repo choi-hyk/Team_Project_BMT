@@ -2,19 +2,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 //import 'package:test1/algorithm_code/graph.dart';
-//import 'package:test1/interface.dart';
+import 'package:test1/interface.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 import 'login_widgets/auth_service.dart';
 // import 'package:test1/home_UI.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 // import 'test.dart';
+import 'package:test1/menu_widgets/station_bulletin.dart';
+import 'package:test1/bookmark_widgets/bookmark_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); //db 연동
+  ); //즐겨찾기, 게시판 db 연동
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting();
   runApp(
     MultiProvider(
       providers: [
