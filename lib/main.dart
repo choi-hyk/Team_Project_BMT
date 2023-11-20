@@ -1,16 +1,51 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-//import 'package:test1/algorithm_code/graph.dart';
-//import 'package:test1/interface.dart';
-import 'package:test1/login_widgets/login_ui.dart';
-import 'login_widgets/auth_service.dart';
-// import 'package:test1/home_UI.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
-// import 'test.dart';
+import 'package:provider/provider.dart';
+import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/login_widgets/login_ui.dart';
+import 'login_widgets/auth_service.dart';
+//import 'package:test1/interface.dart';
+// import 'package:test1/home_UI.dart';
+//import 'package:test1/algorithm_code/graph.dart';
 
-int i = 0;
+int array = 0; //역 정보 데이터 배열
+String currentUI = "home"; //home, stationdata, routesearch, routeresult
+
+void showSnackBar(BuildContext context, Text text) {
+  final snackBar = SnackBar(
+    content: text,
+    backgroundColor: const Color.fromARGB(255, 112, 48, 48),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+Color perlinedata(int currentLine) {
+  switch (currentLine) {
+    case 1:
+      return Colors.green;
+    case 2:
+      return const Color.fromARGB(255, 14, 67, 111);
+    case 3:
+      return Colors.brown;
+    case 4:
+      return Colors.red;
+    case 5:
+      return const Color.fromARGB(255, 24, 99, 134);
+    case 6:
+      return const Color.fromARGB(255, 218, 206, 95);
+    case 7:
+      return const Color.fromARGB(255, 115, 216, 118);
+    case 8:
+      return const Color.fromARGB(255, 54, 181, 240);
+    case 9:
+      return Colors.purple;
+    default:
+      return Colors.white;
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +55,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => DataProvider(),
+        ),
         ChangeNotifierProvider(create: (context) => AuthService()),
       ],
       child: const MyApp(),
