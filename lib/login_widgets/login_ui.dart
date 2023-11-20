@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/login_widgets/find_account.dart';
 import 'package:test1/login_widgets/join_account.dart';
+import 'package:test1/main.dart';
+import 'package:test1/provider_code/data_provider.dart';
 
 class LoginUI extends StatefulWidget {
   const LoginUI({Key? key}) : super(key: key);
@@ -16,6 +18,8 @@ class _LogInState extends State<LoginUI> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  DataProvider dataProvider = DataProvider(); //프로바이더 객체 변수
 
   Future<User?> _handleSignIn() async {
     final email = _emailController.text;
@@ -43,20 +47,6 @@ class _LogInState extends State<LoginUI> {
       showSnackBar(context, const Text("아이디 또는 비밀번호가 올바르지 않습니다."));
       return null;
     }
-  }
-
-  Future<List<Map<String, dynamic>>> _getAllDocuments() async {
-    // Firestore에서 데이터 가져오기
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('Lines') // 여기에 컬렉션 이름을 넣어주세요
-        .get();
-
-    // 각 문서의 데이터를 List<Map>으로 변환
-    List<Map<String, dynamic>> documentDataList = querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-
-    return documentDataList;
   }
 
   @override
@@ -128,15 +118,13 @@ class _LogInState extends State<LoginUI> {
                                     if (user != null) {
                                       // 로그인 성공
                                       print('로그인 성공: ${user.email}');
-                                      List<Map<String, dynamic>>
-                                          documentDataList =
-                                          await _getAllDocuments();
+                                      await dataProvider.fetchDocumentList();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => NextPage(
                                             currentUser: user,
-                                            documentDataList: documentDataList,
+                                            dataProvider: dataProvider,
                                           ),
                                         ),
                                       );
@@ -243,23 +231,14 @@ class _LogInState extends State<LoginUI> {
   }
 }
 
-void showSnackBar(BuildContext context, Text text) {
-  final snackBar = SnackBar(
-    content: text,
-    backgroundColor: const Color.fromARGB(255, 112, 48, 48),
-  );
-
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
-
 class NextPage extends StatelessWidget {
   final User currentUser;
-  final List<Map<String, dynamic>> documentDataList;
+  final DataProvider dataProvider;
 
   const NextPage({
     Key? key,
     required this.currentUser,
-    required this.documentDataList,
+    required this.dataProvider,
   }) : super(key: key);
 
   @override
@@ -268,7 +247,7 @@ class NextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return InterFace(
       currentUser: currentUser,
-      documentDataList: documentDataList,
+      documentDataList: dataProvider.documentDataList,
     );
   }
 }
