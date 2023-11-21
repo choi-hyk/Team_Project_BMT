@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test1/settings_widgets/setting_account_page.dart';
 
 //계정 설정 버튼 페이지만 만들고 내부 구성은 아직 안함. 나머지 버튼은 페이지말고 작게 팝업으로 띄울 예정
 

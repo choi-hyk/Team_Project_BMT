@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // 추가된 부분
+//import 'package:cloud_firestore/cloud_firestore.dart'; // 추가된 부분
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';

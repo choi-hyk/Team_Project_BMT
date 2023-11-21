@@ -3,10 +3,9 @@ class Graph {
   final Map<int, List<Edge>> adjacencyList;
 
   Graph(this.vertices) : adjacencyList = <int, List<Edge>>{};
-
   void makeGraph(List<Map<String, dynamic>> documentDataList, String weight) {
     for (int i = 0; i < 9; i++) {
-      for (int j = 0; j < documentDataList[i]['station'].length - 1; i++) {
+      for (int j = 0; j < documentDataList[i]['station'].length - 1; j++) {
         addEdge(
             documentDataList[i]['station'][j],
             documentDataList[i]['station'][j + 1],
@@ -46,7 +45,7 @@ class Graph {
     while (priorityQueue.isNotEmpty) {
       int currentVertex = priorityQueue.removeAt(0).vertex;
 
-      for (Edge edge in adjacencyList[currentVertex]!) {
+      for (Edge edge in adjacencyList[currentVertex] ?? []) {
         int newDistance = distances[currentVertex] + edge.weight;
 
         if (newDistance < distances[edge.destination]) {
@@ -88,14 +87,9 @@ class Node {
   Node(this.vertex, this.distance);
 }
 
-
-
-//예시
 // void main() {
-
-//   Graph timeGraph = Graph(143);
-//   Graph costGraph = Graph(143);
-
+//   Graph timeGraph = Graph(905);
+//   //Graph costGraph = Graph(6);
 //   timeGraph.addEdge(0, 1, 5);
 //   timeGraph.addEdge(0, 2, 1);
 //   timeGraph.addEdge(1, 2, 2);
@@ -104,19 +98,14 @@ class Node {
 //   timeGraph.addEdge(3, 4, 6);
 //   timeGraph.addEdge(3, 5, 8);
 //   timeGraph.addEdge(4, 5, 7);
-
-
-//   int startVertex = 5;
-//   int endVertex = 0;
-
+//   int startVertex = 0;
+//   int endVertex = 5;
 //   List<int> timePath = [];
-//   List<int> costPath = [];
-
+//   //List<int> costPath = [];
 //   List<int> minTime = timeGraph.dijkstra(startVertex, endVertex, timePath);
-//   List<int> minCost = costGraph.dijkstra(startVertex, endVertex, costPath);
-
+//   //List<int> minCost = costGraph.dijkstra(startVertex, endVertex, costPath);
 //   print("$startVertex역에서 $endVertex역 까지의 최단 시간: ${minTime[endVertex]}");
 //   print("최단 경로: $timePath");
-//   print("$startVertex역에서 $endVertex역 까지의 최소 비용: ${minCost[endVertex]}");
-//   print("최단 경로: $costPath");
+//   //print("$startVertex역에서 $endVertex역 까지의 최소 비용: ${minCost[endVertex]}");
+//   //print("최단 경로: $costPath");
 // }
