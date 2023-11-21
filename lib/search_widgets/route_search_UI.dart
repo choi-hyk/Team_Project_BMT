@@ -100,19 +100,8 @@ class _RouteSearchState extends State<RouteSearch> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              FontAwesomeIcons.angleLeft,
-                              color: Theme.of(context).primaryColorDark,
-                            ), // 뒤로 가기 아이콘
-                            onPressed: () {
-                              Navigator.pop(
-                                  context); // 뒤로 가기 버튼을 누르면 현재 화면에서 빠져나감
-                            },
-                          ),
-                        ],
+                      const Column(
+                        children: [],
                       ),
                       const SizedBox(
                         width: 5.5,
@@ -122,6 +111,9 @@ class _RouteSearchState extends State<RouteSearch> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              const SizedBox(
+                                width: 43.5,
+                              ),
                               SizedBox(
                                 width: 240,
                                 child: TextField(
@@ -167,6 +159,9 @@ class _RouteSearchState extends State<RouteSearch> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              const SizedBox(
+                                width: 43.5,
+                              ),
                               SizedBox(
                                 width: 240,
                                 child: TextField(
@@ -409,6 +404,18 @@ class _RouteSearchState extends State<RouteSearch> {
                   );
                 },
               ),
+            ),
+          ),
+          Positioned(
+            top: 20.5, // 뒤로가기 버튼의 위치 조정 (값을 조절하여 원하는 위치로 이동 가능)
+            child: IconButton(
+              icon: Icon(
+                FontAwesomeIcons.angleLeft,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // 뒤로가기 기능 수행
+              },
             ),
           ),
         ],

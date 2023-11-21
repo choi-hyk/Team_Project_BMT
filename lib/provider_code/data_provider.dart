@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // 추가된 부분
 import 'package:test1/algorithm_code/graph.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DataProvider with ChangeNotifier {
-  Graph? costGraph; // 비용 그래프
-  Graph? timeGraph; // 시간 그래프
   List<Map<String, dynamic>> documentDataList = [];
-
-  void initializeGraphs(List<Map<String, dynamic>> documentDataList) {
-    costGraph = Graph(143);
-    timeGraph = Graph(143);
-    costGraph!.makeGraph(documentDataList, 'cost');
-    timeGraph!.makeGraph(documentDataList, 'time');
-    notifyListeners();
-  }
+  late Graph timeGraph;
+  late Graph costGraph;
 
   Future<void> fetchDocumentList() async {
     // Firestore에서 데이터 가져오기
@@ -26,6 +18,20 @@ class DataProvider with ChangeNotifier {
         .map((doc) => doc.data() as Map<String, dynamic>)
         .toList();
 
+    timeGraph = Graph(905);
+    costGraph = Graph(905);
+
+    timeGraph.makeGraph(documentDataList, 'time');
+    costGraph.makeGraph(documentDataList, 'cost');
+
     notifyListeners();
+  }
+
+  Graph getTimeGraph() {
+    return timeGraph;
+  }
+
+  Graph getCostGraph() {
+    return costGraph;
   }
 }
