@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:test1/settings_widgets/guide.dart';
+import 'package:test1/settings_widgets/notice.dart';
+import 'package:test1/settings_widgets/setting_account_page.dart';
+import 'package:test1/settings_widgets/service_terms.dart';
+import 'package:test1/settings_widgets/location_terms.dart';
+import 'package:test1/settings_widgets/privacy_terms.dart';
+
 //계정 설정 버튼 페이지만 만들고 내부 구성은 아직 안함. 나머지 버튼은 페이지말고 작게 팝업으로 띄울 예정
 
 class SettingsUI extends StatefulWidget {
@@ -38,7 +45,7 @@ class _SettingsUIState extends State<SettingsUI> {
                   color: Colors.grey,
                 ),
                 width: double.infinity,
-                height: 50,
+                height: 40,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Align(
@@ -79,7 +86,7 @@ class _SettingsUIState extends State<SettingsUI> {
                   color: Colors.grey,
                 ),
                 width: double.infinity,
-                height: 50,
+                height: 40,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Align(
@@ -116,62 +123,78 @@ class _SettingsUIState extends State<SettingsUI> {
                 ),
               ),
               Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  border: Border.all(
-                    color: Colors.grey, // 테두리 색상
-                    width: 0.5, // 테두리 두께
-                  ),
-                ),
-                width: double.infinity,
-                height: 50,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "위치정보 이용 동의",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  border: Border.all(
-                    color: Colors.grey, // 테두리 색상
-                    width: 0.5, // 테두리 두께
-                  ),
-                ),
-                width: double.infinity,
-                height: 50,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "즐겨찾기 백업",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
                 decoration: const BoxDecoration(
                   color: Colors.grey,
                 ),
                 width: double.infinity,
-                height: 50,
+                height: 40,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "도움말",
+                      "고객 지원",
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  border: Border.all(
+                    color: Colors.grey, // 테두리 색상
+                    width: 0.5, // 테두리 두께
+                  ),
+                ),
+                width: double.infinity,
+                height: 50,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Guide()),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "어플 사용 가이드",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  border: Border.all(
+                    color: Colors.grey, // 테두리 색상
+                    width: 0.5, // 테두리 두께
+                  ),
+                ),
+                width: double.infinity,
+                height: 50,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Notice()),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "공지 사항",
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
                   ),
@@ -199,6 +222,26 @@ class _SettingsUIState extends State<SettingsUI> {
                 ),
               ),
               Container(
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                ),
+                width: double.infinity,
+                height: 40,
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "기타",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 255, 255, 255),
                   border: Border.all(
@@ -208,32 +251,81 @@ class _SettingsUIState extends State<SettingsUI> {
                 ),
                 width: double.infinity,
                 height: 50,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "약간 및 정책",
-                      style: TextStyle(fontSize: 15),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Service_Terms()),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "서비스 이용약관",
+                        style: TextStyle(fontSize: 15),
+                      ),
                     ),
                   ),
                 ),
               ),
               Container(
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  border: Border.all(
+                    color: Colors.grey, // 테두리 색상
+                    width: 0.5, // 테두리 두께
+                  ),
                 ),
                 width: double.infinity,
                 height: 50,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "위젯 설정",
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Location_Terms()),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "위치 정보 사용 동의 약관",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  border: Border.all(
+                    color: Colors.grey, // 테두리 색상
+                    width: 0.5, // 테두리 두께
+                  ),
+                ),
+                width: double.infinity,
+                height: 50,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Privacy_Terms()),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "개인정보 처리방침",
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
                   ),
