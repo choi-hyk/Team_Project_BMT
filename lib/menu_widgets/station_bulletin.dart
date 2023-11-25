@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:test1/menu_widgets/comment_page.dart';
 
 class StationBulletin extends StatefulWidget {
   const StationBulletin({super.key});
@@ -10,11 +11,18 @@ class StationBulletin extends StatefulWidget {
 }
 
 class _StationBulletinState extends State<StationBulletin> {
-  bool _isSearching = false;
-  int selectedStation = 101; // Initial selected station
+  final bool _isSearching = false;
+  List<int> stationIds = []; // station_ID 목록을 저장할 리스트
+  int selectedStation = 101; // 초기 선택된 station_ID
 
+  // Bulletin_Board테이블의 데이터를 가져옴
   CollectionReference product =
       FirebaseFirestore.instance.collection('Bulletin_Board');
+
+  // 댓글을 저장할 서브컬렉션을 위한 참조 생성
+  CollectionReference commentsReference(String postId) {
+    return product.doc(postId).collection('comments');
+  }
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
@@ -22,11 +30,12 @@ class _StationBulletinState extends State<StationBulletin> {
   final TextEditingController stationController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
+  // 게시물 편집
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
     titleController.text = documentSnapshot['title'];
     contentController.text = documentSnapshot['content'];
     userController.text = documentSnapshot['User_ID'];
-    stationController.text = documentSnapshot['station_ID'];
+    stationController.text = documentSnapshot['station_ID'].toString();
 
     await showModalBottomSheet(
       isScrollControlled: true,
@@ -76,7 +85,8 @@ class _StationBulletinState extends State<StationBulletin> {
                   onPressed: () async {
                     final String title = titleController.text;
                     final String content = contentController.text;
-                    final String station = stationController.text;
+                    final int station =
+                        int.tryParse(stationController.text) ?? 0;
                     final String user = userController.text;
 
                     await product.doc(documentSnapshot.id).update(
@@ -105,6 +115,7 @@ class _StationBulletinState extends State<StationBulletin> {
     );
   }
 
+  //게시글 생성
   Future<void> _create() async {
     await showModalBottomSheet(
       isScrollControlled: true,
@@ -154,7 +165,8 @@ class _StationBulletinState extends State<StationBulletin> {
                   onPressed: () async {
                     final String title = titleController.text;
                     final String content = contentController.text;
-                    final String station = stationController.text;
+                    final int station =
+                        int.tryParse(stationController.text) ?? 0;
                     final String user = userController.text;
 
                     await product.add({
@@ -181,8 +193,105 @@ class _StationBulletinState extends State<StationBulletin> {
     );
   }
 
+  //게시글 삭제
   Future<void> _delete(String productId) async {
     await product.doc(productId).delete();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchStationIds(); // initState에서 station_ID 목록을 가져오도록 설정
+  }
+
+  // Firestore에서 station_ID 목록을 가져오는 메서드
+  Future<void> fetchStationIds() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('Bulletin_Board').get();
+
+    List<int> ids = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> document
+        in snapshot.docs) {
+      int stationId = document.data()['station_ID'];
+      if (!ids.contains(stationId)) {
+        ids.add(stationId);
+      }
+    }
+
+    setState(() {
+      stationIds = ids;
+    });
+  }
+
+// 댓글 목록을 가져와 표시하는 위젯
+  Widget buildCommentsSection(String postId) {
+    return StreamBuilder(
+      stream: commentsReference(postId).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('댓글', style: TextStyle(fontWeight: FontWeight.bold)),
+              // 댓글 목록을 출력하는 방법 구현
+              // snapshot.data.docs를 사용하여 댓글 목록을 가져올 수 있습니다.
+              // 댓글 내용, 작성자 등을 표시할 수 있습니다.
+              // 각 댓글에 대한 삭제 기능 등도 추가 가능
+              for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
+                  in snapshot.data!.docs
+                      .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
+                ListTile(
+                  title: Text(commentSnapshot['text']),
+                  subtitle: Text('작성자: ${commentSnapshot['user']}'),
+                  // 추가적인 정보나 삭제 기능을 표시하려면 여기에 추가
+                ),
+            ],
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
+// 댓글을 작성하는 입력 필드와 버튼을 표시하는 위젯
+  Widget buildCommentInputField(String postId) {
+    TextEditingController commentController = TextEditingController();
+
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: commentController,
+            decoration: const InputDecoration(
+              hintText: '댓글을 입력하세요',
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final String commentText = commentController.text;
+            if (commentText.isNotEmpty) {
+              // 댓글을 Firestore에 추가
+              await commentsReference(postId).add({
+                'text': commentText,
+                'user': '사용자', // 사용자 ID 또는 다른 사용자 정보 추가 가능
+                'timestamp': FieldValue.serverTimestamp(),
+              });
+
+              // 댓글 입력 필드 초기화
+              commentController.clear();
+            }
+          },
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.deepPurple),
+          ),
+          child: const Text('댓글 추가'),
+        ),
+      ],
+    );
   }
 
   @override
@@ -195,7 +304,6 @@ class _StationBulletinState extends State<StationBulletin> {
             color: Colors.black,
           ),
           onPressed: () {
-            _isSearching = false;
             Navigator.pop(context);
           },
         ),
@@ -215,144 +323,156 @@ class _StationBulletinState extends State<StationBulletin> {
               ),
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
-        actions: [
-          _isSearching
-              ? Container() // Empty container when searching
-              : DropdownButton<int>(
-                  value: selectedStation,
-                  items: const [
-                    DropdownMenuItem<int>(
-                      value: 101,
-                      child: Text('101호'),
-                    ),
-                    DropdownMenuItem<int>(
-                      value: 102,
-                      child: Text('102호'),
-                    ),
-                    DropdownMenuItem<int>(
-                      value: 104,
-                      child: Text('104호'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedStation = value!;
-                    });
-                  },
-                ),
-          /*IconButton(
-            icon: const Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-              });
-            },
-          ),*/
-        ],
       ),
-      body: StreamBuilder(
-        stream:
-            product.where('station_ID', isEqualTo: selectedStation).snapshots(),
-        builder: (BuildContext context,
-            AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-          if (streamSnapshot.hasData) {
-            return ListView.builder(
-              itemCount: streamSnapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final DocumentSnapshot documentSnapshot =
-                    streamSnapshot.data!.docs[index];
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButton<int>(
+              value: selectedStation,
+              items: stationIds.map((int stationId) {
+                return DropdownMenuItem<int>(
+                  value: stationId,
+                  child: Text('$stationId호'),
+                );
+              }).toList(),
+              onChanged: (int? value) {
+                if (value != null) {
+                  setState(() {
+                    selectedStation = value;
+                  });
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder(
+              stream: product
+                  .where('station_ID', isEqualTo: selectedStation)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                if (streamSnapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: streamSnapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final DocumentSnapshot documentSnapshot =
+                          streamSnapshot.data!.docs[index];
 
-                DateTime createdAt =
-                    (documentSnapshot['created_at'] as Timestamp).toDate();
+                      DateTime createdAt;
+                      if (documentSnapshot['created_at'] != null) {
+                        createdAt =
+                            (documentSnapshot['created_at'] as Timestamp)
+                                .toDate();
+                      } else {
+                        createdAt = DateTime.now();
+                      }
 
-                String formattedDate =
-                    DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
-                        .format(createdAt);
+                      String formattedDate =
+                          DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                              .format(createdAt);
 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  color: Colors.white,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /*Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          '${documentSnapshot['station_ID']}호',
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),*/
-                      const SizedBox(height: 5),
-                      ListTile(
-                        title: Text(
-                          documentSnapshot['title'],
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 5),
-                            Text(documentSnapshot['content']),
-                            const SizedBox(height: 5),
-                            Text('사용자: ${documentSnapshot['User_ID']}'),
-                            const SizedBox(height: 5),
-                            Text('작성일: $formattedDate'),
-                            const SizedBox(height: 5),
-                          ],
-                        ),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CommentPage(postSnapshot: documentSnapshot),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          color: Colors.white,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              IconButton(
-                                onPressed: () {
-                                  _update(documentSnapshot);
-                                },
-                                icon: const Icon(Icons.edit),
+                              const SizedBox(height: 5),
+                              ListTile(
+                                title: Text(
+                                  documentSnapshot['title'],
+                                  style: const TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 5.0,
+                                    bottom: 5.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        documentSnapshot['content'],
+                                      ),
+                                      Text(
+                                          '사용자: ${documentSnapshot['User_ID']}'),
+                                      Text(
+                                        '작성일: $formattedDate',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                trailing: SizedBox(
+                                  width: 100,
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          _update(documentSnapshot);
+                                        },
+                                        icon: const Icon(Icons.edit),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          _delete(documentSnapshot.id);
+                                        },
+                                        icon: const Icon(Icons.delete),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  _delete(documentSnapshot.id);
-                                },
-                                icon: const Icon(Icons.delete),
+                              Container(
+                                height: 1,
+                                width: double.infinity,
+                                color: Colors.black,
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Container(
-                        height: 1,
-                        width: double.infinity,
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                );
+                      );
+                    },
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
               },
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+            ),
+          ),
+        ],
       ),
+      // 글 작성 버튼
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.deepPurple[300],
         onPressed: () {
           _create();
         },
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        child: const Text('글쓰기'),
+        child: const Text(
+          '글 작성',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.endFloat, // 위치 변경
     );
   }
 }
