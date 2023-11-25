@@ -118,7 +118,7 @@ class _LogInState extends State<LoginUI> {
                                     if (user != null) {
                                       // 로그인 성공
                                       print('로그인 성공: ${user.email}');
-                                      await dataProvider.fetchDocumentList();
+                                      currentUI = 'home';
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -247,7 +247,6 @@ class NextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return InterFace(
       currentUser: currentUser,
-      documentDataList: dataProvider.documentDataList,
     );
   }
 }
