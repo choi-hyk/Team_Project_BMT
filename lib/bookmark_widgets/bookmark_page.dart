@@ -65,13 +65,15 @@ class _BookMarkState extends State<BookMark> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    final String station1 = station1Controller.text;
-                    final String station2 = station2Controller.text;
+                    final int station1 =
+                        int.tryParse(station1Controller.text) ?? 0;
+                    final int station2 =
+                        int.tryParse(station2Controller.text) ?? 0;
                     final String place = placeRouteController.text;
                     final String user = userRouteController.text;
 
-                    if (station1.isNotEmpty && station2.isNotEmpty) {
-                      // 추가: Bookmark_Route 테이블에 데이터 추가
+                    if (station1 != 0 && station2 != 0) {
+                      // Bookmark_Route 테이블에 데이터 추가
                       await routeCollection.add({
                         'Station1_ID': station1,
                         'Station2_ID': station2,
@@ -144,11 +146,12 @@ class _BookMarkState extends State<BookMark> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final String station = stationController.text;
+                    final int station =
+                        int.tryParse(stationController.text) ?? 0;
                     final String place = placeController.text;
                     final String user = userController.text;
 
-                    if (station.isNotEmpty && place.isNotEmpty) {
+                    if (station != 0 && place.isNotEmpty) {
                       // 추가
                       await product.add({
                         'Station_ID': station,
