@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:test1/menu_widgets/buy_page.dart';
+import 'package:test1/menu_widgets/category_page.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -9,6 +12,37 @@ class StorePage extends StatefulWidget {
 
 class _StorePageState extends State<StorePage> {
   bool _isSearching = false;
+
+  void showCategoryList(String category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryPage(category: category),
+      ),
+    );
+  }
+
+  Widget buildCategoryContainer(String categoryName, Function(String) onTap) {
+    return GestureDetector(
+      onTap: () => onTap(categoryName),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40.0),
+          color: Colors.grey[400],
+        ),
+        width: 60,
+        height: 35,
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            categoryName,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,115 +90,130 @@ class _StorePageState extends State<StorePage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(children: [
-          //편의점,카페,상품권을 누를수있는 버튼 로우
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 10.0,
+          ),
           Row(
             children: [
+              const SizedBox(
+                width: 6.5,
+              ),
+              buildCategoryContainer("편의점", showCategoryList),
+              const SizedBox(
+                width: 6.5,
+              ),
+              buildCategoryContainer("카페", showCategoryList),
+              const SizedBox(
+                width: 6.5,
+              ),
+              buildCategoryContainer("상품권", showCategoryList),
+              const SizedBox(
+                width: 140.0,
+              ),
+              // 리워드 포인트
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
+                  color: Colors.deepPurple[200],
                 ),
                 width: 60,
                 height: 35,
                 child: const Align(
                   alignment: Alignment.center,
-                  //역이름 들어가는 곳
                   child: Text(
-                    "편의점",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    '2500p',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(
-                width: 6.5,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  //역이름 들어가는 곳
-                  child: Text(
-                    "카페",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 6.5,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 0, 0, 0), // 테두리 색상
-                    width: 2.0, // 테두리 두께
-                  ),
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  //역이름 들어가는 곳
-                  child: Text(
-                    "상품권",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
+                height: 10.0,
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
-
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  Column(
-                    children: [
-                      for (var i = 0; i < 10; i++)
-                        Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                  color: Colors.grey, // 테두리 색상
-                                  width: 1.0, // 테두리 두께
+            child: StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance.collection('Store').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const CircularProgressIndicator();
+                }
+
+                var stores = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: stores.length,
+                  itemBuilder: (context, index) {
+                    var store = stores[index].data();
+
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // 이미지를 탭하면 구매 페이지로 이동
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BuyPage(
+                                  category: store['category'],
+                                  categoryname: store['category_name'],
+                                  icon: store['icon'],
+                                  imageUrl: store['image_url'],
+                                  name: store['name'],
+                                  pay: store['pay'],
                                 ),
                               ),
-                              width: double.infinity,
-                              height: 160,
+                            );
+                          },
+                          child: ListTile(
+                            title: Text(
+                              store['name'],
+                              textAlign: TextAlign.start,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(
-                              height: 10,
+                            subtitle: Text(
+                              ' ${store['pay']}p',
+                              textAlign: TextAlign.start,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          ],
+                            leading: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Image.network(
+                                store['image_url'],
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
                         ),
-                    ],
-                  ),
-                ],
-              ),
+                        const Divider(
+                          thickness: 1.0,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ),
-        ]),
+        ],
       ),
     );
   }
