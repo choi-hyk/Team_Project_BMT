@@ -46,72 +46,68 @@ class _HomeUIState extends State<HomeUI> {
               height: 10,
             ),
             const Text("즐겨찾기"),
-            SizedBox(
-              height: 300,
-              child: Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      for (var i = 0; i < 4; i++)
-                        Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Colors.grey, // 테두리 색상
-                                  width: 1, // 테두리 두께
-                                ),
-                              ),
-                              width: double.infinity,
-                              height: 100,
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    width: 90,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "역,경로",
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 90,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "장소",
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 90,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    for (var i = 0; i < 4; i++)
+                      Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.grey, // 테두리 색상
+                                width: 1, // 테두리 두께
                               ),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            )
-                          ],
-                        ),
-                    ],
-                  ),
+                            width: double.infinity,
+                            height: 100,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(
+                                  width: 90,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "역,경로",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 90,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "장소",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 90,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                  ],
                 ),
               ),
             ),
