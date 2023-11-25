@@ -87,6 +87,15 @@ class Node {
   Node(this.vertex, this.distance);
 }
 
+int weightOfPath(Graph weightGraph, List<int> path) {
+  int weight = 0;
+  for (int i = 0; i < path.length - 1; i++) {
+    weight += weightGraph.adjacencyList[path[i]]!
+        .firstWhere((edge) => edge.destination == path[i + 1])
+        .weight;
+  }
+  return weight;
+}
 // void main() {
 //   Graph timeGraph = Graph(905);
 //   //Graph costGraph = Graph(6);
