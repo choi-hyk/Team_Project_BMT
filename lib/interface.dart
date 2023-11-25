@@ -6,6 +6,7 @@ import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/lost_and_found.dart';
 import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
+import 'package:test1/provider_code/data_provider.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
@@ -15,12 +16,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 //InterFace 클래스
 class InterFace extends StatefulWidget {
   final User currentUser;
-  final List<Map<String, dynamic>> documentDataList;
 
   const InterFace({
     super.key,
     required this.currentUser, //유저 정보
-    required this.documentDataList, //호선도 정보
   });
   @override
   State<InterFace> createState() => _InterFaceState();
@@ -28,101 +27,21 @@ class InterFace extends StatefulWidget {
 
 class _InterFaceState extends State<InterFace> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String name = "";
-  bool nRoom = false;
-  bool cStore = false;
-  List<String> nName = [];
-  List<String> pName = [];
-  List<String> nCong = [];
-  List<String> pCong = [];
-  List<int> line = [];
+  DataProvider dataProvider = DataProvider();
 
   final TextEditingController station = TextEditingController();
   //검색되는 역
 
-//Lines컬렉션 의 다큐먼트 호선 리스트를 역별 데이터로 변환
-//i : 다큐먼트 리스트 순회 i + 1 : 호선 번호
-//j : 각 필드의 배열 번호  Ex) widget.documentDataList[0]['station'][1] : 1호선의 첫번쨰 역 이름
-  void searchData(int searchStation) {
-    bool found = false;
-    name = "";
-    nRoom = false;
-    cStore = false;
-    nCong.clear();
-    pCong.clear();
-    line.clear();
-    nName.clear();
-    pName.clear();
-
-    for (int i = 0; i < 9; i++) {
-      int leng = widget.documentDataList[i]['station'].length;
-      print(leng - 1);
-
-      for (int j = 0; j < leng; j++) {
-        if (widget.documentDataList[i]['station'][j] == searchStation) {
-          name = widget.documentDataList[i]['station'][j].toString();
-          nRoom = widget.documentDataList[i]['nRoom'][j];
-          cStore = widget.documentDataList[i]['cStore'][j];
-          nCong
-              .add(widget.documentDataList[i]['next_congestion'][j].toString());
-          pCong
-              .add(widget.documentDataList[i]['prev_congestion'][j].toString());
-          line.add(i + 1);
-          //순환하는 호선인 1호선과 6호선 처리 과정
-          //순환하는 호선이면 맨처음 역과 마지막역을 이어줘야함
-          if (i == 0 || i == 5) {
-            if (j == 0) {
-              nName
-                  .add(widget.documentDataList[i]['station'][j + 1].toString());
-              pName.add(
-                  widget.documentDataList[i]['station'][leng - 1].toString());
-            } else if (j == leng - 1) {
-              nName.add(widget.documentDataList[i]['station'][0].toString());
-              pName
-                  .add(widget.documentDataList[i]['station'][j - 1].toString());
-            } else {
-              nName
-                  .add(widget.documentDataList[i]['station'][j + 1].toString());
-              pName
-                  .add(widget.documentDataList[i]['station'][j - 1].toString());
-            }
-            //순환하지 않는 호선인 경우
-          } else {
-            if (j == 0) {
-              nName
-                  .add(widget.documentDataList[i]['station'][j + 1].toString());
-              pName.add("종점역");
-            } else if (j == leng - 1) {
-              nName.add("종점역");
-              pName
-                  .add(widget.documentDataList[i]['station'][j - 1].toString());
-            } else {
-              nName
-                  .add(widget.documentDataList[i]['station'][j + 1].toString());
-              pName
-                  .add(widget.documentDataList[i]['station'][j - 1].toString());
-            }
-          }
-          found = true;
-          array = 0;
-          break;
-        }
-      }
-    }
-    if (!found) {
-      currentUI = 'home';
-      showSnackBar(
-        context,
-        const Text("존재하지 않는 역입니다."),
-      );
-    } else {
-      currentUI = "stationdata";
-    }
-  }
-
 //드로어 함수
   void menuDrawer() {
     _scaffoldKey.currentState?.openDrawer();
+  }
+
+  Future<void> waitData(int searchStation) async {
+    await dataProvider.searchData(searchStation);
+    if (!dataProvider.found) {
+      showSnackBar(context, const Text("존재하지 않는 역 입니다"));
+    }
   }
 
 //현재 스크롤어블 위젯 표시 컨테이너
@@ -132,14 +51,14 @@ class _InterFaceState extends State<InterFace> {
         return const HomeUI();
       case "stationdata":
         return StationData(
-          name: name,
-          nRoom: nRoom,
-          cStore: cStore,
-          nCong: nCong,
-          pCong: pCong,
-          line: line,
-          nName: nName,
-          pName: pName,
+          name: dataProvider.name,
+          nRoom: dataProvider.nRoom,
+          cStore: dataProvider.cStore,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
+          line: dataProvider.line,
+          nName: dataProvider.nName,
+          pName: dataProvider.pName,
         );
       default:
         return const HomeUI();
@@ -204,20 +123,23 @@ class _InterFaceState extends State<InterFace> {
                         );
                       }),
                       Container(
-                          width: 40.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: currentUI == 'home'
-                                ? Theme.of(context).primaryColorDark
-                                : Theme.of(context).primaryColor,
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              currentUI = 'home'; // 입력된 텍스트 지우기
-                            },
-                            icon: const Icon(Icons.home),
-                          )),
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: currentUI == 'home'
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).primaryColor,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              currentUI = 'home';
+                            });
+                          },
+                          icon: const Icon(Icons.home),
+                        ),
+                      ),
                       const SizedBox(
                         width: 6.5,
                       ),
@@ -229,7 +151,7 @@ class _InterFaceState extends State<InterFace> {
                           onSubmitted: (String value) {
                             int? searchStation = int.tryParse(value);
                             if (searchStation != null) {
-                              searchData(searchStation);
+                              waitData(searchStation);
                             }
                           },
                           decoration: InputDecoration(
