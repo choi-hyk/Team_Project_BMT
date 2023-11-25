@@ -1,4 +1,4 @@
-//import 'package:cloud_firestore/cloud_firestore.dart'; // 추가된 부분
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';
@@ -22,8 +22,10 @@ class _LogInState extends State<LoginUI> {
   DataProvider dataProvider = DataProvider(); //프로바이더 객체 변수
 
   Future<User?> _handleSignIn() async {
+    //로그인 함수
     final email = _emailController.text;
     final password = _passwordController.text;
+
     if (email.isEmpty) {
       showSnackBar(
         context,
@@ -36,15 +38,18 @@ class _LogInState extends State<LoginUI> {
     }
 
     try {
+      //로그인 성공시
       final UserCredential userCredential =
           await _auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: email,
+        password: password,
       );
       final User? user = userCredential.user;
-      return user;
-    } catch (e) {
-      showSnackBar(context, const Text("아이디 또는 비밀번호가 올바르지 않습니다."));
+
+      return user; //로그인된 사용자 객체 반환
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "로그인 실패: ${e.message}";
+      showSnackBar(context, Text(errorMessage));
       return null;
     }
   }
@@ -81,14 +86,14 @@ class _LogInState extends State<LoginUI> {
                               TextField(
                                 controller: _emailController,
                                 autofocus: true,
-                                decoration: const InputDecoration(
-                                    labelText: 'Enter email'),
+                                decoration:
+                                    const InputDecoration(labelText: 'email'),
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               TextField(
                                 controller: _passwordController,
                                 decoration: const InputDecoration(
-                                    labelText: 'Enter password'),
+                                    labelText: 'password'),
                                 keyboardType: TextInputType.text,
                                 obscureText: true,
                               ),
