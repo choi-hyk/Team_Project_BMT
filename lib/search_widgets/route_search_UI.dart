@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:test1/main.dart';
+import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/search_widgets/route_result_UI.dart';
 
 class RouteSearch extends StatefulWidget {
@@ -18,6 +20,8 @@ class _RouteSearchState extends State<RouteSearch> {
 
   String? _tempStartStation;
   String? _tempArrivStation;
+  DataProvider dataProvider1 = DataProvider();
+  DataProvider dataProvider2 = DataProvider();
 
   @override
   void initState() {
@@ -41,18 +45,28 @@ class _RouteSearchState extends State<RouteSearch> {
     });
   }
 
-  void _searchRoute() {
+  Future<void> _searchRoute() async {
     String startStation = _searchStartController.text;
     String arrivStation = _searchArrivController.text;
 
-    // 네비게이션 및 데이터 전달
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RouteResults(
-            startStation: startStation, arrivStation: arrivStation),
-      ),
-    );
+    await dataProvider1.searchData(int.parse(startStation));
+    await dataProvider2.searchData(int.parse(arrivStation));
+
+    if (!dataProvider1.found || !dataProvider2.found) {
+      showSnackBar(context, const Text("존재하지 않는 역입니다"));
+    } else if (startStation == arrivStation) {
+      showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
+    } else {
+      // 네비게이션 및 데이터 전달
+      // 네비게이션 및 데이터 전달
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RouteResults(
+              startStation: startStation, arrivStation: arrivStation),
+        ),
+      );
+    }
   }
 
   @override
@@ -100,9 +114,6 @@ class _RouteSearchState extends State<RouteSearch> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Column(
-                        children: [],
-                      ),
                       const SizedBox(
                         width: 5.5,
                       ),
