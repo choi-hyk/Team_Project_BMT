@@ -89,16 +89,16 @@ class MyApp extends StatelessWidget {
       //앱 테마
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: const Color.fromARGB(255, 163, 201, 205),
+          backgroundColor: const Color.fromARGB(255, 123, 97, 255),
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
             color: Color(0xFF232B55),
           ),
         ),
-        primaryColorLight: const Color.fromARGB(255, 61, 188, 202),
-        primaryColor: const Color.fromARGB(255, 108, 159, 164),
-        primaryColorDark: const Color.fromARGB(255, 22, 73, 79),
+        primaryColorLight: const Color.fromARGB(255, 123, 97, 255),
+        primaryColor: const Color.fromARGB(255, 123, 97, 255), //앱바 색상
+        primaryColorDark: const Color.fromARGB(255, 123, 97, 255),
         cardColor: const Color.fromARGB(255, 233, 255, 243),
       ),
       //InterFace 호출
