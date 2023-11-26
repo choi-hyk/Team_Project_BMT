@@ -17,17 +17,17 @@ class _NoticeState extends State<Notice> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('공지사항 목록'),
+        title: const Text('공지사항 목록'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('Notice').orderBy('date').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Text('오류가 발생했습니다.');
+            return const Text('오류가 발생했습니다.');
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
           return ListView(

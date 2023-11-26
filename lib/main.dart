@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+<<<<<<< HEAD
+=======
+import 'package:test1/provider_code/user_provider.dart';
+>>>>>>> 0e2033c (로그인 어쩌고 수정)
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +11,10 @@ import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 //import 'package:flutter/services.dart';
 //import 'package:test1/menu_widgets/station_bulletin.dart';
+<<<<<<< HEAD
 import 'login_widgets/auth_service.dart';
+=======
+>>>>>>> 0e2033c (로그인 어쩌고 수정)
 //import 'package:flutter/services.dart';station_bulletin
 //import 'package:test1/menu_widgets/.dart';
 //import 'package:test1/bookmark_widgets/bookmark_page.dart';
@@ -67,9 +74,19 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
+<<<<<<< HEAD
           create: (_) => DataProvider(),
         ),
         //ChangeNotifierProvider(create: (context) => AuthService()),
+=======
+          //역 정보
+          create: (_) => DataProvider(),
+        ),
+        ChangeNotifierProvider(
+          //사용자 정보
+          create: (_) => UserProvider(),
+        ),
+>>>>>>> 0e2033c (로그인 어쩌고 수정)
       ],
       child: const MyApp(),
     ),
