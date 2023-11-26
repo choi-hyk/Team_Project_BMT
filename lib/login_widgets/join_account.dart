@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -16,6 +17,7 @@ class _JoinAccountState extends State<JoinAccount> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  //회원가입 함수
   Future<void> _handleJoinAccount() async {
     final name = _nameController.text;
     final email = _emailController.text;
@@ -38,6 +40,8 @@ class _JoinAccountState extends State<JoinAccount> {
         password: password,
       );
       newUser.user?.updateDisplayName(name);
+      await addUserToFirestore(newUser.user!); //디비 연동
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('회원 가입이 성공적으로 완료되었습니다.'),
@@ -62,6 +66,21 @@ class _JoinAccountState extends State<JoinAccount> {
         );
       }
     }
+  }
+
+  //회원가입 후 디비에 추가하는 함수
+  Future<void> addUserToFirestore(User user) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('Users');
+
+    return users
+        .doc(user.uid)
+        .set({
+          'User_ID': user.uid, //사용자 ID 가져오기
+          'email': user.email, //사용자 이메일 가져오기
+        })
+        .then((value) => print("User Added to Firestore"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 
   @override
@@ -101,22 +120,20 @@ class _JoinAccountState extends State<JoinAccount> {
                         children: [
                           TextField(
                             controller: _nameController,
-                            decoration:
-                                const InputDecoration(labelText: 'Enter name'),
+                            decoration: const InputDecoration(labelText: '이름'),
                             keyboardType: TextInputType.text,
                           ),
                           const SizedBox(
-                            height: 80,
+                            height: 50,
                           ),
                           TextField(
                             controller: _emailController,
                             autofocus: true,
-                            decoration:
-                                const InputDecoration(labelText: 'Enter email'),
+                            decoration: const InputDecoration(labelText: '이메일'),
                             keyboardType: TextInputType.emailAddress,
                           ),
                           const SizedBox(
-                            height: 80,
+                            height: 50,
                           ),
                           const Align(
                             alignment: Alignment.topLeft,
@@ -127,8 +144,8 @@ class _JoinAccountState extends State<JoinAccount> {
                           ),
                           TextField(
                             controller: _passwordController,
-                            decoration: const InputDecoration(
-                                labelText: 'Enter password'),
+                            decoration:
+                                const InputDecoration(labelText: '비밀번호'),
                             keyboardType: TextInputType.text,
                             obscureText: true, // 비밀번호 안보이도록 하는 것
                           ),
@@ -137,8 +154,8 @@ class _JoinAccountState extends State<JoinAccount> {
                           ),
                           TextField(
                             controller: _confirmPasswordController,
-                            decoration: const InputDecoration(
-                                labelText: 'Comfirm password'),
+                            decoration:
+                                const InputDecoration(labelText: '비밀번호 확인'),
                             keyboardType: TextInputType.text,
                             obscureText: true,
                             // 비밀번호 안보이도록 하는 것

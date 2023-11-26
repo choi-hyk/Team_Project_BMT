@@ -5,16 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/login_widgets/login_ui.dart';
-import 'login_widgets/auth_service.dart';
 //import 'package:flutter/services.dart';
 //import 'package:test1/menu_widgets/station_bulletin.dart';
+import 'login_widgets/auth_service.dart';
+//import 'package:flutter/services.dart';station_bulletin
+//import 'package:test1/menu_widgets/.dart';
 //import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 //import 'package:test1/algorithm_code/graph.dart';
 // import 'package:test1/home_UI.dart';
 
 int array = 0; //역 정보 데이터 배열
-String currentUI = "home"; //home, stationdata, routesearch, routeresult
+String currentUI = "login"; //home, stationdata, routesearch, routeresult
 
 void showSnackBar(BuildContext context, Text text) {
   final snackBar = SnackBar(
@@ -25,8 +27,11 @@ void showSnackBar(BuildContext context, Text text) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
+//호선 별 색상
 Color perlinedata(int currentLine) {
   switch (currentLine) {
+    case -1:
+      return const Color.fromARGB(255, 225, 213, 213);
     case 1:
       return Colors.green;
     case 2:
@@ -64,7 +69,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => DataProvider(),
         ),
-        ChangeNotifierProvider(create: (context) => AuthService()),
+        //ChangeNotifierProvider(create: (context) => AuthService()),
       ],
       child: const MyApp(),
     ),
