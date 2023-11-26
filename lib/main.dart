@@ -7,7 +7,6 @@ import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 //import 'package:flutter/services.dart';
 //import 'package:test1/menu_widgets/station_bulletin.dart';
-import 'login_widgets/auth_service.dart';
 //import 'package:flutter/services.dart';station_bulletin
 //import 'package:test1/menu_widgets/.dart';
 //import 'package:test1/bookmark_widgets/bookmark_page.dart';
