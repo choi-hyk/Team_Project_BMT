@@ -41,6 +41,13 @@ class _InterFaceState extends State<InterFace> {
     await dataProvider.searchData(searchStation);
     if (!dataProvider.found) {
       showSnackBar(context, const Text("존재하지 않는 역 입니다"));
+      setState(() {
+        currentUI = "home";
+      });
+    } else {
+      setState(() {
+        currentUI = "stationdata";
+      });
     }
   }
 
@@ -151,7 +158,9 @@ class _InterFaceState extends State<InterFace> {
                           onSubmitted: (String value) {
                             int? searchStation = int.tryParse(value);
                             if (searchStation != null) {
-                              waitData(searchStation);
+                              setState(() {
+                                waitData(searchStation);
+                              });
                             }
                           },
                           decoration: InputDecoration(
