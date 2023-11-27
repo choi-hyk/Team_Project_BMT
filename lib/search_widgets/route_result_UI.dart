@@ -25,6 +25,7 @@ class RouteResults extends StatefulWidget {
 }
 
 class _RouteResultsState extends State<RouteResults> {
+  bool isLoading = true; //로딩 여부
   String currentSearch =
       "recommend"; //현재 경로 검색 모드 -> "recommend", shortest, cheapest
   late List<int> optmPath; //추천 경로
@@ -102,7 +103,7 @@ class _RouteResultsState extends State<RouteResults> {
   }
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
-  void fetchData() async {
+  Future<void> fetchData() async {
     await dataProvider.fetchDocumentList();
 
     Graph optmGraph = dataProvider.getOptmGraph();
@@ -156,6 +157,9 @@ class _RouteResultsState extends State<RouteResults> {
     });
 
     // 데이터 가져온 후 UI 업데이트
+    setState(() {
+      isLoading = false;
+    });
   }
 
   //경로 그려주는 함수 -> 배열에 호선 번호 삽입 환승하는 역일 시 환승 전 호선과 환승 후 호선 삽입
@@ -634,90 +638,98 @@ class _RouteResultsState extends State<RouteResults> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            width: double.infinity,
-            height: 115,
-            child: Column(
+      body: isLoading // 로딩 중일 때
+          ? const Center(
+              child: CircularProgressIndicator(), // 로딩 인디케이터를 보여줍니다.
+            )
+          : Column(
               children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        FontAwesomeIcons.angleLeft,
-                        color: Theme.of(context).primaryColorDark,
+                Container(
+                  decoration:
+                      BoxDecoration(color: Theme.of(context).primaryColor),
+                  width: double.infinity,
+                  height: 115,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // 뒤로가기 기능 수행
-                      },
-                    ),
-                    const SizedBox(
-                      width: 81,
-                    ),
-                    Container(
-                      height: 40.5,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color:
-                                Theme.of(context).primaryColorDark, // 테두리 색상 설정
-                            width: 0.75, // 테두리 두께 설정
-                          ),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              widget.startStation,
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColorDark,
-                                  fontSize: 22.5,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(
-                              width: 6.5,
-                            ),
-                            Icon(
-                              FontAwesomeIcons.rightLong,
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              FontAwesomeIcons.angleLeft,
                               color: Theme.of(context).primaryColorDark,
                             ),
-                            const SizedBox(
-                              width: 6.5,
+                            onPressed: () {
+                              Navigator.of(context).pop(); // 뒤로가기 기능 수행
+                            },
+                          ),
+                          const SizedBox(
+                            width: 81,
+                          ),
+                          Container(
+                            height: 40.5,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .primaryColorDark, // 테두리 색상 설정
+                                  width: 0.75, // 테두리 두께 설정
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget.startStation,
+                                    style: TextStyle(
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                        fontSize: 22.5,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(
+                                    width: 6.5,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.rightLong,
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                  const SizedBox(
+                                    width: 6.5,
+                                  ),
+                                  Text(
+                                    widget.arrivStation,
+                                    style: TextStyle(
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                        fontSize: 22.5,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(
-                              widget.arrivStation,
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColorDark,
-                                  fontSize: 22.5,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          routeContainer(
+                              "앱 추천 경로", currentSearch == "recommend"),
+                          routeContainer("최단 시간", currentSearch == "shortest"),
+                          routeContainer("최소 비용", currentSearch == "cheapest"),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    routeContainer("앱 추천 경로", currentSearch == "recommend"),
-                    routeContainer("최단 시간", currentSearch == "shortest"),
-                    routeContainer("최소 비용", currentSearch == "cheapest"),
-                  ],
-                ),
+                Expanded(child: routeResultContainer(currentpath))
               ],
             ),
-          ),
-          Expanded(child: routeResultContainer(currentpath))
-        ],
-      ),
     );
   }
 }

@@ -94,13 +94,9 @@ class DataProvider with ChangeNotifier {
           }
           found = true;
           array = 0;
-          currentUI = "stationdata";
           break;
         }
       }
-    }
-    if (!found) {
-      currentUI = "home";
     }
   }
 
