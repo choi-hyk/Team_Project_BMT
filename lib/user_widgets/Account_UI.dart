@@ -20,8 +20,7 @@ class UserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    //String? uid = userProvider.user?.uid;
+    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
 
     return Container(
       decoration: BoxDecoration(
@@ -59,14 +58,14 @@ class UserProfileWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6.5),
-          const Text(
-            "보유 포인트 : ",
+          Text(
+            "보유 포인트 : " + userProvider.point,
             style: TextStyle(
               fontSize: 15,
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 25),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -124,7 +123,8 @@ class AccountUI extends StatefulWidget {
 class AccountUIState extends State<AccountUI> {
   @override
   Widget build(BuildContext context) {
-    //final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -145,9 +145,9 @@ class AccountUIState extends State<AccountUI> {
       ),
       body: Column(
         children: [
-          const UserProfileWidget(
-            name: "사용자 이름",
-            email: "사용자 이메일",
+          UserProfileWidget(
+            name: userProvider.name,
+            email: userProvider.email,
             profileImageUrl: "assets/images/사용자 프로필.png",
           ),
           const SizedBox(

@@ -196,7 +196,7 @@ class _JoinAccountState extends State<JoinAccount> {
                                 await _handleJoinAccount();
                               },
                               child: const Text(
-                                "계정 등록",
+                                "다음",
                               ),
                             ),
                           ),

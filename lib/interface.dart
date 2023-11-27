@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:test1/home_UI.dart';
 import 'package:test1/login_widgets/login_ui.dart';
@@ -7,6 +8,7 @@ import 'package:test1/menu_widgets/lost_and_found.dart';
 import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
 import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/provider_code/user_provider.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
@@ -67,6 +69,7 @@ class _InterFaceState extends State<InterFace> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -252,7 +255,7 @@ class _InterFaceState extends State<InterFace> {
                     MaterialPageRoute(builder: (context) => const AccountUI()),
                   );
                 },
-                child: const Text("CHOI_HYUK"),
+                child: Text(userProvider.nickname),
               ),
               accountEmail: InkWell(
                   onTap: () {
@@ -263,7 +266,7 @@ class _InterFaceState extends State<InterFace> {
                       ),
                     );
                   },
-                  child: const Text("8176chhk@naver.com")),
+                  child: Text(userProvider.email)),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.background,
                 borderRadius: const BorderRadius.only(

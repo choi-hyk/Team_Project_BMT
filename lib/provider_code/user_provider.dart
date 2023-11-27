@@ -2,32 +2,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:test1/main.dart';
 
 class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  //Authentication 접근을 위한 객체
   User? _user;
+  Map<String, dynamic>? _userInfo;
+
   User? get user => _user;
+  Map<String, dynamic>? get userInfo => _userInfo;
 
-  //Cloud Firestore 접근을 위한 객체
-  Map<String, dynamic>? _userData;
-  Map<String, dynamic>? get userData => _userData;
-
+  //생성자
   UserProvider() {
-    // 인증 상태 변경 리스너 설정
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        setUser(user);
-      }
-    });
+    _user = FirebaseAuth.instance.currentUser;
+    _fetchUserInfo();
   }
 
-  void setUser(User user) {
-    _user = user;
-    notifyListeners(); //상태 변경 알림
+  String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
+
+  //사용자 정보 가져오기 함수~
+  Future<void> _fetchUserInfo() async {
+    if (_user != null) {
+      var result = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(_user!.uid)
+          .get();
+      _userInfo = result.data();
+      notifyListeners();
+    }
+    print(_userInfo);
   }
+
+  String get name => _userInfo?['name'] ?? 'No Name';
+  String get nickname => _userInfo?['nickname'] ?? 'No nickname';
+  String get email => _userInfo?['email'] ?? 'No Email';
+  String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
+  String get point => _userInfo?['point'].toString() ?? '100';
+  String get age => (2024 - _userInfo?['age']).toString();
 
   //로그인 함수
   Future<String?> handleSignIn(String email, String password) async {
@@ -42,19 +54,6 @@ class UserProvider with ChangeNotifier {
       return null; // 성공 시 null 반환
     } on FirebaseAuthException catch (e) {
       return "이메일 또는 비밀번호가 틀렸습니다.";
-    }
-  }
-
-  //파이어스토어와 연동하여 데이터 가져오기
-  Future<dynamic> fetchUserData(String fieldName) async {
-    String userId = _user!.uid;
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('Users').doc(userId).get();
-
-    if (snapshot.exists) {
-      return snapshot.data()?[fieldName];
-    } else {
-      return null; // 문서가 존재하지 않거나 필드가 없는 경우
     }
   }
 }
