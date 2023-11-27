@@ -1,11 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/login_widgets/find_account.dart';
 import 'package:test1/login_widgets/join_account.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
+import '../provider_code/user_provider.dart';
 
 class LoginUI extends StatefulWidget {
   const LoginUI({Key? key}) : super(key: key);
@@ -15,44 +16,10 @@ class LoginUI extends StatefulWidget {
 }
 
 class _LogInState extends State<LoginUI> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   DataProvider dataProvider = DataProvider(); //프로바이더 객체 변수
-
-  Future<User?> _handleSignIn() async {
-    //로그인 함수
-    final email = _emailController.text;
-    final password = _passwordController.text;
-
-    if (email.isEmpty) {
-      showSnackBar(
-        context,
-        const Text("이메일을 입력하세요."),
-      );
-      return null;
-    } else if (password.isEmpty) {
-      showSnackBar(context, const Text("비밀번호를 입력하세요."));
-      return null;
-    }
-
-    try {
-      //로그인 성공시
-      final UserCredential userCredential =
-          await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final User? user = userCredential.user;
-
-      return user; //로그인된 사용자 객체 반환
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = "로그인 실패: ${e.message}";
-      showSnackBar(context, Text(errorMessage));
-      return null;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,23 +86,41 @@ class _LogInState extends State<LoginUI> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    User? user = await _handleSignIn();
-                                    if (user != null) {
-                                      // 로그인 성공
-                                      print('로그인 성공: ${user.email}');
+                                    var userProvider = context.read<
+                                        UserProvider>(); //user_provider에서 가져오기
+
+                                    String? errorMessage =
+                                        await userProvider.handleSignIn(
+                                      _emailController.text,
+                                      _passwordController.text,
+                                    );
+
+                                    if (!mounted) return; //현재 위젯이 마운트되었는지 확인
+
+                                    if (errorMessage == null &&
+                                        userProvider.user != null) {
+                                      // 로그인 성공 및 user가 null이 아닌 경우
+                                      print(
+                                          '로그인 성공: ${userProvider.user!.email}');
                                       currentUI = 'home';
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => NextPage(
-                                            currentUser: user,
+                                            currentUser: userProvider
+                                                .user!, // null이 아닌 것이 보장된 User 객체
                                             dataProvider: dataProvider,
                                           ),
                                         ),
                                       );
                                     } else {
-                                      // 로그인 실패
-                                      print('로그인 실패');
+                                      // 로그인 실패 또는 사용자 정보 없음
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text(errorMessage ?? "로그인 오류")),
+                                      );
                                     }
                                   },
                                   child: const Icon(

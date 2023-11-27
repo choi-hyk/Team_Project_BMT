@@ -76,6 +76,9 @@ flutter:
   
     - assets\images\노선도.png
     - assets\images\사용자 프로필.png
+    - assets\terms\service_terms.txt
+    - assets\terms\location_terms.txt
+    - assets\terms\privacy_terms.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
