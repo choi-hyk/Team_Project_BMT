@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:test1/settings_widgets/guide.dart';
 import 'package:test1/settings_widgets/notice.dart';
 import 'package:test1/settings_widgets/setting_account_page.dart';
@@ -294,7 +293,7 @@ class _SettingsUIState extends State<SettingsUI> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "위치 정보 사용 동의 약관",
+                        "위치 정보 이용 약관",
                         style: TextStyle(fontSize: 15),
                       ),
                     ),
