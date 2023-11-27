@@ -50,6 +50,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             imageUrl: store['image_url'],
                             name: store['name'],
                             pay: store['pay'],
+                            giftUrl: store['gift_url'],
                           ),
                         ),
                       );
