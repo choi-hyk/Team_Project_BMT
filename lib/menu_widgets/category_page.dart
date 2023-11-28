@@ -16,7 +16,11 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category),
+        title: Text(widget.category,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
+        centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: StreamBuilder(
@@ -36,58 +40,64 @@ class _CategoryPageState extends State<CategoryPage> {
             itemBuilder: (context, index) {
               var store = stores[index].data();
 
-              return Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BuyPage(
-                            category: store['category'],
-                            categoryname: store['category_name'],
-                            icon: store['icon'],
-                            imageUrl: store['image_url'],
-                            name: store['name'],
-                            pay: store['pay'],
-                            giftUrl: store['gift_url'],
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // 이미지를 탭하면 구매 페이지로 이동
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BuyPage(
+                              category: store['category'],
+                              categoryname: store['category_name'],
+                              icon: store['icon'],
+                              imageUrl: store['image_url'],
+                              name: store['name'],
+                              pay: store['pay'],
+                              giftUrl: store['gift_url'],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: ListTile(
-                      title: Text(
-                        store['name'],
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        ' ${store['pay']}p',
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      leading: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1.0,
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 110,
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            color: Colors.white),
+                        child: ListTile(
+                          title: Text(
+                            store['name'],
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColorDark),
                           ),
-                        ),
-                        child: Image.network(
-                          store['image_url'],
-                          fit: BoxFit.fill,
+                          subtitle: Text(
+                            ' ${store['pay']}p',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColorDark),
+                          ),
+                          leading: SizedBox(
+                            width: 90,
+                            height: 130,
+                            child: Image.network(
+                              store['image_url'],
+                              fit: BoxFit.fill,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const Divider(
-                    thickness: 1.0,
-                    color: Colors.grey,
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           );
