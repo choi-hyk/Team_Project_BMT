@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/menu_widgets/buy_page.dart';
 import 'package:test1/menu_widgets/category_page.dart';
 
@@ -45,6 +47,8 @@ class _StorePageState extends State<StorePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context); //사용자 정보
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -110,24 +114,27 @@ class _StorePageState extends State<StorePage> {
               ),
               buildCategoryContainer("상품권", showCategoryList),
               const SizedBox(
-                width: 140.0,
+                width: 130.0,
               ),
               // 리워드 포인트
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  color: Colors.deepPurple[200],
-                ),
-                width: 60,
-                height: 35,
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    '2500p',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.0),
+                    color: Colors.deepPurple[200],
+                  ),
+                  width: 60,
+                  height: 35,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${userProvider.point}p",
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -168,6 +175,7 @@ class _StorePageState extends State<StorePage> {
                                   imageUrl: store['image_url'],
                                   name: store['name'],
                                   pay: store['pay'],
+                                  giftUrl: store['gift_url'],
                                 ),
                               ),
                             );
