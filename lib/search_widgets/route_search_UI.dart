@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:test1/StationMap.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/search_widgets/route_result_UI.dart';
@@ -86,17 +87,13 @@ class _RouteSearchState extends State<RouteSearch> {
               width: 500,
               height: 560,
               child: InteractiveViewer(
-                minScale: 1.0,
-                maxScale: 4.5,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    right: 20.0,
-                  ),
-                  child: ClipRRect(
-                    child: Image.asset("assets/images/노선도.png",
-                        width: 500, height: 560, fit: BoxFit.contain),
-                  ),
+                minScale: 2.5,
+                maxScale: 2.5,
+                child: Image.asset(
+                  "assets/images/노선도.png",
+                  width: 500,
+                  height: 560,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
