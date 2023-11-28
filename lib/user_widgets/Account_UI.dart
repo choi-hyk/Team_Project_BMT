@@ -41,7 +41,7 @@ class UserProfileWidget extends StatelessWidget {
             radius: 50,
             backgroundImage: AssetImage(profileImageUrl),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             name,
             style: const TextStyle(
@@ -59,8 +59,8 @@ class UserProfileWidget extends StatelessWidget {
           ),
           const SizedBox(height: 6.5),
           Text(
-            "보유 포인트 : " + userProvider.point,
-            style: TextStyle(
+            "보유 포인트 : ${userProvider.point}",
+            style: const TextStyle(
               fontSize: 15,
               color: Colors.black,
             ),

@@ -13,6 +13,7 @@ import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'StationMap.dart';
 //import 'package:test1/algorithm_code/graph.dart';
 
 //InterFace 클래스
@@ -30,9 +31,16 @@ class InterFace extends StatefulWidget {
 class _InterFaceState extends State<InterFace> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   DataProvider dataProvider = DataProvider();
-
+  String? tappedStationKey;
   final TextEditingController station = TextEditingController();
   //검색되는 역
+
+  void onTapStation(String stationKey) {
+    setState(() {
+      tappedStationKey = stationKey;
+    });
+    waitData(int.parse(stationKey));
+  }
 
 //드로어 함수
   void menuDrawer() {
@@ -91,19 +99,8 @@ class _InterFaceState extends State<InterFace> {
                   borderRadius: BorderRadius.circular(20), color: Colors.white),
               width: 500,
               height: 560,
-              child: InteractiveViewer(
-                minScale: 1.0,
-                maxScale: 4.5,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    right: 20.0,
-                  ),
-                  child: ClipRRect(
-                    child: Image.asset("assets/images/노선도.png",
-                        width: 500, height: 560, fit: BoxFit.contain),
-                  ),
-                ),
+              child: StationMap(
+                onTapStation: onTapStation,
               ),
             ),
           ),
