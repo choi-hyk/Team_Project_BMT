@@ -87,7 +87,6 @@ class UserProfileWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 20),
-              //로그아웃 버튼으로 구현해야됨
               InkWell(
                 onTap: () {
                   Navigator.push(
@@ -163,7 +162,7 @@ class AccountUIState extends State<AccountUI> {
                 width: 500,
                 height: 660,
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: [
                       Container(
@@ -176,42 +175,6 @@ class AccountUIState extends State<AccountUI> {
                           alignment: Alignment.center,
                           child: Text(
                             "작성 글",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 6.5,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(10.0)),
-                        width: 500,
-                        height: 150,
-                        child: const Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "즐겨 찾기",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 6.5,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(10.0)),
-                        width: 500,
-                        height: 150,
-                        child: const Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "스토어",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
