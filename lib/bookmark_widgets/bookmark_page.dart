@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -62,12 +63,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
     }
   }
 
-  // 입력 다이얼로그를 보여주는 메소드
   void showAddDialog(bool isRoute) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
+
           title: Text(
             isRoute ? '경로 추가' : '역 추가',
             style: TextStyle(
@@ -81,6 +82,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   TextField(
                     controller: stationController,
                     decoration: const InputDecoration(
+
                       labelText: '역',
                     ),
                     keyboardType: TextInputType.number,
@@ -93,6 +95,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   TextField(
                     controller: station1Controller,
                     decoration: const InputDecoration(
+
+              
                       labelText: '출발역',
                     ),
                     keyboardType: TextInputType.number,
@@ -102,7 +106,10 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   ),
                   TextField(
                     controller: station2Controller,
+
                     decoration: const InputDecoration(
+
+                    decoration: InputDecoration(
                       labelText: '도착역',
                     ),
                     keyboardType: TextInputType.number,
@@ -116,16 +123,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
           ),
           actions: <Widget>[
             TextButton(
+
               child: const Text(
                 '취소',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
+
+
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
+
               onPressed: isRoute ? addBookmarkRoute : addBookmarkStation,
               child: const Text(
                 '추가',
@@ -144,6 +155,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     String? userUid = getCurrentUserUid();
 
     return StreamBuilder<QuerySnapshot>(
+
       stream: FirebaseFirestore.instance
           .collection('Users')
           .doc(userUid)
@@ -155,6 +167,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
         }
 
         if (stationSnapshot.connectionState == ConnectionState.waiting) {
+
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -184,6 +197,9 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   },
                 ),
               ),
+
+       
+
             ),
           );
         }).toList();
@@ -200,6 +216,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
             }
 
             if (routeSnapshot.connectionState == ConnectionState.waiting) {
+
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -252,6 +269,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       },
                     ),
                   ),
+
+
                 ),
               );
             }).toList();
@@ -272,6 +291,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
