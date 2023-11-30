@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:test1/provider_code/bookmark_provider.dart';
 
 class BookmarkPage extends StatefulWidget {
   @override
@@ -9,67 +10,30 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
-  final TextEditingController stationController = TextEditingController();
-  final TextEditingController station1Controller = TextEditingController();
-  final TextEditingController station2Controller = TextEditingController();
+  final TextEditingController stationController =
+      TextEditingController(); //역 입력
+  final TextEditingController station1Controller =
+      TextEditingController(); //역1(출발역) 입력
+  final TextEditingController station2Controller =
+      TextEditingController(); //역2 (도착역) 입력
 
-  // 현재 로그인된 사용자의 UID를 가져오는 메소드
+  //현재 로그인된 사용자의 UID를 가져오는 함수
   String? getCurrentUserUid() {
     final User? user = FirebaseAuth.instance.currentUser;
     return user?.uid;
   }
 
-  // 즐겨찾기 역 추가 메소드
-  Future<void> addBookmarkStation() async {
-    String? userUid = getCurrentUserUid();
-    if (userUid != null && stationController.text.isNotEmpty) {
-      CollectionReference bookmarks = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(userUid)
-          .collection('Bookmark_Station');
-
-      await bookmarks.add({
-        'station': stationController.text,
-      });
-
-      stationController.clear();
-      Navigator.of(context).pop();
-    }
-  }
-
-  // 즐겨찾기 경로 추가 메소드
-  Future<void> addBookmarkRoute() async {
-    String? userUid = getCurrentUserUid();
-    if (userUid != null &&
-        station1Controller.text.isNotEmpty &&
-        station2Controller.text.isNotEmpty) {
-      CollectionReference bookmarks = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(userUid)
-          .collection('Bookmark_Route');
-
-      await bookmarks.add({
-        'station1_ID': station1Controller.text,
-        'station2_ID': station2Controller.text,
-      });
-
-      station1Controller.clear();
-      station2Controller.clear();
-      Navigator.of(context).pop();
-    }
-  }
-
-  // 입력 다이얼로그를 보여주는 메소드
+  //입력 다이얼로그를 보여주는 함수
   void showAddDialog(bool isRoute) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(isRoute ? '경로 추가' : '역 추가'),
+          title: Text(isRoute ? '경로 추가' : '역 추가'), //제목
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                if (!isRoute) // 역 추가
+                if (!isRoute) //False일 때 역 추가
                   TextField(
                     controller: stationController,
                     decoration: InputDecoration(
@@ -80,7 +44,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                   ),
-                if (isRoute) // 경로 추가
+                if (isRoute) //True일 때 경로 추가
                   ...[
                   TextField(
                     controller: station1Controller,
@@ -115,7 +79,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
             ),
             TextButton(
               child: Text('추가'),
-              onPressed: isRoute ? addBookmarkRoute : addBookmarkStation,
+              onPressed: () async {
+                if (isRoute) {
+                  //isRpute에 따라 함수 구별
+                  await BookmarkProvider.addBookmarkRoute(
+                    station1Controller.text,
+                    station2Controller.text,
+                  );
+                } else {
+                  await BookmarkProvider.addBookmarkStation(
+                    stationController.text,
+                  );
+                }
+                Navigator.of(context).pop(); // 다이얼로그 닫기
+              },
             ),
           ],
         );
@@ -123,11 +100,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  // 즐겨찾기 목록을 보여주는 위젯
+  //즐겨찾기 목록을 보여주는 위젯
   Widget buildBookmarkList() {
-    String? userUid = getCurrentUserUid();
+    String? userUid = getCurrentUserUid(); //로그인 사용자 확인
 
     return StreamBuilder<QuerySnapshot>(
+      //DB 가져오기
       stream: FirebaseFirestore.instance
           .collection('Users')
           .doc(userUid)
@@ -146,6 +124,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
           return ListTile(
             title: Text('${document['station']}'),
             trailing: IconButton(
+              //이 아이콘을 누르면 DB에서 삭제
               icon: Icon(Icons.delete),
               onPressed: () {
                 document.reference.delete();
@@ -174,6 +153,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 title: Text(
                     '${document['station1_ID']}  ->  ${document['station2_ID']}'),
                 trailing: IconButton(
+                  //이 아이콘을 누르면 DB에서 삭제
                   icon: Icon(Icons.delete),
                   onPressed: () {
                     document.reference.delete();
@@ -201,14 +181,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
         title: Text('즐겨찾기'),
         actions: <Widget>[
           TextButton(
-            child: Text('역 추가',
-                style: TextStyle(color: Colors.white)), // 텍스트 버튼으로 변경
-            onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
+            child: Text('역 추가', style: TextStyle(color: Colors.white)),
+            onPressed: () => showAddDialog(false), //역 추가 다이얼로그
           ),
           TextButton(
-            child: Text('경로 추가',
-                style: TextStyle(color: Colors.white)), // 텍스트 버튼으로 변경
-            onPressed: () => showAddDialog(true), // 역 추가 다이얼로그
+            child: Text('경로 추가', style: TextStyle(color: Colors.white)),
+            onPressed: () => showAddDialog(true), //경로 추가 다이얼로그
           ),
         ],
       ),
