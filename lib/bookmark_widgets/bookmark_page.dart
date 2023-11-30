@@ -68,7 +68,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-
           title: Text(
             isRoute ? '경로 추가' : '역 추가',
             style: TextStyle(
@@ -82,7 +81,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   TextField(
                     controller: stationController,
                     decoration: const InputDecoration(
-
                       labelText: '역',
                     ),
                     keyboardType: TextInputType.number,
@@ -95,8 +93,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   TextField(
                     controller: station1Controller,
                     decoration: const InputDecoration(
-
-              
                       labelText: '출발역',
                     ),
                     keyboardType: TextInputType.number,
@@ -106,10 +102,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   ),
                   TextField(
                     controller: station2Controller,
-
                     decoration: const InputDecoration(
-
-                    decoration: InputDecoration(
                       labelText: '도착역',
                     ),
                     keyboardType: TextInputType.number,
@@ -123,20 +116,16 @@ class _BookmarkPageState extends State<BookmarkPage> {
           ),
           actions: <Widget>[
             TextButton(
-
               child: const Text(
                 '취소',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
-
-
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-
               onPressed: isRoute ? addBookmarkRoute : addBookmarkStation,
               child: const Text(
                 '추가',
@@ -155,7 +144,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
     String? userUid = getCurrentUserUid();
 
     return StreamBuilder<QuerySnapshot>(
-
       stream: FirebaseFirestore.instance
           .collection('Users')
           .doc(userUid)
@@ -167,7 +155,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
         }
 
         if (stationSnapshot.connectionState == ConnectionState.waiting) {
-
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -197,9 +184,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   },
                 ),
               ),
-
-       
-
             ),
           );
         }).toList();
@@ -216,7 +200,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
             }
 
             if (routeSnapshot.connectionState == ConnectionState.waiting) {
-
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -269,8 +252,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       },
                     ),
                   ),
-
-
                 ),
               );
             }).toList();
@@ -291,7 +272,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
