@@ -35,19 +35,16 @@ class _StationDataState extends State<StationData> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(13.0),
-          topRight: Radius.circular(13.0),
-        ),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
         border: Border.all(
           color: Colors.grey,
           width: 1.5,
         ),
       ),
-      width: 379.5,
-      height: 640.0,
+      width: 400.5,
+      height: 710.0,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         child: Column(
           children: [
             Container(
@@ -148,7 +145,7 @@ class _StationDataState extends State<StationData> {
                     ),
                   ),
                   const SizedBox(
-                    width: 6.5,
+                    width: 1.5,
                   ),
                   InkWell(
                     onTap: () {

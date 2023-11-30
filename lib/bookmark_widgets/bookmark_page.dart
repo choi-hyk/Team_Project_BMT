@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:test1/menu_widgets/stationdata.dart';
+import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/search_widgets/route_result_UI.dart';
+import 'package:test1/search_widgets/stationdata_UI.dart';
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({super.key});
@@ -16,6 +19,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
   final TextEditingController stationController = TextEditingController();
   final TextEditingController station1Controller = TextEditingController();
   final TextEditingController station2Controller = TextEditingController();
+
+  DataProvider dataProvider = DataProvider();
 
   // 현재 로그인된 사용자의 UID를 가져오는 메소드
   String? getCurrentUserUid() {
@@ -139,6 +144,35 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
+  Future<void> returnStationData(String station) async {
+    await dataProvider.searchData(int.parse(station));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StationDataPage(
+          name: dataProvider.name,
+          nRoom: dataProvider.nRoom,
+          cStore: dataProvider.cStore,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
+          line: dataProvider.line,
+          nName: dataProvider.nName,
+          pName: dataProvider.pName,
+        ),
+      ),
+    );
+  }
+
+  Future<void> returnRouteData(String statin1, String station2) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RouteResults(startStation: statin1, arrivStation: station2),
+      ),
+    );
+  }
+
   // 즐겨찾기 목록을 보여주는 위젯
   Widget buildBookmarkList() {
     String? userUid = getCurrentUserUid();
@@ -161,27 +195,32 @@ class _BookmarkPageState extends State<BookmarkPage> {
         var stationWidgets = stationSnapshot.data!.docs.map((document) {
           return Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
+            child: GestureDetector(
+              onTap: () {
+                returnStationData(document['station']);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
+                    ),
+                child: ListTile(
+                  title: Text(
+                    '${document['station']}',
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColorDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
                   ),
-              child: ListTile(
-                title: Text(
-                  '${document['station']}',
-                  style: TextStyle(
+                  trailing: IconButton(
+                    icon: Icon(
+                      Icons.delete,
                       color: Theme.of(context).primaryColorDark,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                trailing: IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Theme.of(context).primaryColorDark,
+                    ),
+                    onPressed: () {
+                      document.reference.delete();
+                    },
                   ),
-                  onPressed: () {
-                    document.reference.delete();
-                  },
                 ),
               ),
             ),
@@ -206,50 +245,56 @@ class _BookmarkPageState extends State<BookmarkPage> {
             var routeWidgets = routeSnapshot.data!.docs.map((document) {
               return Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
-                      ),
-                  child: ListTile(
-                    title: Row(
-                      children: [
-                        Text(
-                          '${document['station1_ID']}',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColorDark,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    returnRouteData(
+                        document['station1_ID'], document['station2_ID']);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
+                        ),
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Text(
+                            '${document['station1_ID']}',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColorDark,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 6.5,
-                        ),
-                        Icon(
-                          FontAwesomeIcons.rightLong,
+                          const SizedBox(
+                            width: 6.5,
+                          ),
+                          Icon(
+                            FontAwesomeIcons.rightLong,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          const SizedBox(
+                            width: 6.5,
+                          ),
+                          Text(
+                            '${document['station2_ID']}',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColorDark,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(
+                          Icons.delete,
                           color: Theme.of(context).primaryColorDark,
                         ),
-                        const SizedBox(
-                          width: 6.5,
-                        ),
-                        Text(
-                          '${document['station2_ID']}',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColorDark,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        Icons.delete,
-                        color: Theme.of(context).primaryColorDark,
+                        onPressed: () {
+                          document.reference.delete();
+                        },
                       ),
-                      onPressed: () {
-                        document.reference.delete();
-                      },
                     ),
                   ),
                 ),
