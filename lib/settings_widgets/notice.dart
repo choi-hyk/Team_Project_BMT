@@ -10,17 +10,39 @@ class Notice extends StatefulWidget {
 }
 
 class _NoticeState extends State<Notice> {
-  @override
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  void _showContentDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('공지사항 목록'),
+        title: const Text('공지사항'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('Notice').orderBy('date').snapshots(),
+        stream: _firestore
+            .collection('Notice')
+            .orderBy('created_at', descending: true)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const Text('오류가 발생했습니다.');
@@ -36,6 +58,8 @@ class _NoticeState extends State<Notice> {
                   document.data()! as Map<String, dynamic>;
               return ListTile(
                 title: Text(data['title'] ?? '제목 없음'),
+                onTap: () => _showContentDialog(
+                    data['title'] ?? '제목 없음', data['content'] ?? '내용 없음'),
               );
             }).toList(),
           );
