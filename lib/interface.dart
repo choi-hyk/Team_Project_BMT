@@ -375,7 +375,7 @@ class _InterFaceState extends State<InterFace> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const BookMark()),
+                    MaterialPageRoute(builder: (context) => BookmarkPage()),
                   );
                 },
                 child: Row(
