@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/interface.dart';
-import 'package:test1/login_widgets/find_account.dart';
+import 'package:test1/login_widgets/find_password.dart';
 import 'package:test1/login_widgets/join_account.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
-import '../provider_code/user_provider.dart';
+import 'package:test1/provider_code/user_provider.dart';
 
 class LoginUI extends StatefulWidget {
   const LoginUI({Key? key}) : super(key: key);
@@ -54,13 +54,13 @@ class _LogInState extends State<LoginUI> {
                                 controller: _emailController,
                                 autofocus: true,
                                 decoration:
-                                    const InputDecoration(labelText: 'email'),
+                                    const InputDecoration(labelText: '이메일'),
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               TextField(
                                 controller: _passwordController,
-                                decoration: const InputDecoration(
-                                    labelText: 'password'),
+                                decoration:
+                                    const InputDecoration(labelText: '비밀번호'),
                                 keyboardType: TextInputType.text,
                                 obscureText: true,
                               ),
@@ -194,12 +194,12 @@ class _LogInState extends State<LoginUI> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const FindAccount(),
+                                                ResetPasswordScreen(),
                                           ),
                                         );
                                       },
                                       child: const Text(
-                                        "계정 찾기",
+                                        "비밀번호 찾기",
                                       ),
                                     ),
                                   ),

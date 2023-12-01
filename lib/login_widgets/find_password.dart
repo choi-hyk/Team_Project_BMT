@@ -1,46 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FindAccount extends StatefulWidget {
-  const FindAccount({super.key});
-
+class ResetPasswordScreen extends StatefulWidget {
   @override
-  State<FindAccount> createState() => _FindAccountState();
+  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
 
-class _FindAccountState extends State<FindAccount> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _emailController = TextEditingController();
-  Future<void> _handlePasswordReset() async {
-    final email = _emailController.text;
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final _emailController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
 
+  Future<void> _sendPasswordResetEmail() async {
     try {
-      final result = await _auth.fetchSignInMethodsForEmail(email);
-      if (result.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('등록된 사용자를 찾을 수 없습니다.'),
-            backgroundColor: Color.fromARGB(255, 112, 48, 48),
-          ),
-        );
-      } else {
-        await _auth.sendPasswordResetEmail(email: email);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('비밀번호 재설정 링크가 이메일로 전송되었습니다.'),
-            backgroundColor: Color.fromARGB(255, 112, 48, 48),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('이메일로 등록된 사용자를 찾을 수 없습니다.'),
-            backgroundColor: Color.fromARGB(255, 112, 48, 48),
-          ),
-        );
-      }
+      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('비밀번호 재설정 링크가 이메일로 전송되었습니다.'),
+          backgroundColor: Color.fromARGB(255, 112, 48, 48),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이메일 전송에 실패했습니다.'),
+          backgroundColor: Color.fromARGB(255, 112, 48, 48),
+        ),
+      );
     }
   }
 
@@ -89,14 +74,13 @@ class _FindAccountState extends State<FindAccount> {
                           const SizedBox(height: 50),
                           Container(
                             width: double.infinity,
-                            height: 80,
+                            height: 60,
                             decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.background,
                                 borderRadius: BorderRadius.circular(10.0)),
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                  "비밀번호 재설정을 위해 이메일을 입력하십시오. 해당 이메일에서 비밀번호 재설정 링크를 받은 후 비밀번호를 재설정 하십시오."),
+                              child: Text("비밀번호를 재설정할 수 있는 링크가 해당 이메일로 발송됩니다."),
                             ),
                           ),
                           const SizedBox(
@@ -120,7 +104,7 @@ class _FindAccountState extends State<FindAccount> {
                                 ),
                               ),
                               onPressed: () async {
-                                await _handlePasswordReset();
+                                await _sendPasswordResetEmail();
                               },
                               child: const Text(
                                 "이메일 발송",
