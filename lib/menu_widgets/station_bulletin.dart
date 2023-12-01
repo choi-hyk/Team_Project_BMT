@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/menu_widgets/comment_page.dart';
@@ -14,6 +15,7 @@ class _StationBulletinState extends State<StationBulletin> {
   final bool _isSearching = false;
   List<int> stationIds = []; // station_ID 목록을 저장할 리스트
   int selectedStation = 101; // 초기 선택된 station_ID
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Bulletin_Board테이블의 데이터를 가져옴
   CollectionReference product =
@@ -26,7 +28,6 @@ class _StationBulletinState extends State<StationBulletin> {
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
-  final TextEditingController userController = TextEditingController();
   final TextEditingController stationController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
@@ -34,8 +35,11 @@ class _StationBulletinState extends State<StationBulletin> {
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
     titleController.text = documentSnapshot['title'];
     contentController.text = documentSnapshot['content'];
-    userController.text = documentSnapshot['User_ID'];
     stationController.text = documentSnapshot['station_ID'].toString();
+
+    // 이 부분에서 현재 사용자의 정보를 가져옴
+    User? currentUser = _auth.currentUser;
+    String? currentUserId = currentUser?.uid;
 
     await showModalBottomSheet(
       isScrollControlled: true,
@@ -74,35 +78,26 @@ class _StationBulletinState extends State<StationBulletin> {
                 const SizedBox(
                   height: 20,
                 ),
-                TextField(
-                  controller: userController,
-                  decoration: const InputDecoration(labelText: '작성자'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
                 ElevatedButton(
                   onPressed: () async {
                     final String title = titleController.text;
                     final String content = contentController.text;
                     final int station =
                         int.tryParse(stationController.text) ?? 0;
-                    final String user = userController.text;
 
                     await product.doc(documentSnapshot.id).update(
                       {
                         "title": title,
                         "content": content,
                         "station_ID": station,
-                        "User_ID": user,
                         "updated_at": FieldValue.serverTimestamp(),
+                        "User_ID": currentUserId,
                       },
                     );
 
                     titleController.text = "";
                     contentController.text = "";
                     stationController.text = "";
-                    userController.text = "";
                     Navigator.of(context).pop();
                   },
                   child: const Text('수정'),
@@ -117,6 +112,10 @@ class _StationBulletinState extends State<StationBulletin> {
 
   //게시글 생성
   Future<void> _create() async {
+    // 이 부분에서 현재 사용자의 정보를 가져옴
+    User? currentUser = _auth.currentUser;
+    String? currentUserId = currentUser?.uid;
+
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -154,33 +153,24 @@ class _StationBulletinState extends State<StationBulletin> {
                 const SizedBox(
                   height: 20,
                 ),
-                TextField(
-                  controller: userController,
-                  decoration: const InputDecoration(labelText: '작성자'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
                 ElevatedButton(
                   onPressed: () async {
                     final String title = titleController.text;
                     final String content = contentController.text;
                     final int station =
                         int.tryParse(stationController.text) ?? 0;
-                    final String user = userController.text;
 
                     await product.add({
                       'title': title,
                       'content': content,
                       'station_ID': station,
-                      'User_ID': user,
                       'created_at': FieldValue.serverTimestamp(),
+                      'User_ID': currentUserId,
                     });
 
                     titleController.text = "";
                     contentController.text = "";
                     stationController.text = "";
-                    userController.text = "";
                     Navigator.of(context).pop();
                   },
                   child: const Text('작성'),
@@ -242,8 +232,7 @@ class _StationBulletinState extends State<StationBulletin> {
                   in snapshot.data!.docs
                       .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
                 ListTile(
-                  title: Text(commentSnapshot['text']),
-                  subtitle: Text('작성자: ${commentSnapshot['user']}'),
+                  title: Text('작성자: ${commentSnapshot['user']}'),
                   // 추가적인 정보나 삭제 기능을 표시하려면 여기에 추가
                 ),
             ],
@@ -409,8 +398,30 @@ class _StationBulletinState extends State<StationBulletin> {
                                       Text(
                                         documentSnapshot['content'],
                                       ),
-                                      Text(
-                                          '사용자: ${documentSnapshot['User_ID']}'),
+                                      FutureBuilder<DocumentSnapshot>(
+                                        future: FirebaseFirestore.instance
+                                            .collection('Users')
+                                            .doc(documentSnapshot['User_ID'])
+                                            .get(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<DocumentSnapshot>
+                                                userSnapshot) {
+                                          if (userSnapshot.hasData &&
+                                              userSnapshot.data != null &&
+                                              userSnapshot.data!.exists) {
+                                            // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                            Map<String, dynamic> userData =
+                                                userSnapshot.data!.data()
+                                                    as Map<String, dynamic>;
+                                            String nickname =
+                                                userData['nickname'];
+                                            // 닉네임으로 사용자 구분
+                                            return Text('사용자: $nickname');
+                                          } else {
+                                            return const SizedBox();
+                                          }
+                                        },
+                                      ),
                                       Text(
                                         '작성일: $formattedDate',
                                       ),
@@ -471,8 +482,7 @@ class _StationBulletinState extends State<StationBulletin> {
           ),
         ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.endFloat, // 위치 변경
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

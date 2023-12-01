@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class CommentPage extends StatefulWidget {
@@ -54,16 +55,39 @@ class _CommentPageState extends State<CommentPage> {
               style: const TextStyle(fontSize: 18.0),
             ),
             const SizedBox(height: 10),
-            Text(
-              '작성자: ${postSnapshot['User_ID']}',
-              style: const TextStyle(fontSize: 16.0),
+            // 게시글 작성자 정보 가져오기
+            FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('Users')
+                  .doc(postSnapshot['User_ID'])
+                  .get(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                if (userSnapshot.hasData &&
+                    userSnapshot.data != null &&
+                    userSnapshot.data!.exists) {
+                  // 게시글 작성자의 닉네임 가져오기
+                  String? nickname = userSnapshot.data!['nickname'];
+                  return Text(
+                    '작성자: ${nickname ?? '사용자'}',
+                    style: const TextStyle(fontSize: 16.0),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
             ),
             const SizedBox(height: 10),
             Text(
               '작성일: $formattedDate',
               style: const TextStyle(fontSize: 16.0),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
+            const Divider(
+              thickness: 1.0,
+              color: Colors.black,
+            ),
+            const SizedBox(height: 10),
             const Text(
               '댓글',
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
@@ -93,9 +117,27 @@ class _CommentPageState extends State<CommentPage> {
               for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
                   in snapshot.data!.docs
                       .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
-                ListTile(
-                  title: Text(commentSnapshot['text']),
-                  subtitle: Text('작성자: ${commentSnapshot['user']}'),
+                // 댓글 작성자 정보 가져오기
+                FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(commentSnapshot['user'])
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                    if (userSnapshot.hasData &&
+                        userSnapshot.data != null &&
+                        userSnapshot.data!.exists) {
+                      // 댓글 작성자의 닉네임 가져오기
+                      String? nickname = userSnapshot.data!['nickname'];
+                      return ListTile(
+                        title: Text(commentSnapshot['text']),
+                        subtitle: Text('작성자: ${nickname ?? '사용자'}'),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 ),
             ],
           );
@@ -121,13 +163,18 @@ class _CommentPageState extends State<CommentPage> {
           onPressed: () async {
             final String commentText = commentController.text;
             if (commentText.isNotEmpty) {
+              // 현재 사용자 정보 가져오기
+              User? currentUser = FirebaseAuth.instance.currentUser;
+              String? currentUserNickname = currentUser?.displayName;
+
+              // 댓글을 Firestore에 추가
               await FirebaseFirestore.instance
                   .collection('Bulletin_Board')
                   .doc(postId)
                   .collection('comments')
                   .add({
                 'text': commentText,
-                'user': '사용자', // 사용자 ID 또는 다른 사용자 정보 추가 가능
+                'user': currentUser?.uid, // 사용자 ID 또는 다른 사용자 정보 추가 가능
                 'timestamp': FieldValue.serverTimestamp(),
               });
 
