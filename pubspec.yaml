@@ -50,6 +50,14 @@ dependencies:
   directed_graph: ^0.3.9
   graph_collection: ^2.1.0
   firebase_app_check: ^0.2.1+6
+  dijkstra: ^0.0.4 
+  directed_graph: ^0.3.9  
+  flutter_local_notifications: ^16.2.0
+  flutter_timezone: ^1.0.8
+  permission_handler: ^11.1.0
+  android_alarm_manager_plus: ^3.0.3
+  firebase_app_check: ^0.2.1+6
+  
 
 dev_dependencies:
   flutter_test:

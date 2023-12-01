@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/main.dart';
+import 'package:test1/provider_code/user_provider.dart';
 
 class DataProvider with ChangeNotifier {
   List<Map<String, dynamic>> documentDataList = [];
@@ -13,11 +14,14 @@ class DataProvider with ChangeNotifier {
   String name = "";
   bool nRoom = false;
   bool cStore = false;
+  bool isBkmk = false;
   List<String> nName = [];
   List<String> pName = [];
   List<String> nCong = [];
   List<String> pCong = [];
   List<int> line = [];
+
+  UserProvider userProvider = UserProvider();
 
   Future<void> fetchDocumentList() async {
     // Firestore에서 데이터 가져오기
@@ -51,6 +55,7 @@ class DataProvider with ChangeNotifier {
     name = "";
     nRoom = false;
     cStore = false;
+    isBkmk = false;
     nCong.clear();
     pCong.clear();
     line.clear();
@@ -93,6 +98,7 @@ class DataProvider with ChangeNotifier {
             }
           }
           found = true;
+          isBkmk = await userProvider.isStationBookmarked(name);
           array = 0;
           break;
         }
