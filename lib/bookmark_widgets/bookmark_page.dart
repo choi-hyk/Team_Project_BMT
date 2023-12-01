@@ -210,7 +210,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
         if (stationSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         var stationWidgets = stationSnapshot.data!.docs.map((document) {
           return Padding(
             padding: const EdgeInsets.all(5.0),
@@ -245,7 +244,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
             ),
           );
         }).toList();
-
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('Users')
