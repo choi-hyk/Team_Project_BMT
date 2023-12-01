@@ -29,85 +29,104 @@ class _StationBulletinState extends State<StationBulletin> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController stationController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
 
   // 게시물 편집
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
-    titleController.text = documentSnapshot['title'];
-    contentController.text = documentSnapshot['content'];
-    stationController.text = documentSnapshot['station_ID'].toString();
-
     // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    await showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 20,
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: '제목'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: contentController,
-                  decoration: const InputDecoration(labelText: '내용'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: stationController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: '호선'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final String title = titleController.text;
-                    final String content = contentController.text;
-                    final int station =
-                        int.tryParse(stationController.text) ?? 0;
+    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    if (documentSnapshot['User_ID'] == currentUserId) {
+      titleController.text = documentSnapshot['title'];
+      contentController.text = documentSnapshot['content'];
+      stationController.text = documentSnapshot['station_ID'].toString();
 
-                    await product.doc(documentSnapshot.id).update(
-                      {
-                        "title": title,
-                        "content": content,
-                        "station_ID": station,
-                        "updated_at": FieldValue.serverTimestamp(),
-                        "User_ID": currentUserId,
-                      },
-                    );
+      await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext context) {
+          return SizedBox(
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(labelText: '제목'),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(labelText: '내용'),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: stationController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(labelText: '호선'),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String title = titleController.text;
+                      final String content = contentController.text;
+                      final int station =
+                          int.tryParse(stationController.text) ?? 0;
 
-                    titleController.text = "";
-                    contentController.text = "";
-                    stationController.text = "";
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('수정'),
-                ),
-              ],
+                      await product.doc(documentSnapshot.id).update(
+                        {
+                          "title": title,
+                          "content": content,
+                          "station_ID": station,
+                          "updated_at": FieldValue.serverTimestamp(),
+                          "User_ID": currentUserId,
+                        },
+                      );
+
+                      titleController.text = "";
+                      contentController.text = "";
+                      stationController.text = "";
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('수정'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    } else {
+      // 작성자가 아닌 경우 수정 권한이 없음을 알림
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('권한 없음'),
+          content: const Text('자신이 작성한 게시글만 수정할 수 있습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   //게시글 생성
@@ -185,7 +204,33 @@ class _StationBulletinState extends State<StationBulletin> {
 
   //게시글 삭제
   Future<void> _delete(String productId) async {
-    await product.doc(productId).delete();
+    // 현재 사용자의 정보를 가져옴
+    User? currentUser = _auth.currentUser;
+    String? currentUserId = currentUser?.uid;
+
+    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    DocumentSnapshot documentSnapshot = await product.doc(productId).get();
+
+    if (documentSnapshot['User_ID'] == currentUserId) {
+      await product.doc(productId).delete();
+    } else {
+      // 작성자가 아닌 경우 삭제 권한이 없음을 알림
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('권한 없음'),
+          content: const Text('자신이 작성한 게시글만 삭제할 수 있습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -212,75 +257,6 @@ class _StationBulletinState extends State<StationBulletin> {
     setState(() {
       stationIds = ids;
     });
-  }
-
-// 댓글 목록을 가져와 표시하는 위젯
-  Widget buildCommentsSection(String postId) {
-    return StreamBuilder(
-      stream: commentsReference(postId).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('댓글', style: TextStyle(fontWeight: FontWeight.bold)),
-              // 댓글 목록을 출력하는 방법 구현
-              // snapshot.data.docs를 사용하여 댓글 목록을 가져올 수 있습니다.
-              // 댓글 내용, 작성자 등을 표시할 수 있습니다.
-              // 각 댓글에 대한 삭제 기능 등도 추가 가능
-              for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
-                  in snapshot.data!.docs
-                      .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
-                ListTile(
-                  title: Text('작성자: ${commentSnapshot['user']}'),
-                  // 추가적인 정보나 삭제 기능을 표시하려면 여기에 추가
-                ),
-            ],
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
-      },
-    );
-  }
-
-// 댓글을 작성하는 입력 필드와 버튼을 표시하는 위젯
-  Widget buildCommentInputField(String postId) {
-    TextEditingController commentController = TextEditingController();
-
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: commentController,
-            decoration: const InputDecoration(
-              hintText: '댓글을 입력하세요',
-            ),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final String commentText = commentController.text;
-            if (commentText.isNotEmpty) {
-              // 댓글을 Firestore에 추가
-              await commentsReference(postId).add({
-                'text': commentText,
-                'user': '사용자', // 사용자 ID 또는 다른 사용자 정보 추가 가능
-                'timestamp': FieldValue.serverTimestamp(),
-              });
-
-              // 댓글 입력 필드 초기화
-              commentController.clear();
-            }
-          },
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.deepPurple),
-          ),
-          child: const Text('댓글 추가'),
-        ),
-      ],
-    );
   }
 
   @override
