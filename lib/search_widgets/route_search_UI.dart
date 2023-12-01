@@ -86,18 +86,25 @@ class _RouteSearchState extends State<RouteSearch> {
                   borderRadius: BorderRadius.circular(20), color: Colors.white),
               width: 500,
               height: 560,
-              child: InteractiveViewer(
-                minScale: 2.5,
-                maxScale: 2.5,
-                child: Image.asset(
-                  "assets/images/노선도.png",
-                  width: 500,
-                  height: 560,
-                  fit: BoxFit.contain,
-                ),
+              child: StationMap(
+                onTapStation: (String stationKey) {
+                  child: InteractiveViewer(
+                    minScale: 1,
+                    maxScale: 5,
+                    child: Image.asset(
+                      "assets/images/노선도.png",
+                      width: 500,
+                      height: 560,
+                      fit: BoxFit.contain, 
+                    ),
+                  );
+                },
               ),
             ),
           ),
+          
+
+          // 검색 바
           Column(
             children: [
               Container(
