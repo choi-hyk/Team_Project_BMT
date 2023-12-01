@@ -211,22 +211,40 @@ class _BookmarkPageState extends State<BookmarkPage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        var stationWidgets = stationSnapshot.data!.docs
-            .map((document) => Column(
-                  children: [
-                    ListTile(
-                      title: Text('${document['station']}'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          document.reference.delete(); //DB에서 삭제
-                        },
-                      ),
+        var stationWidgets = stationSnapshot.data!.docs.map((document) {
+          return Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: GestureDetector(
+              onTap: () {
+                returnStationData(document['station']);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
                     ),
-                    Divider(),
-                  ],
-                ))
-            .toList();
+                child: ListTile(
+                  title: Text(
+                    '${document['station']}',
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColorDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    onPressed: () {
+                      removeStation(document['station']);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList();
 
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
@@ -244,20 +262,62 @@ class _BookmarkPageState extends State<BookmarkPage> {
             }
 
             var routeWidgets = routeSnapshot.data!.docs.map((document) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                        '${document['station1_ID']}  ->  ${document['station2_ID']}'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        document.reference.delete(); //DB에서 삭제
-                      },
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: GestureDetector(
+                  onTap: () {
+                    returnRouteData(
+                        document['station1_ID'], document['station2_ID']);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
+                        ),
+                    child: ListTile(
+                      title: Row(
+                        children: [
+                          Text(
+                            '${document['station1_ID']}',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColorDark,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 6.5,
+                          ),
+                          Icon(
+                            FontAwesomeIcons.rightLong,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          const SizedBox(
+                            width: 6.5,
+                          ),
+                          Text(
+                            '${document['station2_ID']}',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColorDark,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                        onPressed: () {
+                          removeRoute(
+                              document['station1_ID'], document['station2_ID']);
+                        },
+                      ),
                     ),
                   ),
-                  Divider(), // 각 아이템 아래에 구분선 추가
-                ],
+                ),
               );
             }).toList();
 
