@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:test1/provider_code/user_provider.dart';
 
 //drawRouteResult에서 반환값으로 사용하기 위한 클래스
 class StationRouteResult {
@@ -25,6 +28,10 @@ class RouteResults extends StatefulWidget {
 }
 
 class _RouteResultsState extends State<RouteResults> {
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  UserProvider userProvider = UserProvider();
+
   bool isLoading = true; //로딩 여부
   String currentSearch =
       "recommend"; //현재 경로 검색 모드 -> "recommend", shortest, cheapest
@@ -63,12 +70,22 @@ class _RouteResultsState extends State<RouteResults> {
 
   late DataProvider dataProvider;
 
+  late int travelTime;
+
+  late bool isBook;
+
   // ignore: unused_field
 
   //클래스 진입 시 초기화
   @override
   void initState() {
     super.initState();
+
+    isBook = false;
+
+    checkBookRoute();
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     optmPath = [];
     timePath = [];
@@ -99,7 +116,33 @@ class _RouteResultsState extends State<RouteResults> {
 
     dataProvider = DataProvider();
 
+    travelTime = 0;
+
     fetchData(); // 그래프 데이터 가져오기
+  }
+
+  void checkBookRoute() async {
+    isBook = await userProvider.isRouteBookmarked(
+        widget.startStation, widget.arrivStation);
+  }
+
+  Future<void> _scheduleAlarm(int minutes) async {
+    const int alarmID = 0;
+    final Duration duration = Duration(minutes: minutes);
+
+    await AndroidAlarmManager.oneShot(
+      duration,
+      alarmID,
+      _showNotification, // 알람이 울릴 때 실행할 콜백 함수
+      exact: true,
+      wakeup: true,
+    );
+  }
+
+  void _showNotification() {
+    // 여기에 알림을 표시하는 로직을 추가할 수 있습니다.
+    // 예: 로컬 노티피케이션 사용 등
+    print('Alarm! It\'s time to go!');
   }
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
@@ -323,19 +366,37 @@ class _RouteResultsState extends State<RouteResults> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "소요시간",
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 16.5,
                     ),
                   ),
-                  Icon(
-                    Icons.star_border_outlined,
-                    size: 27.5,
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        if (isBook) {
+                          userProvider.removeBookmarkRoute(
+                              widget.startStation, widget.arrivStation);
+                          isBook = false;
+                        } else {
+                          userProvider.addBookmarkRoute(
+                              widget.startStation, widget.arrivStation);
+                          isBook = true;
+                        }
+                      });
+                    },
+                    child: Icon(
+                      isBook ? Icons.star : Icons.star_border_outlined,
+                      size: 35,
+                      color: isBook
+                          ? const Color.fromARGB(255, 224, 210, 91)
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -415,31 +476,44 @@ class _RouteResultsState extends State<RouteResults> {
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).primaryColor,
                 ),
-                child: const Align(
+                child: Align(
                   alignment: Alignment.center,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 80,
-                      ),
-                      SizedBox(
-                        width: 50,
-                        child: Icon(
-                          FontAwesomeIcons.bell,
-                          color: Colors.white,
+                  child: TextButton(
+                    onPressed: () {
+                      if (currentpath == optmPath) {
+                        travelTime = timeOfOptmPath;
+                      } else if (currentpath == timePath) {
+                        travelTime = timeOfCostPath;
+                      } else if (currentpath == costPath) {
+                        travelTime = timeOfCostPath;
+                      }
+                      _scheduleAlarm(1);
+                      print("알람시작");
+                    },
+                    child: const Row(
+                      children: [
+                        SizedBox(
+                          width: 80,
                         ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: Text(
-                          "알림 시작",
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 20,
-                              color: Colors.white),
+                        SizedBox(
+                          width: 50,
+                          child: Icon(
+                            FontAwesomeIcons.bell,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            "알림 시작",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 20,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               )

@@ -3,16 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class CommentPage extends StatefulWidget {
+class LostCommentPage extends StatefulWidget {
   final DocumentSnapshot postSnapshot;
 
-  const CommentPage({Key? key, required this.postSnapshot}) : super(key: key);
+  const LostCommentPage({Key? key, required this.postSnapshot})
+      : super(key: key);
 
   @override
-  State<CommentPage> createState() => _CommentPageState();
+  State<LostCommentPage> createState() => _LostCommentPageState();
 }
 
-class _CommentPageState extends State<CommentPage> {
+class _LostCommentPageState extends State<LostCommentPage> {
   late TextEditingController commentController;
 
   @override
@@ -105,7 +106,7 @@ class _CommentPageState extends State<CommentPage> {
   Widget buildCommentsSection(String postId) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('Bulletin_Board')
+          .collection('LostAndFound')
           .doc(postId)
           .collection('comments')
           .snapshots(),
@@ -169,7 +170,7 @@ class _CommentPageState extends State<CommentPage> {
 
               // 댓글을 Firestore에 추가
               await FirebaseFirestore.instance
-                  .collection('Bulletin_Board')
+                  .collection('LostAndFound')
                   .doc(postId)
                   .collection('comments')
                   .add({

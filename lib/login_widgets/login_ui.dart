@@ -233,8 +233,6 @@ class NextPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InterFace(
-      currentUser: currentUser,
-    );
+    return const InterFace();
   }
 }
