@@ -288,8 +288,7 @@ class _InterFaceState extends State<InterFace> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const SettingsUI()),
+                      MaterialPageRoute(builder: (context) => SettingsUI()),
                     );
                   },
                   child: const Icon(
@@ -316,6 +315,31 @@ class _InterFaceState extends State<InterFace> {
                       width: 5,
                     ),
                     const Text('스토어'),
+                  ],
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookmarkPage()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text('즐겨찾기'),
                   ],
                 ),
               ),
@@ -356,7 +380,7 @@ class _InterFaceState extends State<InterFace> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LostAndFound()),
+                        builder: (context) => const BookmarkPage()),
                   );
                 },
                 child: Row(
@@ -372,32 +396,6 @@ class _InterFaceState extends State<InterFace> {
                   ],
                 ),
               ),
-            ),
-            ListTile(
-              title: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BookmarkPage()),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('즐겨찾기'),
-                  ],
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
             ),
             ListTile(
               title: InkWell(
