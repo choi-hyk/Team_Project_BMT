@@ -3,13 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:test1/interface.dart';
+import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/stationdata.dart';
 import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/search_widgets/route_result_UI.dart';
-import 'package:test1/search_widgets/stationdata_UI.dart';
 
 class BookmarkPage extends StatefulWidget {
-  const BookmarkPage({super.key});
+  const BookmarkPage({
+    super.key,
+  });
 
   @override
   _BookmarkPageState createState() => _BookmarkPageState();
@@ -21,6 +25,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   final TextEditingController station2Controller = TextEditingController();
 
   DataProvider dataProvider = DataProvider();
+  UserProvider userProvider = UserProvider();
 
   // 현재 로그인된 사용자의 UID를 가져오는 메소드
   String? getCurrentUserUid() {
@@ -28,44 +33,51 @@ class _BookmarkPageState extends State<BookmarkPage> {
     return user?.uid;
   }
 
-  // 즐겨찾기 역 추가 메소드
-  Future<void> addBookmarkStation() async {
-    String? userUid = getCurrentUserUid();
-    if (userUid != null && stationController.text.isNotEmpty) {
-      CollectionReference bookmarks = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(userUid)
-          .collection('Bookmark_Station');
-
-      await bookmarks.add({
-        'station': stationController.text,
-      });
-
-      stationController.clear();
-      Navigator.of(context).pop();
+  //즐겨찾기 역 추가 메소드
+  Future<void> addStation(String station) async {
+    await dataProvider.searchData(int.parse(station));
+    if (!dataProvider.found) {
+      showSnackBar(context, const Text("존재하지 않는 역입니다"));
+    } else {
+      userProvider.addBookmarkStation(station);
+      if (await userProvider.isStationBookmarked(station)) {
+        showSnackBar(context, const Text("이미 즐겨찾기에 추가된 역입니다"));
+      }
     }
+    stationController.clear();
+    Navigator.of(context).pop();
   }
 
-  // 즐겨찾기 경로 추가 메소드
-  Future<void> addBookmarkRoute() async {
-    String? userUid = getCurrentUserUid();
-    if (userUid != null &&
-        station1Controller.text.isNotEmpty &&
-        station2Controller.text.isNotEmpty) {
-      CollectionReference bookmarks = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(userUid)
-          .collection('Bookmark_Route');
-
-      await bookmarks.add({
-        'station1_ID': station1Controller.text,
-        'station2_ID': station2Controller.text,
-      });
-
-      station1Controller.clear();
-      station2Controller.clear();
-      Navigator.of(context).pop();
+//경로 추가 메소드
+  Future<void> addRoute(String station1, String station2) async {
+    await dataProvider.searchData(int.parse(station1));
+    if (!dataProvider.found) {
+      showSnackBar(context, const Text("출발역이 존재하지 않는 역입니다"));
+    } else {
+      if (await userProvider.isRouteBookmarked(station1, station2)) {
+        showSnackBar(context, const Text("이미 존재하는 경로입니다"));
+      }
+      {
+        await dataProvider.searchData(int.parse(station2));
+        if (!dataProvider.found) {
+          showSnackBar(context, const Text("도착역이 존재하지 않는 역입니다"));
+        } else {
+          userProvider.addBookmarkRoute(station1, station2);
+        }
+      }
     }
+    station1Controller.clear();
+    station2Controller.clear();
+    Navigator.of(context).pop();
+  }
+
+//역 제거 메소드
+  void removeStation(String station) async {
+    await userProvider.removeBookmarkStation(station);
+  }
+
+  void removeRoute(String station1, String station2) async {
+    await userProvider.removeBookmarkRoute(station1, station2);
   }
 
   void showAddDialog(bool isRoute) {
@@ -121,6 +133,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
           ),
           actions: <Widget>[
             TextButton(
+              onPressed: () {
+                if (isRoute) {
+                  addRoute(station1Controller.text, station2Controller.text);
+                } else {
+                  addStation(stationController.text);
+                }
+              },
+              child: const Text(
+                '추가',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
               child: const Text(
                 '취소',
                 style:
@@ -129,14 +155,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-            ),
-            TextButton(
-              onPressed: isRoute ? addBookmarkRoute : addBookmarkStation,
-              child: const Text(
-                '추가',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
             ),
           ],
         );
@@ -153,6 +171,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
           name: dataProvider.name,
           nRoom: dataProvider.nRoom,
           cStore: dataProvider.cStore,
+          isBkMk: dataProvider.isBkmk,
           nCong: dataProvider.nCong,
           pCong: dataProvider.pCong,
           line: dataProvider.line,
@@ -218,7 +237,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       color: Theme.of(context).primaryColorDark,
                     ),
                     onPressed: () {
-                      document.reference.delete();
+                      removeStation(document['station']);
                     },
                   ),
                 ),
@@ -292,7 +311,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
                           color: Theme.of(context).primaryColorDark,
                         ),
                         onPressed: () {
-                          document.reference.delete();
+                          removeRoute(
+                              document['station1_ID'], document['station2_ID']);
                         },
                       ),
                     ),
@@ -324,6 +344,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
           ),
           onPressed: () {
             Navigator.pop(context);
+            currentUI = "home";
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const InterFace()), // 다음으로 이동할 페이지
+            );
           },
         ),
         title: const Text(

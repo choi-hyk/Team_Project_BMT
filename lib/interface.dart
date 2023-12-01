@@ -18,11 +18,8 @@ import 'StationMap.dart';
 
 //InterFace 클래스
 class InterFace extends StatefulWidget {
-  final User currentUser;
-
   const InterFace({
     super.key,
-    required this.currentUser, //유저 정보
   });
   @override
   State<InterFace> createState() => _InterFaceState();
@@ -71,11 +68,17 @@ class _InterFaceState extends State<InterFace> {
           name: dataProvider.name,
           nRoom: dataProvider.nRoom,
           cStore: dataProvider.cStore,
+          isBkMk: dataProvider.isBkmk,
           nCong: dataProvider.nCong,
           pCong: dataProvider.pCong,
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
+          updateIsBookmark: (bool newValue) {
+            setState(() {
+              dataProvider.isBkmk = newValue; // isBkMk 값을 업데이트합니다.
+            });
+          },
         );
       default:
         return const HomeUI();
@@ -375,7 +378,8 @@ class _InterFaceState extends State<InterFace> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => BookmarkPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const BookmarkPage()),
                   );
                 },
                 child: Row(

@@ -232,11 +232,7 @@ class NextPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  //로그인 진입하면서 노선도 정보 불러오고 인터페이스에서 데이터 구조화 및 노선도 그래프 그림,
-  //그래프는 3개 존재 -> 시간 그래프, 비용 그래프, 최적 가중치 설정 그래프
   Widget build(BuildContext context) {
-    return InterFace(
-      currentUser: currentUser,
-    );
+    return const InterFace();
   }
 }
