@@ -120,22 +120,17 @@ class _BookmarkPageState extends State<BookmarkPage> {
           return Center(child: CircularProgressIndicator());
         }
 
-        var stationWidgets = stationSnapshot.data!.docs
-            .map((document) => Column(
-                  children: [
-                    ListTile(
-                      title: Text('${document['station']}'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          document.reference.delete(); //DB에서 삭제
-                        },
-                      ),
-                    ),
-                    Divider(),
-                  ],
-                ))
-            .toList();
+        var stationWidgets = stationSnapshot.data!.docs.map((document) {
+          return ListTile(
+            title: Text('${document['station']}'),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                document.reference.delete();
+              },
+            ),
+          );
+        }).toList();
 
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
@@ -153,20 +148,16 @@ class _BookmarkPageState extends State<BookmarkPage> {
             }
 
             var routeWidgets = routeSnapshot.data!.docs.map((document) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                        '${document['station1_ID']}  ->  ${document['station2_ID']}'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        document.reference.delete(); //DB에서 삭제
-                      },
-                    ),
-                  ),
-                  Divider(), // 각 아이템 아래에 구분선 추가
-                ],
+              return ListTile(
+                title: Text(
+                    '${document['station1_ID']}  ->  ${document['station2_ID']}'),
+                trailing: IconButton(
+                  //이 아이콘을 누르면 DB에서 삭제
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    document.reference.delete();
+                  },
+                ),
               );
             }).toList();
 
