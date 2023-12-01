@@ -6,6 +6,7 @@ class StationDataPage extends StatefulWidget {
   final String name;
   final bool cStore;
   final bool nRoom;
+  final bool isBkMk;
   final List nName;
   final List pName;
   final List nCong;
@@ -20,6 +21,7 @@ class StationDataPage extends StatefulWidget {
     required this.pCong,
     required this.nName,
     required this.pName,
+    required this.isBkMk,
   });
 
   @override
@@ -27,6 +29,14 @@ class StationDataPage extends StatefulWidget {
 }
 
 class _StationDataPageState extends State<StationDataPage> {
+  late bool isBkMk = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isBkMk = widget.isBkMk;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +62,17 @@ class _StationDataPageState extends State<StationDataPage> {
         name: widget.name,
         nRoom: widget.nRoom,
         cStore: widget.cStore,
+        isBkMk: isBkMk,
         nCong: widget.nCong,
         pCong: widget.pCong,
         line: widget.line,
         nName: widget.nName,
         pName: widget.pName,
+        updateIsBookmark: (bool newValue) {
+          setState(() {
+            isBkMk = newValue;
+          });
+        },
       ),
     );
   }

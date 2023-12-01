@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:test1/main.dart';
+import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/provider_code/user_provider.dart';
 import 'route_search_UI.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class StationData extends StatefulWidget {
+  final void Function(bool) updateIsBookmark;
   final List line;
   final String name;
   final bool cStore;
   final bool nRoom;
+  bool isBkMk;
   final List nName;
   final List pName;
   final List nCong;
   final List pCong;
 
-  const StationData({
+  // ignore: prefer_const_constructors_in_immutables
+  StationData({
     Key? key,
     required this.line,
     required this.name,
     required this.cStore,
     required this.nRoom,
+    required this.isBkMk,
     required this.nCong,
     required this.pCong,
     required this.nName,
     required this.pName,
+    required this.updateIsBookmark,
   }) : super(key: key);
 
   @override
@@ -30,6 +37,19 @@ class StationData extends StatefulWidget {
 }
 
 class _StationDataState extends State<StationData> {
+  UserProvider userProvider = UserProvider();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void toggleBookmark() {
+    setState(() {
+      widget.updateIsBookmark(!widget.isBkMk); // isBkMk 값을 토글합니다.
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -184,9 +204,25 @@ class _StationDataState extends State<StationData> {
                   const SizedBox(
                     width: 6.5,
                   ),
-                  const Icon(
-                    Icons.star_border_outlined,
-                    size: 35,
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        if (widget.isBkMk) {
+                          toggleBookmark();
+                          userProvider.removeBookmarkStation(widget.name);
+                        } else {
+                          toggleBookmark();
+                          userProvider.addBookmarkStation(widget.name);
+                        }
+                      });
+                    },
+                    child: Icon(
+                      widget.isBkMk ? Icons.star : Icons.star_border_outlined,
+                      size: 35,
+                      color: widget.isBkMk
+                          ? const Color.fromARGB(255, 224, 210, 91)
+                          : null,
+                    ),
                   ),
                 ],
               ),

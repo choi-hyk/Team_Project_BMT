@@ -6,6 +6,7 @@ import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:test1/provider_code/user_provider.dart';
 
 //drawRouteResult에서 반환값으로 사용하기 위한 클래스
 class StationRouteResult {
@@ -28,6 +29,8 @@ class RouteResults extends StatefulWidget {
 
 class _RouteResultsState extends State<RouteResults> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  UserProvider userProvider = UserProvider();
 
   bool isLoading = true; //로딩 여부
   String currentSearch =
@@ -69,12 +72,18 @@ class _RouteResultsState extends State<RouteResults> {
 
   late int travelTime;
 
+  late bool isBook;
+
   // ignore: unused_field
 
   //클래스 진입 시 초기화
   @override
   void initState() {
     super.initState();
+
+    isBook = false;
+
+    checkBookRoute();
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -110,6 +119,11 @@ class _RouteResultsState extends State<RouteResults> {
     travelTime = 0;
 
     fetchData(); // 그래프 데이터 가져오기
+  }
+
+  void checkBookRoute() async {
+    isBook = await userProvider.isRouteBookmarked(
+        widget.startStation, widget.arrivStation);
   }
 
   Future<void> _scheduleAlarm(int minutes) async {
@@ -352,19 +366,37 @@ class _RouteResultsState extends State<RouteResults> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "소요시간",
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 16.5,
                     ),
                   ),
-                  Icon(
-                    Icons.star_border_outlined,
-                    size: 27.5,
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        if (isBook) {
+                          userProvider.removeBookmarkRoute(
+                              widget.startStation, widget.arrivStation);
+                          isBook = false;
+                        } else {
+                          userProvider.addBookmarkRoute(
+                              widget.startStation, widget.arrivStation);
+                          isBook = true;
+                        }
+                      });
+                    },
+                    child: Icon(
+                      isBook ? Icons.star : Icons.star_border_outlined,
+                      size: 35,
+                      color: isBook
+                          ? const Color.fromARGB(255, 224, 210, 91)
+                          : null,
+                    ),
                   ),
                 ],
               ),
