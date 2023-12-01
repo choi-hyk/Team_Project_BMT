@@ -1,4 +1,4 @@
-// Provider를 사용하여 User 객체를 관리하는 예시
+//Provider를 사용하여 User 객체와 즐겨찾기 객체를 관리하는 예시
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,9 +22,9 @@ class UserProvider with ChangeNotifier {
     _fetchUserInfo();
   }
 
-  String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
+  //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
 
-  //사용자 정보 가져오기 함수~
+  //사용자 정보 가져오기 함수
   Future<void> _fetchUserInfo() async {
     if (_user != null) {
       var result = await FirebaseFirestore.instance
@@ -37,7 +37,7 @@ class UserProvider with ChangeNotifier {
     print(_userInfo);
   }
 
-//역 줄겨찾기 여부 확인
+//역 즐겨찾기 여부 확인
   Future<bool> isStationBookmarked(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
@@ -156,17 +156,23 @@ class UserProvider with ChangeNotifier {
 
   //로그인 함수
   Future<String?> handleSignIn(String email, String password) async {
-    if (email.isEmpty) {
-      return "이메일을 입력하세요.";
-    } else if (password.isEmpty) {
-      return "비밀번호를 입력하세요.";
-    }
-
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return null; // 성공 시 null 반환
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      _user = userCredential.user;
+      await _fetchUserInfo(); //사용자 정보 갱신
+      notifyListeners();
+      return null; //성공 시 null 반환
     } on FirebaseAuthException catch (e) {
-      return "이메일 또는 비밀번호가 틀렸습니다.";
+      return e.message; // 구체적인 오류 메시지 반환
     }
+  }
+
+  //로그아웃 함수
+  Future<void> handleSignOut() async {
+    await _auth.signOut();
+    _user = null;
+    _userInfo = null;
+    notifyListeners();
   }
 }
