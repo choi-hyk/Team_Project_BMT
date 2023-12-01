@@ -87,7 +87,7 @@ class _LogInState extends State<LoginUI> {
                                   ),
                                   onPressed: () async {
                                     var userProvider = context.read<
-                                        UserProvider>(); //user_provider에서 가져오기
+                                        UserProvider>(); // user_provider에서 가져오기
 
                                     String? errorMessage =
                                         await userProvider.handleSignIn(
@@ -95,14 +95,13 @@ class _LogInState extends State<LoginUI> {
                                       _passwordController.text,
                                     );
 
-                                    if (!mounted) return; //현재 위젯이 마운트되었는지 확인
+                                    if (!mounted) return; // 현재 위젯이 마운트되었는지 확인
 
                                     if (errorMessage == null &&
                                         userProvider.user != null) {
                                       // 로그인 성공 및 user가 null이 아닌 경우
                                       print(
                                           '로그인 성공: ${userProvider.user!.email}');
-                                      currentUI = 'home';
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
