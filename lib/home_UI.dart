@@ -13,17 +13,14 @@ class _HomeUIState extends State<HomeUI> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(13.0),
-          topRight: Radius.circular(13.0),
-        ),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         border: Border.all(
           color: Colors.grey, // 테두리 색상
           width: 1.5, // 테두리 두께
         ),
       ),
       width: 379.5,
-      height: 640.0,
+      height: 710.0,
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(

@@ -12,7 +12,6 @@ import 'package:test1/provider_code/user_provider.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'StationMap.dart';
 //import 'package:test1/algorithm_code/graph.dart';
 
@@ -85,188 +84,190 @@ class _InterFaceState extends State<InterFace> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Stack(
-        children: [
-          Positioned(
-            top: 95,
-            left: 6.5,
-            right: 6.5,
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20), color: Colors.white),
-              width: 500,
-              height: 560,
-              child: StationMap(
-                onTapStation: onTapStation,
+  Future<bool> _onWillPop(BuildContext context) async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('로그아웃'),
+            content: const Text('로그아웃 하시겟습니까?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('취소'),
               ),
-            ),
-          ),
-          Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                width: double.infinity,
-                height: 90,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Builder(builder: (BuildContext builderContext) {
-                        return GestureDetector(
-                          onTap: () {
-                            Scaffold.of(builderContext).openDrawer();
-                          },
-                          child: const SizedBox(
-                            width: 40.0,
-                            height: 43.5,
-                            child: Icon(Icons.menu),
-                          ),
-                        );
-                      }),
-                      Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: currentUI == 'home'
-                              ? Theme.of(context).primaryColorDark
-                              : Theme.of(context).primaryColor,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              currentUI = 'home';
-                            });
-                          },
-                          icon: const Icon(Icons.home),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 6.5,
-                      ),
-                      SizedBox(
-                        width: 240,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          controller: station,
-                          onSubmitted: (String value) {
-                            int? searchStation = int.tryParse(value);
-                            if (searchStation != null) {
-                              setState(() {
-                                waitData(searchStation);
-                              });
-                            }
-                          },
-                          decoration: InputDecoration(
-                            fillColor: Colors.white,
-                            filled: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 13,
-                              horizontal: 10,
-                            ),
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                            hintText: '역을 입력하세요',
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                Icons.cancel,
-                                color: Theme.of(context).primaryColorDark,
-                              ),
-                              onPressed: () {
-                                station.clear();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 23.5,
-                      ),
-                    ],
-                  ),
-                ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('확인'),
               ),
             ],
           ),
-          Positioned(
-            bottom: 59,
-            left: 0,
-            right: 0,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.825),
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.10,
-                maxChildSize: 0.99,
-                minChildSize: 0.10,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return SingleChildScrollView(
-                      controller: scrollController,
-                      child: buildContentWidget());
-                },
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              //광고배너 컨테이너
-              width: double.infinity,
-              height: 60.0,
-              color: Colors.green,
-              child: const Center(
-                child: Text("광고 배너"),
-              ),
-            ),
-          ),
-        ],
-      ),
-//__________드로어____________________________________________________________________
-//사용자 프로필, 설정, 스토어, 게시판 이동가능
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              currentAccountPicture: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AccountUI(),
-                    ),
-                  );
-                },
-                child: const CircleAvatar(
-                  backgroundImage: AssetImage("assets/images/사용자 프로필.png"),
-                  backgroundColor: Colors.white,
+        )) ??
+        false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () => _onWillPop(context),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Stack(
+          children: [
+            Positioned(
+              top: 95,
+              left: 6.5,
+              right: 6.5,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white),
+                width: 500,
+                height: 560,
+                child: StationMap(
+                  onTapStation: onTapStation,
                 ),
               ),
-              accountName: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AccountUI()),
-                  );
-                },
-                child: Text(userProvider.nickname),
+            ),
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  width: double.infinity,
+                  height: 110,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Builder(builder: (BuildContext builderContext) {
+                          return GestureDetector(
+                            onTap: () {
+                              Scaffold.of(builderContext).openDrawer();
+                            },
+                            child: const SizedBox(
+                              width: 40.0,
+                              height: 43.5,
+                              child: Icon(Icons.menu),
+                            ),
+                          );
+                        }),
+                        Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: currentUI == 'home'
+                                ? Theme.of(context).primaryColorDark
+                                : Theme.of(context).primaryColor,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                currentUI = 'home';
+                              });
+                            },
+                            icon: const Icon(Icons.home),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 6.5,
+                        ),
+                        SizedBox(
+                          width: 240,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            controller: station,
+                            onSubmitted: (String value) {
+                              int? searchStation = int.tryParse(value);
+                              if (searchStation != null) {
+                                setState(() {
+                                  waitData(searchStation);
+                                });
+                              }
+                            },
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              filled: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 13,
+                                horizontal: 10,
+                              ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              hintText: '역을 입력하세요',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.cancel,
+                                  color: Theme.of(context).primaryColorDark,
+                                ),
+                                onPressed: () {
+                                  station.clear();
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 23.5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 59,
+              left: 0,
+              right: 0,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.825),
+                child: DraggableScrollableSheet(
+                  initialChildSize: 0.23,
+                  maxChildSize: 0.99,
+                  minChildSize: 0.23,
+                  builder: (BuildContext context,
+                      ScrollController scrollController) {
+                    return SingleChildScrollView(
+                        controller: scrollController,
+                        child: buildContentWidget());
+                  },
+                ),
               ),
-              accountEmail: InkWell(
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                //광고배너 컨테이너
+                width: double.infinity,
+                height: 60.0,
+                color: Colors.green,
+                child: const Center(
+                  child: Text("광고 배너"),
+                ),
+              ),
+            ),
+          ],
+        ),
+        //__________드로어____________________________________________________________________
+        //사용자 프로필, 설정, 스토어, 게시판 이동가능
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              UserAccountsDrawerHeader(
+                currentAccountPicture: InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
@@ -275,160 +276,189 @@ class _InterFaceState extends State<InterFace> {
                       ),
                     );
                   },
-                  child: Text(userProvider.email)),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(5.0),
-                  bottomRight: Radius.circular(5.0),
+                  child: const CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/사용자 프로필.png"),
+                    backgroundColor: Colors.white,
+                  ),
                 ),
-              ),
-              otherAccountsPictures: <Widget>[
-                InkWell(
+                accountName: InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SettingsUI()),
+                      MaterialPageRoute(
+                          builder: (context) => const AccountUI()),
                     );
                   },
-                  child: const Icon(
-                    Icons.settings,
+                  child: Text(userProvider.nickname),
+                ),
+                accountEmail: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AccountUI(),
+                        ),
+                      );
+                    },
+                    child: Text(userProvider.email)),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(5.0),
+                    bottomRight: Radius.circular(5.0),
                   ),
                 ),
-              ],
-            ),
-            ListTile(
-              title: InkWell(
+                otherAccountsPictures: <Widget>[
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsUI()),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.settings,
+                    ),
+                  ),
+                ],
+              ),
+              ListTile(
+                title: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StorePage()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.store,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('스토어'),
+                    ],
+                  ),
+                ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const StorePage()),
-                  );
+                  Navigator.pop(context);
                 },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.store,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('스토어'),
-                  ],
-                ),
               ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: InkWell(
+              ListTile(
+                title: InkWell(
+                  onTap: () {
+                    currentUI = 'home';
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BookmarkPage()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('즐겨찾기'),
+                    ],
+                  ),
+                ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookmarkPage()),
-                  );
+                  Navigator.pop(context);
                 },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('즐겨찾기'),
-                  ],
-                ),
               ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: InkWell(
+              ListTile(
+                title: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const StationBulletin(),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.comment,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('역별 게시판'),
+                    ],
+                  ),
+                ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const StationBulletin(),
-                    ),
-                  );
+                  Navigator.pop(context);
                 },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.comment,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('역별 게시판'),
-                  ],
+              ),
+              ListTile(
+                title: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LostAndFound()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.comment,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('분실물 게시판'),
+                    ],
+                  ),
                 ),
               ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: InkWell(
+              ListTile(
+                title: InkWell(
+                  onTap: () async {
+                    final userProvider =
+                        Provider.of<UserProvider>(context, listen: false);
+                    await userProvider.handleSignOut();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginUI(),
+                      ),
+                      (Route<dynamic> route) => false, //네비게이터 초기화
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.logout,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('로그아웃'),
+                    ],
+                  ),
+                ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LostAndFound()),
-                  );
+                  Navigator.pop(context);
                 },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.comment,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('분실물 게시판'),
-                  ],
-                ),
               ),
-            ),
-            ListTile(
-              title: InkWell(
-                onTap: () async {
-                  final userProvider =
-                      Provider.of<UserProvider>(context, listen: false);
-                  await userProvider.handleSignOut();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginUI(),
-                    ),
-                    (Route<dynamic> route) => false, //네비게이터 초기화
-                  );
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.logout,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('로그아웃'),
-                  ],
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

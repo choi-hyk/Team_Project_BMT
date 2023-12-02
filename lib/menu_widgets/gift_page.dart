@@ -13,47 +13,66 @@ class GiftPage extends StatefulWidget {
 class _GiftPageState extends State<GiftPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const StorePage(),
-              ),
-            );
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const StorePage()),
+        );
+
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StorePage(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
           ),
         ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.network(
-              widget.giftUrl,
-              width: 350.0,
-              height: 600.0,
-              fit: BoxFit.fill,
-            ),
-            const SizedBox(height: 20.0),
-            const Text(
-              '축하합니다!',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10.0),
-            const Text(
-              '기프티콘을 성공적으로 획득하셨습니다.',
-              style: TextStyle(fontSize: 16.0),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.network(
+                widget.giftUrl,
+                width: 350.0,
+                height: 600.0,
+                fit: BoxFit.fill,
+              ),
+              const SizedBox(height: 20.0),
+              const Text(
+                '축하합니다!',
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10.0),
+              const Text(
+                '기프티콘을 성공적으로 획득하셨습니다.',
+                style: TextStyle(fontSize: 16.0),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

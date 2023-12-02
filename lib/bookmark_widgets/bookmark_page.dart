@@ -333,67 +333,80 @@ class _BookmarkPageState extends State<BookmarkPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-            currentUI = "home";
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const InterFace()), // 다음으로 이동할 페이지
-            );
-          },
-        ),
-        title: const Text(
-          '즐겨찾기',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        centerTitle: true,
-        actions: <Widget>[
-          Container(
-            width: 50,
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                color: Theme.of(context).canvasColor),
-            child: IconButton(
-              icon: Icon(
-                FontAwesomeIcons.locationDot, // 변경할 아이콘
-                color: Theme.of(context).primaryColorDark, // 아이콘 색상
-              ),
-              onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        currentUI = 'home';
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InterFace()),
+        );
+
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.black,
             ),
+            onPressed: () async {
+              Navigator.pop(context);
+              currentUI = "home";
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const InterFace()), // 다음으로 이동할 페이지
+              );
+            },
           ),
-          const SizedBox(
-            width: 3,
+          title: const Text(
+            '즐겨찾기',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          Container(
-            width: 50,
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                color: Theme.of(context).canvasColor),
-            child: IconButton(
-              icon: Icon(
-                FontAwesomeIcons.route, // 변경할 아이콘
-                color: Theme.of(context).primaryColorDark, // 아이콘 색상
+          backgroundColor: Theme.of(context).primaryColor,
+          centerTitle: true,
+          actions: <Widget>[
+            Container(
+              width: 50,
+              height: 40,
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  color: Theme.of(context).canvasColor),
+              child: IconButton(
+                icon: Icon(
+                  FontAwesomeIcons.locationDot, // 변경할 아이콘
+                  color: Theme.of(context).primaryColorDark, // 아이콘 색상
+                ),
+                onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
               ),
-              onPressed: () => showAddDialog(true), // 역 추가 다이얼로그
             ),
-          ),
-          const SizedBox(
-            width: 6.5,
-          ),
-        ],
+            const SizedBox(
+              width: 3,
+            ),
+            Container(
+              width: 50,
+              height: 40,
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  color: Theme.of(context).canvasColor),
+              child: IconButton(
+                icon: Icon(
+                  FontAwesomeIcons.route, // 변경할 아이콘
+                  color: Theme.of(context).primaryColorDark, // 아이콘 색상
+                ),
+                onPressed: () => showAddDialog(true), // 역 추가 다이얼로그
+              ),
+            ),
+            const SizedBox(
+              width: 6.5,
+            ),
+          ],
+        ),
+        body: buildBookmarkList(),
       ),
-      body: buildBookmarkList(),
     );
   }
 }
