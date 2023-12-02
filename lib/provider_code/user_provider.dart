@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:test1/menu_widgets/stationdata.dart';
-import 'package:test1/provider_code/data_provider.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:test1/menu_widgets/stationdata.dart';
+// import 'package:test1/provider_code/data_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:test1/search_widgets/route_result_UI.dart';
+// import 'package:test1/search_widgets/route_result_UI.dart';
 
 class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,7 +28,7 @@ class UserProvider with ChangeNotifier {
   String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
   String get point => _userInfo?['point'].toString() ?? '0';
   String get age => (2024 - _userInfo?['age']).toString();
-
+  //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
 
   //사용자 정보 가져오기 함수
   Future<void> fetchUserInfo() async {
@@ -49,11 +49,10 @@ class UserProvider with ChangeNotifier {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       _user = userCredential.user;
-
       await fetchUserInfo(); //사용자 정보 갱신
       notifyListeners();
       return null; //성공 시 null 반환
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       String errorMessage = "이메일 또는 비밀번호가 틀렸습니다.";
       return errorMessage;
     }
@@ -67,8 +66,6 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-  //회원 탈퇴 함수
   Future<String?> handleDeleteAccount(String password) async {
     try {
       String? email = _user?.email;
@@ -97,9 +94,6 @@ class UserProvider with ChangeNotifier {
       return e.message;
     }
   }
-
-  
-
 
   // 작성한 게시글을 불러오는 함수
   Future<List<Map<String, dynamic>>> getWrittenPosts() async {
@@ -134,8 +128,8 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+//포인트를 더하는 함수
   Future<void> addPointsToUser() async {
-    String? userUid = _user!.uid;
     try {
       String? userUid = _user!.uid;
       CollectionReference users =

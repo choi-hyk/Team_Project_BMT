@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
+import 'package:test1/interface.dart';
+// import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/menu_widgets/buy_page.dart';
 import 'package:test1/menu_widgets/category_page.dart';
@@ -67,7 +68,12 @@ class _StorePageState extends State<StorePage> {
           ), // 뒤로 가기 아이콘
           onPressed: () {
             _isSearching = false;
-            Navigator.pop(context); // 뒤로 가기 버튼을 누르면 현재 화면에서 빠져나감
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const InterFace(),
+              ),
+            );
           },
         ),
         title: _isSearching
