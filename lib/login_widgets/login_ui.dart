@@ -100,6 +100,9 @@ class _LogInState extends State<LoginUI> {
                                     if (errorMessage == null &&
                                         userProvider.user != null) {
                                       // 로그인 성공 및 user가 null이 아닌 경우
+                                      setState(() {
+                                        currentUI = 'home';
+                                      });
                                       print(
                                           '로그인 성공: ${userProvider.user!.email}');
                                       Navigator.push(
