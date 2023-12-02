@@ -26,17 +26,17 @@ class _InquiryCommentPageState extends State<InquiryCommentPage> {
   Widget build(BuildContext context) {
     final DocumentSnapshot postSnapshot = widget.postSnapshot;
 
-    DateTime date;
-    if (postSnapshot['date'] != null) {
-      date = (postSnapshot['date'] as Timestamp).toDate();
+    DateTime createdAt;
+    if (postSnapshot['created_at'] != null) {
+      createdAt = (postSnapshot['created_at'] as Timestamp).toDate();
     } else {
-      date = DateTime.now();
+      createdAt = DateTime.now();
     }
 
-    date = date.add(const Duration(hours: 9));
+    createdAt = createdAt.add(const Duration(hours: 9));
 
     String formattedDate =
-        DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR').format(date);
+        DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR').format(createdAt);
 
     return Scaffold(
       appBar: AppBar(
