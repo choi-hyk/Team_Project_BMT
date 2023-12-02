@@ -266,4 +266,41 @@ class UserProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<List<Map<String, dynamic>>> getBookmarkList() async {
+    String? userUid = _user!.uid;
+    List<Map<String, dynamic>> bookmarkList = [];
+    // 역 즐겨찾기 가져오기
+    QuerySnapshot stationSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userUid)
+        .collection('Bookmark_Station')
+        .get();
+
+    for (QueryDocumentSnapshot doc in stationSnapshot.docs) {
+      bookmarkList.add({
+        'type': 'station',
+        'data': doc['station'],
+      });
+    }
+
+    // 경로 즐겨찾기 가져오기
+    QuerySnapshot routeSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userUid)
+        .collection('Bookmark_Route')
+        .get();
+
+    for (QueryDocumentSnapshot doc in routeSnapshot.docs) {
+      bookmarkList.add({
+        'type': 'route',
+        'data': {
+          'station1_ID': doc['station1_ID'],
+          'station2_ID': doc['station2_ID'],
+        },
+      });
+    }
+
+    return bookmarkList;
+  }
 }
