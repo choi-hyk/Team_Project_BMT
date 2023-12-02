@@ -29,6 +29,7 @@ class UserProvider with ChangeNotifier {
   String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
   String get point => _userInfo?['point'].toString() ?? '0';
   String get age => (2024 - _userInfo?['age']).toString();
+  //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
 
   //사용자 정보 가져오기 함수
   Future<void> _fetchUserInfo() async {
@@ -99,6 +100,36 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+
+  Future<void> addPointsToUser() async {
+    String? userUid = _user!.uid;
+    try {
+      String? userUid = _user!.uid;
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('Users');
+      DocumentReference userDocRef = users.doc(userUid);
+
+      // 해당 사용자 문서 가져오기
+      DocumentSnapshot userSnapshot = await userDocRef.get();
+
+      // 사용자 문서가 존재하면
+      if (userSnapshot.exists) {
+        // 현재 포인트 가져오기
+        int currentPoints =
+            (userSnapshot.data() as Map<String, dynamic>?)?['point'] ?? 0;
+
+        // 포인트 필드에 100 추가
+        int updatedPoints = currentPoints + 100;
+
+        // 업데이트된 포인트로 업데이트
+        await userDocRef.update({'point': updatedPoints});
+      }
+    } catch (e) {
+      print('Error adding points to user: $e');
+    }
+   
+  }
+  
 //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 //역 즐겨찾기 여부 확인
@@ -206,7 +237,10 @@ class UserProvider with ChangeNotifier {
 
     for (var doc in querySnapshot.docs) {
       doc.reference.delete();
+
     }
     notifyListeners();
   }
+
+
 }

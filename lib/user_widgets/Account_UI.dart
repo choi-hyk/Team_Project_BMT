@@ -89,12 +89,16 @@ class UserProfileWidget extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               InkWell(
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  final userProvider =
+                      Provider.of<UserProvider>(context, listen: false);
+                  await userProvider.handleSignOut();
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LoginUI(),
                     ),
+                    (Route<dynamic> route) => false, // 현재 네비게이션 스택을 모두 제거
                   );
                 },
                 child: const Text(
