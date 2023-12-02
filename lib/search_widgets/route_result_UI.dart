@@ -7,6 +7,7 @@ import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:test1/provider_code/user_provider.dart';
+import 'package:test1/search_widgets/notification_service.dart';
 
 //drawRouteResult에서 반환값으로 사용하기 위한 클래스
 class StationRouteResult {
@@ -126,23 +127,32 @@ class _RouteResultsState extends State<RouteResults> {
         widget.startStation, widget.arrivStation);
   }
 
-  Future<void> _scheduleAlarm(int minutes) async {
+  Future<void> _scheduleAlarm(int seconds) async {
     const int alarmID = 0;
-    final Duration duration = Duration(minutes: minutes);
+    final Duration duration = Duration(seconds: seconds);
 
     await AndroidAlarmManager.oneShot(
       duration,
       alarmID,
-      _showNotification, // 알람이 울릴 때 실행할 콜백 함수
+      _showNotification, //알림이 울릴 때 실행할 콜백 함수
       exact: true,
       wakeup: true,
     );
+    print("스케쥴알람 실행");
   }
 
   void _showNotification() {
-    // 여기에 알림을 표시하는 로직을 추가할 수 있습니다.
-    // 예: 로컬 노티피케이션 사용 등
-    print('Alarm! It\'s time to go!');
+    try {
+      print("알림 설정 시작");
+      final notificationService = NotificationService();
+      String title = '도착 알림';
+      String body = '곧 목적지에 도착합니다!';
+      print("알림 설정 진행 중");
+      notificationService.showNotification(0, title, body);
+      print("알림 설정 완료");
+    } catch (e) {
+      print("알림 설정 중 오류 발생: $e");
+    }
   }
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
@@ -487,8 +497,8 @@ class _RouteResultsState extends State<RouteResults> {
                       } else if (currentpath == costPath) {
                         travelTime = timeOfCostPath;
                       }
-                      _scheduleAlarm(1);
-                      print("알람시작");
+                      _scheduleAlarm(10);
+                      print("알림 왜 안 돼");
                     },
                     child: const Row(
                       children: [
