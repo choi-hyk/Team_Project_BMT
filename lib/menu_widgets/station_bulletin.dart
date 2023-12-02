@@ -333,6 +333,9 @@ class _StationBulletinState extends State<StationBulletin> {
                         createdAt = DateTime.now();
                       }
 
+                      //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
+                      createdAt = createdAt.add(const Duration(hours: 9));
+
                       String formattedDate =
                           DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
                               .format(createdAt);

@@ -1,4 +1,3 @@
-//Provider를 사용하여 User 객체와 즐겨찾기 객체를 관리하는 예시
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,7 +18,7 @@ class UserProvider with ChangeNotifier {
   //생성자
   UserProvider() {
     _user = FirebaseAuth.instance.currentUser;
-    _fetchUserInfo();
+    fetchUserInfo();
   }
 
   //사용자 정보 객체들
@@ -30,8 +29,9 @@ class UserProvider with ChangeNotifier {
   String get point => _userInfo?['point'].toString() ?? '0';
   String get age => (2024 - _userInfo?['age']).toString();
 
+
   //사용자 정보 가져오기 함수
-  Future<void> _fetchUserInfo() async {
+  Future<void> fetchUserInfo() async {
     if (_user != null) {
       var result = await FirebaseFirestore.instance
           .collection('Users')
@@ -49,7 +49,8 @@ class UserProvider with ChangeNotifier {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       _user = userCredential.user;
-      await _fetchUserInfo(); //사용자 정보 갱신
+
+      await fetchUserInfo(); //사용자 정보 갱신
       notifyListeners();
       return null; //성공 시 null 반환
     } on FirebaseAuthException catch (e) {
@@ -65,6 +66,7 @@ class UserProvider with ChangeNotifier {
     _userInfo = null;
     notifyListeners();
   }
+
 
   //회원 탈퇴 함수
   Future<String?> handleDeleteAccount(String password) async {
@@ -96,42 +98,73 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  //비밀번호 변경 함수
-  Future<String?> changePassword(
-      String currentPassword, String newPassword) async {
-    if (email == null || email!.isEmpty) {
-      return "Email is not provided or empty.";
-    }
-    if (currentPassword.isEmpty || newPassword.isEmpty) {
-      return "Password is empty.";
-    }
+  
 
+
+  // 작성한 게시글을 불러오는 함수
+  Future<List<Map<String, dynamic>>> getWrittenPosts() async {
     try {
-      // 사용자 재인증
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: email!, // UserProvider에서 제공하는 이메일 사용, '!'를 추가하여 null이 아님을 보증
-        password: currentPassword,
-      );
-      await user!.reauthenticateWithCredential(credential);
+      String? userUid = _user!.uid;
+      List<Map<String, dynamic>> writtenPosts = [];
 
-      // 비밀번호 업데이트
-      await user!.updatePassword(newPassword);
+      // Fetch posts from Bulletin_Board
+      QuerySnapshot bulletinBoardSnapshot = await FirebaseFirestore.instance
+          .collection('Bulletin_Board')
+          .where('User_ID', isEqualTo: userUid)
+          .get();
 
-      return "Password changed successfully"; // 성공 메시지
-    } on FirebaseAuthException catch (e) {
-      // 오류 처리
-      print("Error changing password: ${e.code}");
-      return e.message; // FirebaseAuthException의 오류 메시지 반환
+      for (QueryDocumentSnapshot doc in bulletinBoardSnapshot.docs) {
+        writtenPosts.add(doc.data() as Map<String, dynamic>);
+      }
+
+      // Fetch posts from Inquiry
+      QuerySnapshot inquirySnapshot = await FirebaseFirestore.instance
+          .collection('Inquiry')
+          .where('User_ID', isEqualTo: userUid)
+          .get();
+
+      for (QueryDocumentSnapshot doc in inquirySnapshot.docs) {
+        writtenPosts.add(doc.data() as Map<String, dynamic>);
+      }
+
+      return writtenPosts;
     } catch (e) {
-      // 기타 예외 처리
-      print("Error changing password: $e");
-      return e.toString(); // 기타 예외의 오류 메시지 반환
+      print('Error fetching written posts: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> addPointsToUser() async {
+    String? userUid = _user!.uid;
+    try {
+      String? userUid = _user!.uid;
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('Users');
+      DocumentReference userDocRef = users.doc(userUid);
+
+      // 해당 사용자 문서 가져오기
+      DocumentSnapshot userSnapshot = await userDocRef.get();
+
+      // 사용자 문서가 존재하면
+      if (userSnapshot.exists) {
+        // 현재 포인트 가져오기
+        int currentPoints =
+            (userSnapshot.data() as Map<String, dynamic>?)?['point'] ?? 0;
+
+        // 포인트 필드에 100 추가
+        int updatedPoints = currentPoints + 100;
+
+        // 업데이트된 포인트로 업데이트
+        await userDocRef.update({'point': updatedPoints});
+      }
+    } catch (e) {
+      print('Error adding points to user: $e');
     }
   }
 
 //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-  //역 즐겨찾기 여부 확인
+//역 즐겨찾기 여부 확인
   Future<bool> isStationBookmarked(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance

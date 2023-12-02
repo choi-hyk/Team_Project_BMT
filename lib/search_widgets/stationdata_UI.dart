@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:test1/main.dart';
-import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/prov_conf.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'route_search_UI.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -39,14 +41,79 @@ class StationData extends StatefulWidget {
 class _StationDataState extends State<StationData> {
   UserProvider userProvider = UserProvider();
 
+  DateTime nowtime = DateTime.now();
+
+  String currentTime = DateFormat('HH:mm').format(DateTime.now());
+  int currentHour = DateTime.now().hour;
+  int currentMinute = DateTime.now().minute;
+
+  int congestionN = -1;
+  int congestionP = -1;
+
+  bool isRunTime = false;
+
   @override
   void initState() {
     super.initState();
+    calculateIsRunTime();
+    loadCongestionData();
   }
 
   void toggleBookmark() {
     setState(() {
       widget.updateIsBookmark(!widget.isBkMk); // isBkMk 값을 토글합니다.
+    });
+  }
+
+  Future<void> loadCongestionData() async {
+    int congestionDataN = await getCongestionData(true);
+    int congestionDataP = await getCongestionData(false);
+
+    setState(() {
+      congestionN = congestionDataN; // 혼잡도 값을 상태로 업데이트
+      congestionP = congestionDataP;
+    });
+  }
+
+  Future<int> getCongestionData(bool direct) async {
+    int station = int.parse(widget.name);
+    bool direction = direct;
+    int line = widget.line[array];
+    int hour = currentHour;
+    int minute = getMinuteRange(currentMinute);
+
+    CollectionReference congestionCollection =
+        FirebaseFirestore.instance.collection('Congestion');
+
+    QuerySnapshot snapshot = await congestionCollection
+        .where('station', isEqualTo: station)
+        .where('direction', isEqualTo: direction)
+        .where('line', isEqualTo: line)
+        .where('hour', isEqualTo: hour)
+        .where('minute', isEqualTo: minute)
+        .get();
+
+    int totalCongestion = 0;
+    int numberOfMatchingDocuments = snapshot.docs.length;
+
+    if (numberOfMatchingDocuments > 0) {
+      // 매칭되는 문서들의 cong 값 합산
+      for (var doc in snapshot.docs) {
+        totalCongestion += doc['cong'] as int;
+      }
+
+      print('일치하는 문서 수: $numberOfMatchingDocuments');
+      print('총 혼잡도 값: $totalCongestion');
+
+      return totalCongestion ~/ numberOfMatchingDocuments;
+    } else {
+      return -1;
+    }
+  }
+
+  void calculateIsRunTime() {
+    setState(() {
+      isRunTime = currentHour < 22 && currentHour >= 8;
     });
   }
 
@@ -75,6 +142,7 @@ class _StationDataState extends State<StationData> {
                     onTap: () {
                       setState(() {
                         array = 0;
+                        loadCongestionData();
                       });
                     },
                     child: Container(
@@ -104,8 +172,9 @@ class _StationDataState extends State<StationData> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          array = 1; // 또는 다른 값으로 변경
-                        }); // 또는 다른 값으로 변경
+                          array = 1;
+                          loadCongestionData();
+                        });
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -241,50 +310,54 @@ class _StationDataState extends State<StationData> {
             Stack(
               alignment: Alignment.center,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: perlinedata(widget.line[array]),
-                    borderRadius: BorderRadius.circular(50.0),
-                  ),
-                  width: 400,
-                  height: 40,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Icon(
-                          Icons.keyboard_arrow_left,
-                          size: 24.0,
-                          color: Colors.white,
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: perlinedata(widget.line[array]),
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                      width: 400,
+                      height: 40,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Icon(
+                              Icons.keyboard_arrow_left,
+                              size: 24.0,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              widget.pName[array],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 230,
+                            ),
+                            Text(
+                              widget.nName[array],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Icon(
+                              Icons.keyboard_arrow_right,
+                              size: 24.0,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
-                        Text(
-                          widget.pName[array],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 230,
-                        ),
-                        Text(
-                          widget.nName[array],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Icon(
-                          Icons.keyboard_arrow_right,
-                          size: 24.0,
-                          color: Colors.white,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -322,60 +395,239 @@ class _StationDataState extends State<StationData> {
             ),
             const Align(
               alignment: Alignment.center,
-              child: Text("혼잡도 정보"),
+              child: Text(
+                "혼잡도 정보",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+              ),
+            ),
+            Text(
+              currentTime,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             const SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 1.0,
+            if (isRunTime) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (widget.pName[array] == "종점역") ...[
+                    Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.0,
+                            ),
+                          ),
+                          width: 160,
+                          height: 120,
+                          child: const Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "종점역입니다",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 175.1,
+                          height: 46,
+                        ),
+                      ],
                     ),
-                  ),
-                  width: 160,
-                  height: 120,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.pCong[array],
-                      style: const TextStyle(
+                  ] else ...[
+                    Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.5,
+                            ),
+                          ),
+                          width: 160,
+                          height: 120,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  getIconForIndex(
+                                    congestionP,
+                                  ),
+                                  color: getColorForIndex(congestionP),
+                                  size: 40,
+                                ),
+                                getConfText(congestionP),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProvConf(
+                                  currentStaion: widget.name,
+                                  linkStaion: widget.pName[array],
+                                  confg: congestionP.toString(),
+                                  line: widget.line[array],
+                                  direction: false,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                color: Theme.of(context).canvasColor),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "${widget.pName[array]}역 방면 혼잡도 정보 제공",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (widget.nName[array] == "종점역") ...[
+                    Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.0,
+                            ),
+                          ),
+                          width: 160,
+                          height: 120,
+                          child: const Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "종점역입니다",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 175.1,
+                          height: 46,
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.5,
+                            ),
+                          ),
+                          width: 160,
+                          height: 120,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  getIconForIndex(congestionN),
+                                  color: getColorForIndex(congestionN),
+                                  size: 40,
+                                ),
+                                getConfText(congestionN),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProvConf(
+                                  currentStaion: widget.name,
+                                  linkStaion: widget.nName[array],
+                                  confg: congestionN.toString(),
+                                  line: widget.line[array],
+                                  direction: true,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                color: Theme.of(context).canvasColor),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "${widget.nName[array]}역 방면 혼잡도 정보 제공",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]
+                ],
+              ),
+            ] else ...[
+              Container(
+                width: double.infinity,
+                height: 180,
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    color: Theme.of(context).primaryColor),
+                child: const Center(
+                  child: Text(
+                    "지하철 운영 시간이 아닙니다.",
+                    style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                        color: Colors.white),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 1.0,
-                    ),
-                  ),
-                  width: 160,
-                  height: 120,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.nCong[array],
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
             const SizedBox(
               height: 10,
             ),
