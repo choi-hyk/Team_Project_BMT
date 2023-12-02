@@ -76,7 +76,7 @@ class _StationBulletinState extends State<StationBulletin> {
                     controller: stationController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: '역 번호호'),
+                    decoration: const InputDecoration(labelText: '호선'),
                   ),
                   const SizedBox(
                     height: 20,
@@ -175,7 +175,7 @@ class _StationBulletinState extends State<StationBulletin> {
                     labelText: '본문',
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(vertical: 20.0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 20.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -338,30 +338,6 @@ class _StationBulletinState extends State<StationBulletin> {
                   }
                 },
               ),
-
-        backgroundColor: Theme.of(context).primaryColor,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: DropdownButton<int>(
-              value: selectedStation,
-              items: stationIds.map((int stationId) {
-                return DropdownMenuItem<int>(
-                  value: stationId,
-                  child: Text('$stationId역'),
-                );
-              }).toList(),
-              onChanged: (int? value) {
-                if (value != null) {
-                  setState(() {
-                    selectedStation = value;
-                  });
-                }
-              },
-
             ),
             Expanded(
               child: StreamBuilder(

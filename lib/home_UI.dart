@@ -29,29 +29,15 @@ class _HomeUIState extends State<HomeUI> {
         ),
       ),
       width: 379.5,
-      height: 640.0,
+      height: 710.0,
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20), color: Colors.grey),
-              width: 50,
-              height: 10,
+            const Text(
+              "즐겨찾기",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 35,
-            ),
-            const Divider(
-              height: 1, // 구분선의 높이
-              thickness: 1, // 구분선의 두께
-              color: Colors.grey, // 구분선의 색상
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text("즐겨찾기"),
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: userProvider.getBookmarkList(),
@@ -128,7 +114,7 @@ class _HomeUIState extends State<HomeUI> {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: Colors.grey, // 테두리 색상
-              width: 1, // 테두리 두께
+              width: 0.5, // 테두리 두께
             ),
           ),
           width: double.infinity,
