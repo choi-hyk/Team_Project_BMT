@@ -89,7 +89,7 @@ class _InterFaceState extends State<InterFace> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('로그아웃'),
-            content: const Text('로그아웃 하시겟습니까?'),
+            content: const Text('로그아웃하시겠습니까?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
