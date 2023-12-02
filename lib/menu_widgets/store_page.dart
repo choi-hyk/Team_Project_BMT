@@ -14,7 +14,7 @@ class StorePage extends StatefulWidget {
 
 class _StorePageState extends State<StorePage> {
   bool _isSearching = false;
-
+  UserProvider userProvider = UserProvider();
   void showCategoryList(String category) {
     Navigator.push(
       context,
@@ -46,9 +46,18 @@ class _StorePageState extends State<StorePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context); //사용자 정보
+  void initState() {
+    super.initState();
+    updateUserProviderData();
+  }
 
+  Future<void> updateUserProviderData() async {
+    await userProvider.fetchUserInfo();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

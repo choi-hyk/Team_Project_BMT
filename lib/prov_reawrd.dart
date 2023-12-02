@@ -72,7 +72,7 @@ class _ProvRewardState extends State<ProvReward> {
                   ),
                   Center(
                     child: Text(
-                      "100P 를 지급해드렸습니다!",
+                      "100P 적립!",
                       style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,

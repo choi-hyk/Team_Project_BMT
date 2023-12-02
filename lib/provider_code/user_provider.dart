@@ -1,4 +1,3 @@
-//Provider를 사용하여 User 객체와 즐겨찾기 객체를 관리하는 예시
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,7 +18,7 @@ class UserProvider with ChangeNotifier {
   //생성자
   UserProvider() {
     _user = FirebaseAuth.instance.currentUser;
-    _fetchUserInfo();
+    fetchUserInfo();
   }
 
   //사용자 정보 객체들
@@ -32,7 +31,7 @@ class UserProvider with ChangeNotifier {
   //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
 
   //사용자 정보 가져오기 함수
-  Future<void> _fetchUserInfo() async {
+  Future<void> fetchUserInfo() async {
     if (_user != null) {
       var result = await FirebaseFirestore.instance
           .collection('Users')
@@ -50,7 +49,7 @@ class UserProvider with ChangeNotifier {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       _user = userCredential.user;
-      await _fetchUserInfo(); //사용자 정보 갱신
+      await fetchUserInfo(); //사용자 정보 갱신
       notifyListeners();
       return null; //성공 시 null 반환
     } on FirebaseAuthException catch (e) {
@@ -100,7 +99,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-
   Future<void> addPointsToUser() async {
     String? userUid = _user!.uid;
     try {
@@ -127,9 +125,8 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       print('Error adding points to user: $e');
     }
-   
   }
-  
+
 //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 //역 즐겨찾기 여부 확인
@@ -237,10 +234,7 @@ class UserProvider with ChangeNotifier {
 
     for (var doc in querySnapshot.docs) {
       doc.reference.delete();
-
     }
     notifyListeners();
   }
-
-
 }
