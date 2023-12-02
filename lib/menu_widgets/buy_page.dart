@@ -30,10 +30,20 @@ class BuyPage extends StatefulWidget {
 }
 
 class _BuyPageState extends State<BuyPage> {
+  UserProvider userProvider = UserProvider();
+  @override
+  void initState() {
+    super.initState();
+    updateUserProviderData();
+  }
+
+  Future<void> updateUserProviderData() async {
+    await userProvider.fetchUserInfo();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context); //사용자 정보
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -182,23 +192,17 @@ class _BuyPageState extends State<BuyPage> {
                 padding: const EdgeInsets.all(10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    // 구매를 누르면 사용자의 포인트를 확인하여 기프트 페이지로 이동
                     int userPoints = int.parse(userProvider.point);
 
                     if (userPoints >= widget.pay) {
-                      // 포인트가 상품 가격보다 충분하면 구매 처리
                       int newPoints = userPoints - widget.pay;
 
                       try {
-                        // Firestore에 사용자의 포인트 업데이트
                         await FirebaseFirestore.instance
                             .collection('Users')
                             .doc(userProvider.user!.uid)
                             .update({'point': newPoints});
 
-                        // 여기에 구매 기록 저장 또는 다른 Firebase 코드 추가
-
-                        // 기프트 페이지로 이동
                         await Navigator.push(
                           context,
                           MaterialPageRoute(

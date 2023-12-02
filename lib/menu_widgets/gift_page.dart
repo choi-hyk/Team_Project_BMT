@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'store_page.dart';
 
 class GiftPage extends StatefulWidget {
   final String giftUrl;
@@ -17,7 +18,12 @@ class _GiftPageState extends State<GiftPage> {
         backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const StorePage(),
+              ),
+            );
           },
           icon: const Icon(
             Icons.arrow_back_ios,
