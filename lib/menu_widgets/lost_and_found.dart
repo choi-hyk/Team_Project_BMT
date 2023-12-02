@@ -74,7 +74,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                     controller: stationController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: '호선'),
+                    decoration: const InputDecoration(labelText: '역 번호'),
                   ),
                   const SizedBox(
                     height: 20,
@@ -139,7 +139,8 @@ class _LostAndFoundState extends State<LostAndFound> {
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
+        return Container(
+          color: const Color.fromARGB(255, 108, 159, 164),
           child: Padding(
             padding: EdgeInsets.only(
               top: 20,
@@ -157,17 +158,24 @@ class _LostAndFoundState extends State<LostAndFound> {
                   height: 20,
                 ),
                 TextField(
-                  controller: contentController,
-                  decoration: const InputDecoration(labelText: '내용'),
+                  controller: stationController,
+                  decoration: const InputDecoration(labelText: '역 번호'),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 TextField(
-                  controller: stationController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: '호선'),
+                  controller: contentController,
+                  maxLines: 8,
+                  decoration: InputDecoration(
+                    labelText: '본문',
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(vertical: 20.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -298,7 +306,7 @@ class _LostAndFoundState extends State<LostAndFound> {
               items: stationIds.map((int stationId) {
                 return DropdownMenuItem<int>(
                   value: stationId,
-                  child: Text('$stationId호'),
+                  child: Text('$stationId역'),
                 );
               }).toList(),
               onChanged: (int? value) {
