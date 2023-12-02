@@ -95,7 +95,7 @@ class _LogInState extends State<LoginUI> {
                                       _passwordController.text,
                                     );
 
-                                    if (!mounted) return; // 현재 위젯이 마운트되었는지 확인
+                                    if (!mounted) return; //현재 위젯이 마운트되었는지 확인
 
                                     if (errorMessage == null &&
                                         userProvider.user != null) {
@@ -107,13 +107,13 @@ class _LogInState extends State<LoginUI> {
                                         MaterialPageRoute(
                                           builder: (context) => NextPage(
                                             currentUser: userProvider
-                                                .user!, // null이 아닌 것이 보장된 User 객체
+                                                .user!, //null이 아닌 것이 보장된 User 객체
                                             dataProvider: dataProvider,
                                           ),
                                         ),
                                       );
                                     } else {
-                                      // 로그인 실패 또는 사용자 정보 없음
+                                      //로그인 실패 또는 사용자 정보 없음
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

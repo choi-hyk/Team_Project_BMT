@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
-import 'package:test1/settings_widgets/setting_account_page.dart';
 import 'package:test1/login_widgets/login_ui.dart';
 import 'package:test1/user_widgets/written_page.dart';
 //계정 정보에서 포인트, 스토어, 자기가 작성한 게시글, 즐겨찾기, 리워드 목록을 볼수있게 구현해야됨
 
 //사용자 프로필 위젯
-class UserProfileWidget extends StatelessWidget {
+class UserProfileWidget extends StatefulWidget {
   final String name;
   final String email;
   final String profileImageUrl;
@@ -18,6 +17,76 @@ class UserProfileWidget extends StatelessWidget {
     required this.email,
     required this.profileImageUrl,
   });
+
+  @override
+  State<UserProfileWidget> createState() => _UserProfileWidgetState();
+}
+
+class _UserProfileWidgetState extends State<UserProfileWidget> {
+//계정을 삭제하는 화면을 보여주는 함수
+  Future<void> _showDeleteAccountDialog() async {
+    String password = ''; // 비밀번호 저장 변수
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        return AlertDialog(
+          title: const Text('계정 삭제'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('정말 계정을 삭제하시겠습니까?'),
+                const Text('계속하려면 비밀번호를 입력하세요.'),
+                TextField(
+                  obscureText: true,
+                  onChanged: (value) {
+                    password = value; // 비밀번호 업데이트
+                  },
+                  decoration: const InputDecoration(
+                    labelText: '비밀번호',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('삭제'),
+              onPressed: () async {
+                String? result =
+                    await userProvider.handleDeleteAccount(password);
+
+                if (result == null) {
+                  //비밀번호 일치, 성공 메시지 표시 후 로그인 화면으로 이동
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('계정이 삭제되었습니다.')),
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginUI(),
+                    ),
+                  );
+                } else {
+                  //비밀번호 불일치
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('비밀번호가 틀렸습니다.')), //오류 메시지
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +109,11 @@ class UserProfileWidget extends StatelessWidget {
           ),
           CircleAvatar(
             radius: 50,
-            backgroundImage: AssetImage(profileImageUrl),
+            backgroundImage: AssetImage(widget.profileImageUrl),
           ),
           const SizedBox(height: 14),
           Text(
-            name,
+            widget.name,
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -52,7 +121,7 @@ class UserProfileWidget extends StatelessWidget {
           ),
           const SizedBox(height: 6.5),
           Text(
-            email,
+            widget.email,
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black,
@@ -72,15 +141,10 @@ class UserProfileWidget extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SettingAccount(),
-                    ),
-                  );
+                  _showDeleteAccountDialog();
                 },
                 child: const Text(
-                  "계정 설정",
+                  "계정 삭제",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.black,
@@ -98,7 +162,7 @@ class UserProfileWidget extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => const LoginUI(),
                     ),
-                    (Route<dynamic> route) => false, // 현재 네비게이션 스택을 모두 제거
+                    (Route<dynamic> route) => false, //네비게이터 초기화
                   );
                 },
                 child: const Text(

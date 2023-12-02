@@ -143,7 +143,6 @@ class _InfoPageState extends State<InfoPage> {
                 } else if (!service_check ||
                     !location_check ||
                     !privacy_check) {
-                  //이거 적용 안 됐음
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('모든 약관에 동의해야 합니다.'),
@@ -151,12 +150,11 @@ class _InfoPageState extends State<InfoPage> {
                     ),
                   );
                 } else {
-                  // 여기에서 추가 정보를 Firestore에 저장하고 Interface 페이지로 이동
-                  _saveAdditionalInfo();
+                  _saveAdditionalInfo(); //추가 정보
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginUI(),
+                      builder: (context) => const LoginUI(), //로그인 화면으로
                     ),
                   );
                 }
@@ -169,20 +167,17 @@ class _InfoPageState extends State<InfoPage> {
     );
   }
 
-  // 추가 정보를 Firestore에 저장하는 함수
+  //추가 정보를 Firestore에 저장하는 함수
   void _saveAdditionalInfo() {
     final phone = _phoneController.text.trim();
     final nickname = _nicknameController.text.trim();
-    final age = _ageController.text.trim(); //약관 3개도 추가해야함
+    final age = _ageController.text.trim();
 
-    // 나이와 성별이 비어있을 경우 디폴트 값 설정
-    final int parsedAge = age.isEmpty ? 0 : int.tryParse(age) ?? 0;
-
-    // Firestore에 추가 정보 저장
+    //Firestore에 추가 정보 저장
     FirebaseFirestore.instance.collection('Users').doc(widget.user.uid).update({
       'phone': phone,
       'nickname': nickname,
-      'age': parsedAge,
+      'age': age,
       'point': 0,
       'service_check': service_check,
       'location_check': location_check,
