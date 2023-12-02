@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:test1/main.dart';
+import 'package:test1/prov_reawrd.dart';
 
 class ProvConf extends StatefulWidget {
   final String currentStaion;
   final String linkStaion;
+  final bool direction;
   final String confg;
   final int line;
 
@@ -14,7 +17,8 @@ class ProvConf extends StatefulWidget {
       required this.currentStaion,
       required this.linkStaion,
       required this.line,
-      required this.confg});
+      required this.confg,
+      required this.direction});
 
   @override
   State<ProvConf> createState() => ProvConfState();
@@ -23,6 +27,36 @@ class ProvConf extends StatefulWidget {
 class ProvConfState extends State<ProvConf> {
   int selectedIconIndex = -1;
   String currentTime = DateFormat('HH:mm').format(DateTime.now());
+  int currentHour = DateTime.now().hour;
+  int currentMinute = DateTime.now().minute;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> addCongestionData(int congestionLevel) async {
+    try {
+      // 데이터
+      int station = int.parse(widget.currentStaion);
+      int line = widget.line;
+      bool direction = widget.direction;
+      int hour = currentHour;
+      int minute = getMinuteRange(currentMinute);
+
+      // Firestore에 데이터 추가
+      await _firestore.collection('Congestion').add({
+        'station': station,
+        'line': line,
+        'direction': direction,
+        'hour': hour,
+        'minute': minute,
+        'cong': congestionLevel,
+      });
+
+      print('Congestion data added successfully');
+    } catch (e) {
+      print('Error adding congestion data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,8 +91,24 @@ class ProvConfState extends State<ProvConf> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                const SizedBox(
-                  height: 23,
+                Container(
+                  width: 50,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    color: perlinedata(widget.line),
+                  ),
+                  child: Center(
+                    child: Text(
+                      (widget.line).toString(),
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -159,9 +209,35 @@ class ProvConfState extends State<ProvConf> {
                         const SizedBox(
                           height: 6.5,
                         ),
-                        Text(widget.confg),
+                        Container(
+                          width: double.infinity,
+                          height: 190,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Theme.of(context).canvasColor),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Icon(
+                                getIconForIndex(
+                                  int.parse(widget.confg),
+                                ),
+                                color: getColorForIndex(
+                                  int.parse(widget.confg),
+                                ),
+                                size: 60,
+                              ),
+                              const SizedBox(
+                                height: 6.5,
+                              ),
+                              getConfText(
+                                int.parse(widget.confg),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(
-                          height: 180,
+                          height: 6.5,
                         ),
                         const Text(
                           "제공할 혼잡도 정보",
@@ -200,10 +276,10 @@ class ProvConfState extends State<ProvConf> {
                                           : Theme.of(context).canvasColor,
                                     ),
                                     child: Icon(
-                                      _getIconForIndex(
+                                      getIconForIndex(
                                           i), // i에 따른 아이콘을 가져오는 함수 호출
                                       size: 40,
-                                      color: _getColorForIndex(
+                                      color: getColorForIndex(
                                           i), // i에 따른 아이콘 색상 설정
                                     ),
                                   ),
@@ -223,7 +299,17 @@ class ProvConfState extends State<ProvConf> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (selectedIconIndex != -1) {
+                        addCongestionData(selectedIconIndex + 1);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProvReward(),
+                          ),
+                        );
+                      }
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 45,
@@ -251,39 +337,5 @@ class ProvConfState extends State<ProvConf> {
         ),
       ),
     );
-  }
-
-  IconData _getIconForIndex(int index) {
-    switch (index) {
-      case 0:
-        return FontAwesomeIcons.solidFaceLaughBeam;
-      case 1:
-        return FontAwesomeIcons.solidFaceSmile;
-      case 2:
-        return FontAwesomeIcons.solidFaceMeh;
-      case 3:
-        return FontAwesomeIcons.solidFaceFrown;
-      case 4:
-        return FontAwesomeIcons.solidFaceTired;
-      default:
-        return Icons.error;
-    }
-  }
-
-  Color _getColorForIndex(int index) {
-    switch (index) {
-      case 0:
-        return const Color.fromARGB(255, 244, 238, 54);
-      case 1:
-        return const Color.fromARGB(255, 244, 206, 54);
-      case 2:
-        return const Color.fromARGB(255, 244, 165, 54);
-      case 3:
-        return const Color.fromARGB(255, 244, 130, 54);
-      case 4:
-        return Colors.red;
-      default:
-        return Colors.black;
-    }
   }
 }
