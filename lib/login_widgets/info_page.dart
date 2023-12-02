@@ -150,12 +150,11 @@ class _InfoPageState extends State<InfoPage> {
                     ),
                   );
                 } else {
-                  // 여기에서 추가 정보를 Firestore에 저장하고 Interface 페이지로 이동
-                  _saveAdditionalInfo();
+                  _saveAdditionalInfo(); //추가 정보
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginUI(),
+                      builder: (context) => const LoginUI(), //로그인 화면으로
                     ),
                   );
                 }
