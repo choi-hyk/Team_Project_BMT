@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/settings_widgets/setting_account_page.dart';
 import 'package:test1/login_widgets/login_ui.dart';
+import 'package:test1/user_widgets/written_page.dart';
 //계정 정보에서 포인트, 스토어, 자기가 작성한 게시글, 즐겨찾기, 리워드 목록을 볼수있게 구현해야됨
 
 //사용자 프로필 위젯
@@ -171,16 +172,26 @@ class AccountUIState extends State<AccountUI> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(10.0)),
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         width: 500,
                         height: 150,
-                        child: const Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "작성 글",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const WrittenPage()),
+                            );
+                          },
+                          child: const Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "작성 글",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),

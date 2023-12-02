@@ -5,8 +5,11 @@ import 'package:test1/settings_widgets/setting_account_page.dart';
 import 'package:test1/settings_widgets/service_terms.dart';
 import 'package:test1/settings_widgets/location_terms.dart';
 import 'package:test1/settings_widgets/privacy_terms.dart';
+import 'package:test1/settings_widgets/inquiry.dart';
 
 class SettingsUI extends StatefulWidget {
+  const SettingsUI({super.key});
+
   @override
   _SettingsUIState createState() => _SettingsUIState();
 }
@@ -78,7 +81,13 @@ class _SettingsUIState extends State<SettingsUI> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Notice()));
             }),
-            settingsOption("문의하기"),
+            settingsOption(
+              "문의하기",
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Inquiry()));
+              },
+            ),
             sectionTitle("약관 및 정책"),
             settingsOption("서비스 이용약관", onTap: () {
               Navigator.push(
