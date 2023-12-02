@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:test1/interface.dart';
+import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/lost_comment_page.dart';
 
 class LostAndFound extends StatefulWidget {
@@ -269,31 +271,72 @@ class _LostAndFoundState extends State<LostAndFound> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        currentUI = 'home';
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InterFace()),
+        );
+
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              currentUI = 'home';
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const InterFace()),
+              );
+            },
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: _isSearching
-            ? TextField(
-                style: const TextStyle(color: Colors.black),
-                decoration: const InputDecoration(
-                  hintText: '검색어를 입력하세요',
-                  hintStyle: TextStyle(color: Colors.black),
+          title: _isSearching
+              ? TextField(
+                  style: const TextStyle(color: Colors.black),
+                  decoration: const InputDecoration(
+                    hintText: '검색어를 입력하세요',
+                    hintStyle: TextStyle(color: Colors.black),
+                  ),
+                  onChanged: (searchQuery) {},
+                )
+              : const Text(
+                  '게시판',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
                 ),
-                onChanged: (searchQuery) {},
-              )
-            : const Text(
-                '게시판',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          backgroundColor: Theme.of(context).primaryColor,
+          centerTitle: true,
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DropdownButton<int>(
+                value: selectedStation,
+                items: stationIds.map((int stationId) {
+                  return DropdownMenuItem<int>(
+                    value: stationId,
+                    child: Text('$stationId호'),
+                  );
+                }).toList(),
+                onChanged: (int? value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedStation = value;
+                    });
+                  }
+                },
               ),
+
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
       ),
@@ -316,160 +359,167 @@ class _LostAndFoundState extends State<LostAndFound> {
                   });
                 }
               },
+
             ),
-          ),
-          Expanded(
-            child: StreamBuilder(
-              stream: product
-                  .where('station_ID', isEqualTo: selectedStation)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                if (streamSnapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: streamSnapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      final DocumentSnapshot documentSnapshot =
-                          streamSnapshot.data!.docs[index];
+            Expanded(
+              child: StreamBuilder(
+                stream: product
+                    .where('station_ID', isEqualTo: selectedStation)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                  if (streamSnapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: streamSnapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final DocumentSnapshot documentSnapshot =
+                            streamSnapshot.data!.docs[index];
 
-                      DateTime createdAt;
-                      if (documentSnapshot['created_at'] != null) {
-                        createdAt =
-                            (documentSnapshot['created_at'] as Timestamp)
-                                .toDate();
-                      } else {
-                        createdAt = DateTime.now();
-                      }
+                        DateTime createdAt;
+                        if (documentSnapshot['created_at'] != null) {
+                          createdAt =
+                              (documentSnapshot['created_at'] as Timestamp)
+                                  .toDate();
+                        } else {
+                          createdAt = DateTime.now();
+                        }
 
-                      //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
-                      createdAt = createdAt.add(const Duration(hours: 9));
+                        //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
+                        createdAt = createdAt.add(const Duration(hours: 9));
 
-                      String formattedDate =
-                          DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
-                              .format(createdAt);
+                        String formattedDate =
+                            DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
+                                .format(createdAt);
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LostCommentPage(
-                                  postSnapshot: documentSnapshot),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LostCommentPage(
+                                    postSnapshot: documentSnapshot),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                                color: Colors.white,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 5),
+                                  ListTile(
+                                    title: Text(
+                                      documentSnapshot['title'],
+                                      style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 5.0,
+                                        bottom: 5.0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          FutureBuilder<DocumentSnapshot>(
+                                            future: FirebaseFirestore.instance
+                                                .collection('Users')
+                                                .doc(
+                                                    documentSnapshot['User_ID'])
+                                                .get(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    userSnapshot) {
+                                              if (userSnapshot.hasData &&
+                                                  userSnapshot.data != null &&
+                                                  userSnapshot.data!.exists) {
+                                                // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                                Map<String, dynamic> userData =
+                                                    userSnapshot.data!.data()
+                                                        as Map<String, dynamic>;
+                                                String nickname =
+                                                    userData['nickname'];
+                                                // 닉네임으로 사용자 구분
+                                                return Text(
+                                                  '사용자: $nickname',
+                                                  style: const TextStyle(
+                                                      fontSize: 13),
+                                                );
+                                              } else {
+                                                return const SizedBox();
+                                              }
+                                            },
+                                          ),
+                                          Text(
+                                            '작성일: $formattedDate',
+                                            style:
+                                                const TextStyle(fontSize: 13),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    trailing: SizedBox(
+                                      width: 100,
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              _update(documentSnapshot);
+                                            },
+                                            icon: const Icon(Icons.edit),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              _delete(documentSnapshot.id);
+                                            },
+                                            icon: const Icon(Icons.delete),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          color: Colors.white,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: 5),
-                              ListTile(
-                                title: Text(
-                                  documentSnapshot['title'],
-                                  style: const TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 5.0,
-                                    bottom: 5.0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        documentSnapshot['content'],
-                                      ),
-                                      FutureBuilder<DocumentSnapshot>(
-                                        future: FirebaseFirestore.instance
-                                            .collection('Users')
-                                            .doc(documentSnapshot['User_ID'])
-                                            .get(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<DocumentSnapshot>
-                                                userSnapshot) {
-                                          if (userSnapshot.hasData &&
-                                              userSnapshot.data != null &&
-                                              userSnapshot.data!.exists) {
-                                            // Users 테이블에서 해당 사용자의 닉네임 가져오기
-                                            Map<String, dynamic> userData =
-                                                userSnapshot.data!.data()
-                                                    as Map<String, dynamic>;
-                                            String nickname =
-                                                userData['nickname'];
-                                            // 닉네임으로 사용자 구분
-                                            return Text('사용자: $nickname');
-                                          } else {
-                                            return const SizedBox();
-                                          }
-                                        },
-                                      ),
-                                      Text(
-                                        '작성일: $formattedDate',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                trailing: SizedBox(
-                                  width: 100,
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          _update(documentSnapshot);
-                                        },
-                                        icon: const Icon(Icons.edit),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          _delete(documentSnapshot.id);
-                                        },
-                                        icon: const Icon(Icons.delete),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 1,
-                                width: double.infinity,
-                                color: Colors.black,
-                              ),
-                            ],
                           ),
-                        ),
-                      );
-                    },
-                  );
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
+                        );
+                      },
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
+            ),
+          ],
+        ),
+        // 글 작성 버튼
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            _create();
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: const Text(
+            '글 작성',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
-      ),
-      // 글 작성 버튼
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.deepPurple[300],
-        onPressed: () {
-          _create();
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
         ),
-        child: const Text(
-          '글 작성',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

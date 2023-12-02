@@ -128,7 +128,7 @@ class _StationDataState extends State<StationData> {
           width: 1.5,
         ),
       ),
-      width: 400.5,
+      width: 440.5,
       height: 710.0,
       child: Padding(
         padding: const EdgeInsets.all(8),

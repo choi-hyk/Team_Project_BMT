@@ -732,7 +732,7 @@ class _RouteResultsState extends State<RouteResults> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).primaryColor),
                   width: double.infinity,
-                  height: 115,
+                  height: 125,
                   child: Column(
                     children: [
                       const SizedBox(
@@ -750,7 +750,7 @@ class _RouteResultsState extends State<RouteResults> {
                             },
                           ),
                           const SizedBox(
-                            width: 81,
+                            width: 95,
                           ),
                           Container(
                             height: 40.5,
