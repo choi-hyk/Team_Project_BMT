@@ -1,4 +1,4 @@
-// Provider를 사용하여 User 객체를 관리하는 예시
+//Provider를 사용하여 User 객체와 즐겨찾기 객체를 관리하는 예시
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,9 +22,15 @@ class UserProvider with ChangeNotifier {
     _fetchUserInfo();
   }
 
-  String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
+  //사용자 정보 객체들
+  String get name => _userInfo?['name'] ?? 'No Name';
+  String get nickname => _userInfo?['nickname'] ?? 'No nickname';
+  String get email => _userInfo?['email'] ?? 'No Email';
+  String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
+  String get point => _userInfo?['point'].toString() ?? '0';
+  String get age => (2024 - _userInfo?['age']).toString();
 
-  //사용자 정보 가져오기 함수~
+  //사용자 정보 가져오기 함수
   Future<void> _fetchUserInfo() async {
     if (_user != null) {
       var result = await FirebaseFirestore.instance
@@ -37,7 +43,65 @@ class UserProvider with ChangeNotifier {
     print(_userInfo);
   }
 
-//역 줄겨찾기 여부 확인
+  //로그인 함수
+  Future<String?> handleSignIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      _user = userCredential.user;
+      await _fetchUserInfo(); //사용자 정보 갱신
+      notifyListeners();
+      return null; //성공 시 null 반환
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "이메일 또는 비밀번호가 틀렸습니다.";
+      return errorMessage;
+    }
+  }
+
+  //로그아웃 함수
+  Future<void> handleSignOut() async {
+    await _auth.signOut();
+    _user = null;
+    _userInfo = null;
+    notifyListeners();
+  }
+
+  // 작성한 게시글을 불러오는 함수
+  Future<List<Map<String, dynamic>>> getWrittenPosts() async {
+    try {
+      String? userUid = _user!.uid;
+      List<Map<String, dynamic>> writtenPosts = [];
+
+      // Fetch posts from Bulletin_Board
+      QuerySnapshot bulletinBoardSnapshot = await FirebaseFirestore.instance
+          .collection('Bulletin_Board')
+          .where('User_ID', isEqualTo: userUid)
+          .get();
+
+      for (QueryDocumentSnapshot doc in bulletinBoardSnapshot.docs) {
+        writtenPosts.add(doc.data() as Map<String, dynamic>);
+      }
+
+      // Fetch posts from Inquiry
+      QuerySnapshot inquirySnapshot = await FirebaseFirestore.instance
+          .collection('Inquiry')
+          .where('User_ID', isEqualTo: userUid)
+          .get();
+
+      for (QueryDocumentSnapshot doc in inquirySnapshot.docs) {
+        writtenPosts.add(doc.data() as Map<String, dynamic>);
+      }
+
+      return writtenPosts;
+    } catch (e) {
+      print('Error fetching written posts: $e');
+      rethrow;
+    }
+  }
+
+//즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+//역 즐겨찾기 여부 확인
   Future<bool> isStationBookmarked(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
@@ -74,42 +138,7 @@ class UserProvider with ChangeNotifier {
     return false;
   }
 
-//즐겨찾기 역 제거 메소드
-  Future<void> removeBookmarkStation(String station) async {
-    String? userUid = _user!.uid;
-    CollectionReference bookmarks = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userUid)
-        .collection('Bookmark_Station');
-
-    QuerySnapshot querySnapshot =
-        await bookmarks.where('station', isEqualTo: station).get();
-    for (var doc in querySnapshot.docs) {
-      doc.reference.delete();
-    }
-    notifyListeners();
-  }
-
-//즐겨찾기 경로 제거 메소드
-  Future<void> removeBookmarkRoute(String station1, String station2) async {
-    String? userUid = _user!.uid;
-    CollectionReference bookmarks = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userUid)
-        .collection('Bookmark_Route');
-
-    QuerySnapshot querySnapshot = await bookmarks
-        .where('station1_ID', isEqualTo: station1)
-        .where('station2_ID', isEqualTo: station2)
-        .get();
-
-    for (var doc in querySnapshot.docs) {
-      doc.reference.delete();
-    }
-    notifyListeners();
-  }
-
-//역추가 매소드
+//즐겨찾기 역 추가 매소드
   Future<void> addBookmarkStation(String station) async {
     bool isBookmarked = await isStationBookmarked(station);
 
@@ -127,7 +156,23 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//경로추가 메소드
+//즐겨찾기 역 제거 메소드
+  Future<void> removeBookmarkStation(String station) async {
+    String? userUid = _user!.uid;
+    CollectionReference bookmarks = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userUid)
+        .collection('Bookmark_Station');
+
+    QuerySnapshot querySnapshot =
+        await bookmarks.where('station', isEqualTo: station).get();
+    for (var doc in querySnapshot.docs) {
+      doc.reference.delete();
+    }
+    notifyListeners();
+  }
+
+//즐겨찾기 경로 추가 메소드
   Future<void> addBookmarkRoute(String station1, String station2) async {
     bool isBookmarked = await isRouteBookmarked(station1, station2);
 
@@ -146,27 +191,22 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-  String get name => _userInfo?['name'] ?? 'No Name';
-  String get nickname => _userInfo?['nickname'] ?? 'No nickname';
-  String get email => _userInfo?['email'] ?? 'No Email';
-  String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
-  String get point => _userInfo?['point'].toString() ?? '100';
-  String get age => (2024 - _userInfo?['age']).toString();
+  //즐겨찾기 경로 제거 메소드
+  Future<void> removeBookmarkRoute(String station1, String station2) async {
+    String? userUid = _user!.uid;
+    CollectionReference bookmarks = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userUid)
+        .collection('Bookmark_Route');
 
-  //로그인 함수
-  Future<String?> handleSignIn(String email, String password) async {
-    if (email.isEmpty) {
-      return "이메일을 입력하세요.";
-    } else if (password.isEmpty) {
-      return "비밀번호를 입력하세요.";
-    }
+    QuerySnapshot querySnapshot = await bookmarks
+        .where('station1_ID', isEqualTo: station1)
+        .where('station2_ID', isEqualTo: station2)
+        .get();
 
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return null; // 성공 시 null 반환
-    } on FirebaseAuthException catch (e) {
-      return "이메일 또는 비밀번호가 틀렸습니다.";
+    for (var doc in querySnapshot.docs) {
+      doc.reference.delete();
     }
+    notifyListeners();
   }
 }
