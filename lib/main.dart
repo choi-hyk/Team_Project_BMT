@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/login_widgets/login_ui.dart';
+import 'package:test1/search_widgets/notification_service.dart';
 //import 'package:flutter/services.dart';
 //import 'package:test1/menu_widgets/station_bulletin.dart';
 //import 'package:flutter/services.dart';station_bulletin
@@ -139,10 +140,15 @@ Text getConfText(int index) {
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); //Flutter 엔진과 위젯 바인딩 초기화
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); //즐겨찾기, 게시판 db 연동
+  );
+
+  //알림 설정 초기화
+  //final notificationService = NotificationService();
+  //await notificationService.init();
 
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
