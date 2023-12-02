@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test1/settings_widgets/guide.dart';
 import 'package:test1/settings_widgets/notice.dart';
-import 'package:test1/settings_widgets/setting_account_page.dart';
 import 'package:test1/settings_widgets/service_terms.dart';
 import 'package:test1/settings_widgets/location_terms.dart';
 import 'package:test1/settings_widgets/privacy_terms.dart';
