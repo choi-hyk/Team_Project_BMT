@@ -3,16 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class CommentPage extends StatefulWidget {
+class InquiryCommentPage extends StatefulWidget {
   final DocumentSnapshot postSnapshot;
 
-  const CommentPage({Key? key, required this.postSnapshot}) : super(key: key);
+  const InquiryCommentPage({Key? key, required this.postSnapshot})
+      : super(key: key);
 
   @override
-  State<CommentPage> createState() => _CommentPageState();
+  State<InquiryCommentPage> createState() => _InquiryCommentPageState();
 }
 
-class _CommentPageState extends State<CommentPage> {
+class _InquiryCommentPageState extends State<InquiryCommentPage> {
   late TextEditingController commentController;
 
   @override
@@ -32,7 +33,6 @@ class _CommentPageState extends State<CommentPage> {
       createdAt = DateTime.now();
     }
 
-    //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
     createdAt = createdAt.add(const Duration(hours: 9));
 
     String formattedDate =
@@ -40,7 +40,21 @@ class _CommentPageState extends State<CommentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('게시물 상세 정보'),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          '문의하기',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -98,7 +112,7 @@ class _CommentPageState extends State<CommentPage> {
             // 댓글 목록을 표시하는 부분
             buildCommentsSection(postSnapshot.id),
             // 댓글 입력 필드 및 추가 버튼
-            buildCommentInputField(postSnapshot.id),
+            // buildCommentInputField(postSnapshot.id),
           ],
         ),
       ),
@@ -108,7 +122,7 @@ class _CommentPageState extends State<CommentPage> {
   Widget buildCommentsSection(String postId) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('Bulletin_Board')
+          .collection('Inquiry')
           .doc(postId)
           .collection('comments')
           .snapshots(),
@@ -120,27 +134,9 @@ class _CommentPageState extends State<CommentPage> {
               for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
                   in snapshot.data!.docs
                       .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
-                // 댓글 작성자 정보 가져오기
-                FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(commentSnapshot['user'])
-                      .get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                    if (userSnapshot.hasData &&
-                        userSnapshot.data != null &&
-                        userSnapshot.data!.exists) {
-                      // 댓글 작성자의 닉네임 가져오기
-                      String? nickname = userSnapshot.data!['nickname'];
-                      return ListTile(
-                        title: Text(commentSnapshot['text']),
-                        subtitle: Text('작성자: ${nickname ?? '사용자'}'),
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  },
+                ListTile(
+                  title: Text(commentSnapshot['text']),
+                  subtitle: Text('${commentSnapshot['admin'] ?? 'Unknown'}'),
                 ),
             ],
           );
@@ -172,7 +168,7 @@ class _CommentPageState extends State<CommentPage> {
 
               // 댓글을 Firestore에 추가
               await FirebaseFirestore.instance
-                  .collection('Bulletin_Board')
+                  .collection('Inquiry')
                   .doc(postId)
                   .collection('comments')
                   .add({

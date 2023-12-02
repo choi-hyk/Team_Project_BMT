@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:test1/provider_code/user_provider.dart';
@@ -13,6 +15,8 @@ import 'package:test1/search_widgets/notification_service.dart';
 //import 'package:test1/menu_widgets/.dart';
 //import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 //import 'package:test1/algorithm_code/graph.dart';
 // import 'package:test1/home_UI.dart';
 
@@ -26,6 +30,16 @@ void showSnackBar(BuildContext context, Text text) {
   );
 
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+int getMinuteRange(int currentMinute) {
+  if (currentMinute >= 0 && currentMinute < 20) {
+    return 1;
+  } else if (currentMinute >= 20 && currentMinute < 40) {
+    return 2;
+  } else {
+    return 3;
+  }
 }
 
 //호선 별 색상
@@ -53,6 +67,75 @@ Color perlinedata(int currentLine) {
       return Colors.purple;
     default:
       return Colors.white;
+  }
+}
+
+Color getColorForIndex(int index) {
+  switch (index) {
+    case 0:
+      return const Color.fromARGB(255, 244, 238, 54);
+    case 1:
+      return const Color.fromARGB(255, 244, 206, 54);
+    case 2:
+      return const Color.fromARGB(255, 244, 165, 54);
+    case 3:
+      return const Color.fromARGB(255, 244, 130, 54);
+    case 4:
+      return Colors.red;
+    default:
+      return Colors.black;
+  }
+}
+
+IconData getIconForIndex(int index) {
+  switch (index) {
+    case 0:
+      return FontAwesomeIcons.solidFaceLaughBeam;
+    case 1:
+      return FontAwesomeIcons.solidFaceSmile;
+    case 2:
+      return FontAwesomeIcons.solidFaceMeh;
+    case 3:
+      return FontAwesomeIcons.solidFaceFrown;
+    case 4:
+      return FontAwesomeIcons.solidFaceTired;
+    default:
+      return Icons.error;
+  }
+}
+
+Text getConfText(int index) {
+  switch (index) {
+    case 0:
+      return const Text(
+        "여유롭게 지하철을 이용하세요!",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
+    case 1:
+      return const Text(
+        "좌석에 앉을수 있을것 같습니다!",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
+    case 2:
+      return const Text(
+        "어느정도 사람이 있습니다!",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
+    case 3:
+      return const Text(
+        "좌석에는 못 앉을것 같네요...",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
+    case 4:
+      return const Text(
+        "출퇴근 시간인가봐요...",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
+    default:
+      return const Text(
+        "혼잡도 정보가 제공되지 않습니다.",
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+      );
   }
 }
 

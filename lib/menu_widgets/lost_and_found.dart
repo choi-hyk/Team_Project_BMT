@@ -2,9 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:test1/menu_widgets/lost_comment_page.dart';
 
 class LostAndFound extends StatefulWidget {
@@ -19,13 +16,6 @@ class _LostAndFoundState extends State<LostAndFound> {
   List<int> stationIds = []; // station_ID 목록을 저장할 리스트
   int selectedStation = 101; // 초기 선택된 station_ID
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // 이미지를 URL화하여 사용자 DB에 저장
-  final FirebaseStorage _storage =
-      FirebaseStorage.instanceFor(bucket: 'your_firebase_storage_bucket');
-
-  // 갤러리에서 사진을 저장하는 변수
-  File? _selectedImage;
 
   // Bulletin_Board테이블의 데이터를 가져옴
   CollectionReference product =
@@ -159,29 +149,6 @@ class _LostAndFoundState extends State<LostAndFound> {
             ),
             child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      // Pick an image using ImagePicker
-                      final XFile? image = await ImagePicker()
-                          .pickImage(source: ImageSource.gallery);
-
-                      if (image != null) {
-                        setState(() {
-                          _selectedImage = File(image.path);
-                        });
-                      }
-                    } catch (e) {
-                      // Handle ImagePicker-related errors
-                      print('ImagePicker Error: $e');
-                    }
-                  },
-                  child: const Text('이미지 선택'),
-                ),
-                if (_selectedImage != null) Image.file(_selectedImage!),
-                const SizedBox(
-                  height: 20,
-                ),
                 TextField(
                   controller: titleController,
                   decoration: const InputDecoration(labelText: '제목'),
@@ -207,55 +174,23 @@ class _LostAndFoundState extends State<LostAndFound> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    try {
-                      final String title = titleController.text;
-                      final String content = contentController.text;
-                      final int station =
-                          int.tryParse(stationController.text) ?? 0;
+                    final String title = titleController.text;
+                    final String content = contentController.text;
+                    final int station =
+                        int.tryParse(stationController.text) ?? 0;
 
-                      if (_selectedImage != null) {
-                        // Upload image to Firebase Storage
-                        final String imageName =
-                            DateTime.now().millisecondsSinceEpoch.toString();
-                        final Reference storageReference =
-                            _storage.ref().child('images/$imageName.jpg');
-                        await storageReference.putFile(_selectedImage!);
+                    await product.add({
+                      'title': title,
+                      'content': content,
+                      'station_ID': station,
+                      'created_at': FieldValue.serverTimestamp(),
+                      'User_ID': currentUserId,
+                    });
 
-                        // Get the download URL of the uploaded image
-                        final String imageUrl =
-                            await storageReference.getDownloadURL();
-
-                        // Add data to Firestore with image URL
-                        await product.add({
-                          'title': title,
-                          'content': content,
-                          'station_ID': station,
-                          'created_at': FieldValue.serverTimestamp(),
-                          'image_url': imageUrl,
-                        });
-                      } else {
-                        // Add data to Firestore without image URL
-                        await product.add({
-                          'title': title,
-                          'content': content,
-                          'station_ID': station,
-                          'created_at': FieldValue.serverTimestamp(),
-                        });
-                      }
-
-                      titleController.text = '';
-                      contentController.text = '';
-                      stationController.text = '';
-                      setState(() {
-                        _selectedImage = null; // Reset selected image
-                      });
-
-                      Navigator.of(context).pop(); // Close the bottom sheet
-                    } catch (e) {
-                      // Handle Firestore-related errors
-                      print('Firestore Error: $e');
-                      // You might want to show a user-friendly error message here
-                    }
+                    titleController.text = "";
+                    contentController.text = "";
+                    stationController.text = "";
+                    Navigator.of(context).pop();
                   },
                   child: const Text('작성'),
                 ),
@@ -307,7 +242,7 @@ class _LostAndFoundState extends State<LostAndFound> {
   // Firestore에서 station_ID 목록을 가져오는 메서드
   Future<void> fetchStationIds() async {
     QuerySnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('Bulletin_Board').get();
+        await FirebaseFirestore.instance.collection('LostAndFound').get();
 
     List<int> ids = [];
 
@@ -347,7 +282,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                 onChanged: (searchQuery) {},
               )
             : const Text(
-                '분실물 게시판',
+                '게시판',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
@@ -398,6 +333,9 @@ class _LostAndFoundState extends State<LostAndFound> {
                         createdAt = DateTime.now();
                       }
 
+                      //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
+                      createdAt = createdAt.add(const Duration(hours: 9));
+
                       String formattedDate =
                           DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
                               .format(createdAt);
@@ -420,13 +358,6 @@ class _LostAndFoundState extends State<LostAndFound> {
                             children: [
                               const SizedBox(height: 5),
                               ListTile(
-                                leading: _selectedImage != null
-                                    ? CircleAvatar(
-                                        backgroundImage:
-                                            FileImage(_selectedImage!),
-                                        radius: 25,
-                                      )
-                                    : null,
                                 title: Text(
                                   documentSnapshot['title'],
                                   style: const TextStyle(
