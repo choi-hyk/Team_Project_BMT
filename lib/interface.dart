@@ -380,7 +380,7 @@ class _InterFaceState extends State<InterFace> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const BookmarkPage()),
+                        builder: (context) => const LostAndFound()),
                   );
                 },
                 child: Row(
@@ -408,7 +408,7 @@ class _InterFaceState extends State<InterFace> {
                     MaterialPageRoute(
                       builder: (context) => const LoginUI(),
                     ),
-                    (Route<dynamic> route) => false, // 현재 네비게이션 스택을 모두 제거
+                    (Route<dynamic> route) => false, //네비게이터 초기화
                   );
                 },
                 child: Row(

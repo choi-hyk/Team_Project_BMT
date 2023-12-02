@@ -97,7 +97,7 @@ class UserProfileWidget extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => const LoginUI(),
                     ),
-                    (Route<dynamic> route) => false, // 현재 네비게이션 스택을 모두 제거
+                    (Route<dynamic> route) => false, //네비게이터 초기화
                   );
                 },
                 child: const Text(
