@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:test1/provider_code/user_provider.dart';
@@ -147,8 +145,8 @@ void main() async {
   );
 
   //알림 설정 초기화
-  //final notificationService = NotificationService();
-  //await notificationService.init();
+  final notificationService = NotificationService();
+  await notificationService.init();
 
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
