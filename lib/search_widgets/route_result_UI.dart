@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/search_widgets/notification_service.dart';
 import 'package:test1/prov_conf.dart';
@@ -471,7 +469,7 @@ class _RouteResultsState extends State<RouteResults> {
                       }
                       //_scheduleAlarm(10);
                       NotificationService.showDelayedNotification(
-                          10, '곧 도착 예정', '잠시 후 역에 도착합니다.');
+                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
                       print("알림 시작 버튼 터치");
                       //팝업 표시
                       bool confirm = await showDialog(
@@ -479,7 +477,7 @@ class _RouteResultsState extends State<RouteResults> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text('알림 시작'),
-                            content: const Text('알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
+                            content: const Text('알림이 시작되었습니다!\n도착 1분전에 알람이 울립니다.\n혼잡도 정보를 제공하시겠습니까?'),
                             actions: <Widget>[
                               TextButton(
                                 child: const Text('아니오'),
