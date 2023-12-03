@@ -480,35 +480,32 @@ class _RouteResultsState extends State<RouteResults> {
                       print("알림 시작 버튼 터치");
                       //팝업 표시
                       bool confirm = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('알림 시작'),
-                                content: const Text(
-                                    '알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('아니오'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(false); // 아니오를 누르면 false를 반환
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('예'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(true); // 예를 누르면 true를 반환
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          ) ??
-                          false;
 
-                      if (confirm) {
-                        if (currentpath == optmPath) {
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('알림 시작'),
+                            content: const Text('알림이 시작되었습니다!\n도착 1분전에 알람이 울립니다.\n혼잡도 정보를 제공하시겠습니까?'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('아니오'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(false); // 아니오를 누르면 false를 반환
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('예'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(true); // 예를 누르면 true를 반환
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ) ?? false;
+                      
+                      if(confirm) {
+                        if(currentpath == optmPath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
@@ -547,7 +544,7 @@ class _RouteResultsState extends State<RouteResults> {
                                 currentStaion:
                                     costPath[timePath.length - 1].toString(),
                                 linkStaion:
-                                    costPath[timePath.length - 1].toString(),
+                                    costPath[timePath.length - 2].toString(),
                                 line: line[0],
                                 confg: '0',
                               ),
@@ -875,7 +872,7 @@ class _RouteResultsState extends State<RouteResults> {
                                     ),
                                   ],
                                 ),
-                              ),
+                              ), 
                             ),
                           ],
                         ),

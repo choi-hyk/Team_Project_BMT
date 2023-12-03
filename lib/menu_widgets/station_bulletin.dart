@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/comment_page.dart';
+import 'package:test1/provider_code/data_provider.dart';
 
 class StationBulletin extends StatefulWidget {
   const StationBulletin({super.key});
@@ -36,6 +37,7 @@ class _StationBulletinState extends State<StationBulletin> {
     // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
+    DataProvider dataProvider1 = DataProvider();
 
     // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (documentSnapshot['User_ID'] == currentUserId) {
@@ -86,16 +88,19 @@ class _StationBulletinState extends State<StationBulletin> {
                       final String content = contentController.text;
                       final int station =
                           int.tryParse(stationController.text) ?? 0;
+                      await dataProvider1.searchData(station);
 
-                      await product.doc(documentSnapshot.id).update(
-                        {
-                          "title": title,
-                          "content": content,
-                          "station_ID": station,
-                          "updated_at": FieldValue.serverTimestamp(),
-                          "User_ID": currentUserId,
-                        },
-                      );
+                      if (dataProvider1.found) {
+                        await product.add({
+                          'title': title,
+                          'content': content,
+                          'station_ID': station,
+                          'created_at': FieldValue.serverTimestamp(),
+                          'User_ID': currentUserId,
+                        });
+                      } else {
+                        showSnackBar(context, const Text("존재하지 않는 역입니다"));
+                      }
 
                       titleController.text = "";
                       contentController.text = "";
@@ -135,6 +140,7 @@ class _StationBulletinState extends State<StationBulletin> {
     // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
+    DataProvider dataProvider1 = DataProvider();
 
     await showModalBottomSheet(
       isScrollControlled: true,
@@ -189,14 +195,19 @@ class _StationBulletinState extends State<StationBulletin> {
                     final String content = contentController.text;
                     final int station =
                         int.tryParse(stationController.text) ?? 0;
+                    await dataProvider1.searchData(station);
 
-                    await product.add({
-                      'title': title,
-                      'content': content,
-                      'station_ID': station,
-                      'created_at': FieldValue.serverTimestamp(),
-                      'User_ID': currentUserId,
-                    });
+                    if (dataProvider1.found) {
+                      await product.add({
+                        'title': title,
+                        'content': content,
+                        'station_ID': station,
+                        'created_at': FieldValue.serverTimestamp(),
+                        'User_ID': currentUserId,
+                      });
+                    } else {
+                      showSnackBar(context, const Text("존재하지 않는 역입니다"));
+                    }
 
                     titleController.text = "";
                     contentController.text = "";
@@ -312,36 +323,29 @@ class _StationBulletinState extends State<StationBulletin> {
         ),
         body: Column(
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
-              child: Center(
-                child: DropdownButton<int>(
-                  value: selectedStation,
-                  items: stationIds.map((int stationId) {
-                    return DropdownMenuItem<int>(
-                      value: stationId,
-                      child: Text(
-                        '$stationId',
-                        style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                            color: Theme.of(context).primaryColorDark),
+            Center(
+              child: DropdownButton<int>(
+                value: selectedStation,
+                items: stationIds.map((int stationId) {
+                  return DropdownMenuItem<int>(
+                    value: stationId,
+                    child: Text(
+                      '$stationId',
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  }).toList(),
-                  underline: Container(), // 밑줄을 없애는 부분
-                  onChanged: (int? value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedStation = value;
-                      });
-                    }
-                  },
-                ),
+                    ),
+                  );
+                }).toList(),
+                underline: Container(), // 밑줄을 없애는 부분
+                onChanged: (int? value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedStation = value;
+                    });
+                  }
+                },
               ),
             ),
             Expanded(
@@ -373,7 +377,7 @@ class _StationBulletinState extends State<StationBulletin> {
                             createdAt = createdAt.add(const Duration(hours: 9));
 
                             String formattedDate =
-                                DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
+                                DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
                                     .format(createdAt);
 
                             return GestureDetector(
@@ -386,112 +390,115 @@ class _StationBulletinState extends State<StationBulletin> {
                                   ),
                                 );
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 1.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ),
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(height: 5),
-                                      ListTile(
-                                        title: Text(
+                                    child: ListTile(
+                                      title: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Text(
                                           documentSnapshot['title'],
                                           style: const TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        subtitle: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 5.0,
-                                            bottom: 5.0,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              FutureBuilder<DocumentSnapshot>(
-                                                future: FirebaseFirestore
-                                                    .instance
-                                                    .collection('Users')
-                                                    .doc(documentSnapshot[
-                                                        'User_ID'])
-                                                    .get(),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<
-                                                            DocumentSnapshot>
-                                                        userSnapshot) {
-                                                  if (userSnapshot.hasData &&
-                                                      userSnapshot.data !=
-                                                          null &&
-                                                      userSnapshot
-                                                          .data!.exists) {
-                                                    // Users 테이블에서 해당 사용자의 닉네임 가져오기
-                                                    Map<String, dynamic>
-                                                        userData = userSnapshot
-                                                                .data!
-                                                                .data()
-                                                            as Map<String,
-                                                                dynamic>;
-                                                    String nickname =
-                                                        userData['nickname'];
-                                                    // 닉네임으로 사용자 구분
-                                                    return Text(
+                                      ),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 5.0,
+                                          bottom: 5.0,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            FutureBuilder<DocumentSnapshot>(
+                                              future: FirebaseFirestore.instance
+                                                  .collection('Users')
+                                                  .doc(documentSnapshot[
+                                                      'User_ID'])
+                                                  .get(),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot<
+                                                          DocumentSnapshot>
+                                                      userSnapshot) {
+                                                if (userSnapshot.hasData &&
+                                                    userSnapshot.data != null &&
+                                                    userSnapshot.data!.exists) {
+                                                  // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                                  Map<String, dynamic>
+                                                      userData =
+                                                      userSnapshot.data!.data()
+                                                          as Map<String,
+                                                              dynamic>;
+                                                  String nickname =
+                                                      userData['nickname'];
+                                                  // 닉네임으로 사용자 구분
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 5.0),
+                                                    child: Text(
                                                       '작성자: $nickname',
                                                       style: const TextStyle(
                                                           fontSize: 13),
-                                                    );
-                                                  } else {
-                                                    return const SizedBox();
-                                                  }
-                                                },
-                                              ),
-                                              Text(
+                                                    ),
+                                                  );
+                                                } else {
+                                                  return const SizedBox();
+                                                }
+                                              },
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 5.0),
+                                              child: Text(
                                                 '작성일: $formattedDate',
                                                 style: const TextStyle(
                                                     fontSize: 13),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        trailing: SizedBox(
-                                          width: 100,
-                                          child: Row(
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  _update(documentSnapshot);
-                                                },
-                                                icon: const Icon(Icons.edit),
-                                                color: Theme.of(context)
-                                                    .primaryColorDark,
-                                              ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  _delete(documentSnapshot.id);
-                                                },
-                                                icon: const Icon(Icons.delete),
-                                                color: Theme.of(context)
-                                                    .primaryColorDark,
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
+                                      trailing: SizedBox(
+                                        width: 100,
+                                        child: Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
+                                                _update(documentSnapshot);
+                                              },
+                                              icon: const Icon(Icons.edit),
+                                              color: Theme.of(context)
+                                                  .primaryColorDark,
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                _delete(documentSnapshot.id);
+                                              },
+                                              icon: const Icon(Icons.delete),
+                                              color: Theme.of(context)
+                                                  .primaryColorDark,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             );
                           },
@@ -529,10 +536,11 @@ class _StationBulletinState extends State<StationBulletin> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: SizedBox(
+                    child: Container(
                       //광고배너 컨테이너
                       width: double.infinity,
                       height: 60.0,
+                      color: Colors.green,
                       child: Image.asset(
                         'assets/images/광고1.png',
                         fit: BoxFit.fill,
@@ -548,3 +556,4 @@ class _StationBulletinState extends State<StationBulletin> {
     );
   }
 }
+
