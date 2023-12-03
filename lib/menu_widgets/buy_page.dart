@@ -244,6 +244,28 @@ class _BuyPageState extends State<BuyPage> {
                 ),
               ),
             ),
+            Container(
+              width: double.infinity,
+              height: 119,
+              color: Theme.of(context).primaryColorLight,
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/Fast1.png",
+                    fit: BoxFit.contain,
+                    width: 150,
+                    height: 200,
+                  ),
+                  Text(
+                    "혼잡도 정보 제공하고 리워드 받자!",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context).cardColor),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
