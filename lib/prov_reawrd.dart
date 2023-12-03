@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/user_provider.dart';
 
@@ -28,16 +27,14 @@ class _ProvRewardState extends State<ProvReward> {
       // 유저 아이디에 혼잡도 제보 1 추가
       userProvider.addCountToUser();
       // 3초 후에 화면 전환
-      _navigateToOtherScreen();
+      _navigateToBack();
     });
   }
 
 
-  void _navigateToOtherScreen() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const InterFace()),
-    );
+  void _navigateToBack() {
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 
   @override
@@ -116,7 +113,7 @@ class _ProvRewardState extends State<ProvReward> {
                   color: Theme.of(context).primaryColorDark),
             ),
             Text(
-              "잠시 후 홈 화면으로 이동합니다",
+              "잠시 후 이전 화면으로 이동합니다",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
