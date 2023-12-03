@@ -331,20 +331,7 @@ class _InterFaceState extends State<InterFace> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                accountEmail: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountUI(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    userProvider.email,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
+              
 
 
                 accountEmail: InkWell(
