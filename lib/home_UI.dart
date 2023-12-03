@@ -23,8 +23,8 @@ class _HomeUIState extends State<HomeUI> {
           topRight: Radius.circular(13.0),
         ),
         border: Border.all(
-          color: Colors.grey, // 테두리 색상
-          width: 1.5, // 테두리 두께
+          color: Colors.grey,
+          width: 1.5,
         ),
       ),
       width: 379.5,
@@ -75,9 +75,9 @@ class _HomeUIState extends State<HomeUI> {
               height: 10,
             ),
             Divider(
-              height: 0.5, // 구분선의 높이
-              thickness: 0.5, // 구분선의 두께
-              color: Theme.of(context).primaryColorDark, // 구분선의 색상
+              height: 0.5, //구분선의 높이
+              thickness: 0.5, //구분선의 두께
+              color: Theme.of(context).primaryColorDark, //구분선의 색상
             ),
             const SizedBox(
               height: 10,
@@ -122,9 +122,9 @@ class _HomeUIState extends State<HomeUI> {
               height: 20,
             ),
             Divider(
-              height: 0.5, // 구분선의 높이
-              thickness: 0.5, // 구분선의 두께
-              color: Theme.of(context).primaryColorDark, // 구분선의 색상
+              height: 0.5,
+              thickness: 0.5,
+              color: Theme.of(context).primaryColorDark,
             ),
             const SizedBox(
               height: 10,
@@ -172,7 +172,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  // 역 즐겨찾기 위젯 생성
+  //역 즐겨찾기 위젯 생성
   Widget buildStationBookmark(String station) {
     return Column(
       children: [
@@ -181,8 +181,8 @@ class _HomeUIState extends State<HomeUI> {
             color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: Theme.of(context).primaryColorDark, // 테두리 색상
-              width: 0.5, // 테두리 두께
+              color: Theme.of(context).primaryColorDark,
+              width: 0.5,
             ),
           ),
           width: double.infinity,
@@ -225,7 +225,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  // 경로 즐겨찾기 위젯 생성
+  //경로 즐겨찾기 위젯 생성
   Widget buildRouteBookmark(Map<String, dynamic> data) {
     final String station1 = data['station1_ID'];
     final String station2 = data['station2_ID'];
@@ -237,8 +237,8 @@ class _HomeUIState extends State<HomeUI> {
             color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: Theme.of(context).primaryColorDark, // 테두리 색상
-              width: 0.5, // 테두리 두께
+              color: Theme.of(context).primaryColorDark,
+              width: 0.5,
             ),
           ),
           width: double.infinity,
@@ -293,7 +293,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  // 게시글 가져오기
+  //게시글 가져오기
   Widget buildBulletinPost(Map<String, dynamic> data) {
     DateTime createdAt;
     if (data['created_at'] != null) {

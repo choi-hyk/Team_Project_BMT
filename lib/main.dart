@@ -170,10 +170,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //알림 설정 초기화
-  //final notificationService = NotificationService();
-  //await notificationService.init();
-
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
   runApp(
