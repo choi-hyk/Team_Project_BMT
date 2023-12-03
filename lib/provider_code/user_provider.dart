@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   User? _user;
   Map<String, dynamic>? _userInfo;
@@ -28,7 +29,20 @@ class UserProvider with ChangeNotifier {
   String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
   String get point => _userInfo?['point'].toString() ?? '0';
   String get age => (2024 - _userInfo?['age']).toString();
+  String get mainStation => _userInfo?['mainStation'].toString() ?? "101";
   //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
+
+  //DB의 mainStaiton값을 변경하는 메소드
+  Future<void> updateMainStation(int newStation) async {
+    try {
+      await _firestore
+          .collection('Users')
+          .doc(_user!.uid)
+          .update({'mainStation': newStation});
+    } catch (e) {
+      print(e);
+    }
+  }
 
   //사용자 정보 가져오기 함수
   Future<void> fetchUserInfo() async {
@@ -66,6 +80,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //회원 탈퇴 함수
   Future<String?> handleDeleteAccount(String password) async {
     try {
       String? email = _user?.email;
@@ -95,7 +110,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  // 작성한 게시글을 불러오는 함수
+  //작성한 게시글을 불러오는 함수
   Future<List<Map<String, dynamic>>> getWrittenPosts() async {
     try {
       String? userUid = _user!.uid;
@@ -128,7 +143,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-//포인트를 더하는 함수
+  //포인트를 더하는 함수
   Future<void> addPointsToUser() async {
     try {
       String? userUid = _user!.uid;

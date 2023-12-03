@@ -46,7 +46,7 @@ class _InterFaceState extends State<InterFace> {
   Future<void> waitData(int searchStation) async {
     await dataProvider.searchData(searchStation);
     if (!dataProvider.found) {
-      showSnackBar(context, const Text("존재하지 않는 역 입니다"));
+      showSnackBar(context, const Text("존재하지 않는 역입니다"));
       setState(() {
         currentUI = "home";
       });
@@ -61,7 +61,8 @@ class _InterFaceState extends State<InterFace> {
   Widget buildContentWidget() {
     switch (currentUI) {
       case "home":
-        return const HomeUI();
+        return HomeUI();
+
       case "stationdata":
         return StationData(
           name: dataProvider.name,
@@ -80,7 +81,7 @@ class _InterFaceState extends State<InterFace> {
           },
         );
       default:
-        return const HomeUI();
+        return HomeUI();
     }
   }
 
@@ -89,7 +90,7 @@ class _InterFaceState extends State<InterFace> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('로그아웃'),
-            content: const Text('로그아웃 하시겟습니까?'),
+            content: const Text('로그아웃하시겠습니까?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),

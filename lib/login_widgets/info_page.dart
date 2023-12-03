@@ -181,7 +181,8 @@ class _InfoPageState extends State<InfoPage> {
       'point': 0,
       'service_check': service_check,
       'location_check': location_check,
-      'privacy_check': privacy_check
+      'privacy_check': privacy_check,
+      'mainStation': 101
     }).then((value) {
       print('Additional info saved to Firestore');
     }).catchError((error) {
