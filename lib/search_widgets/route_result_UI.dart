@@ -7,6 +7,7 @@ import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:test1/provider_code/user_provider.dart';
+import 'package:test1/search_widgets/notification_service.dart';
 
 //drawRouteResult에서 반환값으로 사용하기 위한 클래스
 class StationRouteResult {
@@ -28,8 +29,6 @@ class RouteResults extends StatefulWidget {
 }
 
 class _RouteResultsState extends State<RouteResults> {
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   UserProvider userProvider = UserProvider();
 
   bool isLoading = true; //로딩 여부
@@ -71,21 +70,18 @@ class _RouteResultsState extends State<RouteResults> {
   late DataProvider dataProvider;
 
   late int travelTime;
-
   late bool isBook;
-
-  // ignore: unused_field
 
   //클래스 진입 시 초기화
   @override
   void initState() {
+    NotificationService.init();
+    Future.delayed(const Duration(seconds: 3),
+        NotificationService.requestNotificationPermission());
     super.initState();
 
     isBook = false;
-
     checkBookRoute();
-
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     optmPath = [];
     timePath = [];
@@ -124,25 +120,6 @@ class _RouteResultsState extends State<RouteResults> {
   void checkBookRoute() async {
     isBook = await userProvider.isRouteBookmarked(
         widget.startStation, widget.arrivStation);
-  }
-
-  Future<void> _scheduleAlarm(int minutes) async {
-    const int alarmID = 0;
-    final Duration duration = Duration(minutes: minutes);
-
-    await AndroidAlarmManager.oneShot(
-      duration,
-      alarmID,
-      _showNotification, // 알람이 울릴 때 실행할 콜백 함수
-      exact: true,
-      wakeup: true,
-    );
-  }
-
-  void _showNotification() {
-    // 여기에 알림을 표시하는 로직을 추가할 수 있습니다.
-    // 예: 로컬 노티피케이션 사용 등
-    print('Alarm! It\'s time to go!');
   }
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
@@ -487,8 +464,10 @@ class _RouteResultsState extends State<RouteResults> {
                       } else if (currentpath == costPath) {
                         travelTime = timeOfCostPath;
                       }
-                      _scheduleAlarm(1);
-                      print("알람시작");
+                      //_scheduleAlarm(10);
+                      NotificationService.showDelayedNotification(
+                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
+                      print("알림 시작 버튼 터치");
                     },
                     child: const Row(
                       children: [

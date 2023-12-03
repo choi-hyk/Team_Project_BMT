@@ -133,6 +133,16 @@ class _BookmarkPageState extends State<BookmarkPage> {
           ),
           actions: <Widget>[
             TextButton(
+              child: const Text(
+                '취소',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
               onPressed: () {
                 if (isRoute) {
                   addRoute(station1Controller.text, station2Controller.text);
@@ -145,16 +155,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
-            ),
-            TextButton(
-              child: const Text(
-                '취소',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
           ],
         );

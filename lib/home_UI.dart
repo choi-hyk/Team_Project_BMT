@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 
 class HomeUI extends StatefulWidget {
-  const HomeUI({super.key});
-
   @override
   State<HomeUI> createState() => _HomeUIState();
 }
 
 class _HomeUIState extends State<HomeUI> {
-  UserProvider userProvider = UserProvider();
-  int selectedStation = 101;
-
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -29,29 +26,15 @@ class _HomeUIState extends State<HomeUI> {
         ),
       ),
       width: 379.5,
-      height: 640.0,
+      height: 710.0,
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20), color: Colors.grey),
-              width: 50,
-              height: 10,
+            const Text(
+              "즐겨찾기",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 35,
-            ),
-            const Divider(
-              height: 1, // 구분선의 높이
-              thickness: 1, // 구분선의 두께
-              color: Colors.grey, // 구분선의 색상
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text("즐겨찾기"),
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: userProvider.getBookmarkList(),
@@ -91,24 +74,29 @@ class _HomeUIState extends State<HomeUI> {
             ),
             const Text('게시판'),
             Expanded(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('Bulletin_Board')
+                    .where('station_ID',
+                        isEqualTo: int.parse(userProvider.mainStation))
                     .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        final DocumentSnapshot documentSnapshot =
-                            snapshot.data!.docs[index];
-                        return buildBulletinPost(
-                            documentSnapshot.data() as Map<String, dynamic>);
-                      },
-                    );
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
                   }
-                  return const Center(child: CircularProgressIndicator());
+                  if (snapshot.hasError) {
+                    return Text('에러: ${snapshot.error}');
+                  }
+                  if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                    return ListView(
+                      children: snapshot.data!.docs.map((doc) {
+                        return buildBulletinPost(
+                            doc.data() as Map<String, dynamic>);
+                      }).toList(),
+                    );
+                  } else {
+                    return const Center(child: Text('해당 역의 게시글이 없습니다'));
+                  }
                 },
               ),
             ),
@@ -128,7 +116,7 @@ class _HomeUIState extends State<HomeUI> {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: Colors.grey, // 테두리 색상
-              width: 1, // 테두리 두께
+              width: 0.5, // 테두리 두께
             ),
           ),
           width: double.infinity,

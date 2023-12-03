@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test1/customizing_widgets/customizing.dart';
 import 'package:test1/settings_widgets/guide.dart';
 import 'package:test1/settings_widgets/notice.dart';
 import 'package:test1/settings_widgets/service_terms.dart';
@@ -70,7 +71,10 @@ class _SettingsUIState extends State<SettingsUI> {
         child: Column(
           children: [
             sectionTitle("서비스 설정"),
-            settingsOption("위젯 설정"),
+            settingsOption("위젯 설정", onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Customizing()));
+            }),
             sectionTitle("고객 지원"),
             settingsOption("어플 사용 가이드", onTap: () {
               Navigator.push(context,

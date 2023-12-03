@@ -1,53 +1,55 @@
-import 'package:flutter/material.dart';
+//알림 설정하는 파일
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
-  static final NotificationService _notificationService =
-      NotificationService._internal();
+  NotificationService._();
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  factory NotificationService() {
-    return _notificationService;
+  static init() async {
+    AndroidInitializationSettings androidInitializationSettings =
+        const AndroidInitializationSettings('mipmap/ic_bmt');
+
+    InitializationSettings initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  NotificationService._internal();
-
-  Future<void> init() async {
-    final AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_bmt');
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+  static requestNotificationPermission() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  Future<void> showNotification(int id, String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'arrival_notification', // 채널 ID
-      '도착 알림', // 채널 이름
-      channelDescription: '도착 시간에 대한 알림을 제공합니다', // 채널 설명
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
-    );
+  //알림을 보내는 함수
+  static Future<void> showNotification(String title, String body) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('channelId', 'channelName',
+            channelDescription: 'channel description',
+            importance: Importance.max,
+            priority: Priority.max,
+            showWhen: false);
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      platformChannelSpecifics,
-    );
+        0, title, body, notificationDetails);
+  }
+
+  //정해진 시간 이후에 알림 보여주기
+  static Future<void> showDelayedNotification(
+      int seconds, String title, String body) async {
+    //Delay 설정
+    Duration delay = Duration(seconds: seconds);
+
+    //Delay 후 알림 트리거
+    Timer(delay, () async {
+      await showNotification(title, body);
+    });
   }
 }
