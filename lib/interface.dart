@@ -267,7 +267,7 @@ class _InterFaceState extends State<InterFace> {
                 height: 60.0,
                 color: Colors.green,
                 child: Image.asset(
-                  'assets/images/광고.png',
+                  'assets/images/광고1.png',
                   fit: BoxFit.fill,
                 ),
               ),

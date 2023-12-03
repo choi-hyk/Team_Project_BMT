@@ -291,35 +291,34 @@ class _LostAndFoundState extends State<LostAndFound> {
               );
             },
           ),
-          title: _isSearching
-              ? TextField(
-                  style: const TextStyle(color: Colors.black),
-                  decoration: const InputDecoration(
-                    hintText: '검색어를 입력하세요',
-                    hintStyle: TextStyle(color: Colors.black),
-                  ),
-                  onChanged: (searchQuery) {},
-                )
-              : const Text(
-                  '게시판',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+          title: const Text(
+            '분실물 게시판',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           backgroundColor: Theme.of(context).primaryColor,
           centerTitle: true,
         ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Center(
               child: DropdownButton<int>(
                 value: selectedStation,
                 items: stationIds.map((int stationId) {
                   return DropdownMenuItem<int>(
                     value: stationId,
-                    child: Text('$stationId호'),
+                    child: Text(
+                      '$stationId',
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   );
                 }).toList(),
+                underline: Container(), // 밑줄을 없애는 부분
                 onChanged: (int? value) {
                   if (value != null) {
                     setState(() {
@@ -327,57 +326,51 @@ class _LostAndFoundState extends State<LostAndFound> {
                     });
                   }
                 },
+                iconSize: 30.0,
               ),
             ),
             Expanded(
-              child: StreamBuilder(
-                stream: product
-                    .where('station_ID', isEqualTo: selectedStation)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                  if (streamSnapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: streamSnapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        final DocumentSnapshot documentSnapshot =
-                            streamSnapshot.data!.docs[index];
+              child: Stack(
+                children: [
+                  StreamBuilder(
+                    stream: product
+                        .where('station_ID', isEqualTo: selectedStation)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        return ListView.builder(
+                          itemCount: streamSnapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            final DocumentSnapshot documentSnapshot =
+                                streamSnapshot.data!.docs[index];
 
-                        DateTime createdAt;
-                        if (documentSnapshot['created_at'] != null) {
-                          createdAt =
-                              (documentSnapshot['created_at'] as Timestamp)
-                                  .toDate();
-                        } else {
-                          createdAt = DateTime.now();
-                        }
+                            DateTime createdAt;
+                            if (documentSnapshot['created_at'] != null) {
+                              createdAt =
+                                  (documentSnapshot['created_at'] as Timestamp)
+                                      .toDate();
+                            } else {
+                              createdAt = DateTime.now();
+                            }
 
-                        //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
-                        createdAt = createdAt.add(const Duration(hours: 9));
+                            //에뮬레이터 시간상 한국 시간과 안맞음. 9시간 추가
+                            createdAt = createdAt.add(const Duration(hours: 9));
 
-                        String formattedDate =
-                            DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
-                                .format(createdAt);
+                            String formattedDate =
+                                DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                                    .format(createdAt);
 
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LostCommentPage(
-                                    postSnapshot: documentSnapshot),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                                color: Colors.white,
-                              ),
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LostCommentPage(
+                                        postSnapshot: documentSnapshot),
+                                  ),
+                                );
+                              },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -419,7 +412,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                                                     userData['nickname'];
                                                 // 닉네임으로 사용자 구분
                                                 return Text(
-                                                  '사용자: $nickname',
+                                                  '작성자: $nickname',
                                                   style: const TextStyle(
                                                       fontSize: 13),
                                                 );
@@ -445,48 +438,79 @@ class _LostAndFoundState extends State<LostAndFound> {
                                               _update(documentSnapshot);
                                             },
                                             icon: const Icon(Icons.edit),
+                                            color: Theme.of(context)
+                                                .primaryColorDark,
                                           ),
                                           IconButton(
                                             onPressed: () {
                                               _delete(documentSnapshot.id);
                                             },
                                             icon: const Icon(Icons.delete),
+                                            color: Theme.of(context)
+                                                .primaryColorDark,
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
+                                  const Divider(
+                                    thickness: 1.0,
+                                    color: Colors.black,
+                                  ),
                                 ],
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         );
-                      },
-                    );
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                },
+                      }
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  ),
+                  Positioned(
+                    right: 15.0, // 이미지를 버튼 오른쪽에 배치
+                    bottom: 70.0, // 이미지를 버튼 아래에 배치
+                    child: SizedBox(
+                      width: 100.0,
+                      height: 40.0,
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.white,
+                        onPressed: () {
+                          _create();
+                        },
+                        mini: false,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: const Text(
+                          '글 작성',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      //광고배너 컨테이너
+                      width: double.infinity,
+                      height: 60.0,
+                      color: Colors.green,
+                      child: Image.asset(
+                        'assets/images/광고1.png',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        // 글 작성 버튼
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColor,
-          onPressed: () {
-            _create();
-          },
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: const Text(
-            '글 작성',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }

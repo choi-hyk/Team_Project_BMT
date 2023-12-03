@@ -40,7 +40,15 @@ class _CommentPageState extends State<CommentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('게시물 상세 정보'),
+        title: const Text(
+          '게시물 상세 정보',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -185,10 +193,14 @@ class _CommentPageState extends State<CommentPage> {
             }
           },
           style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.deepPurple),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white)),
+          child: const Text(
+            '댓글 추가',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-          child: const Text('댓글 추가'),
         ),
       ],
     );
