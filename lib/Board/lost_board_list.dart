@@ -15,7 +15,6 @@ class LostBoardList extends StatefulWidget {
 }
 
 class LostBoardListState extends State<LostBoardList> {
-  final bool _isSearching = false;
   List<int> stationIds = []; // station_ID 목록을 저장할 리스트
   int selectedStation = 101; // 초기 선택된 station_ID
   final FirebaseAuth _auth = FirebaseAuth.instance;
