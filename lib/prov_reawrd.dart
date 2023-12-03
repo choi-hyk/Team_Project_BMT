@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/user_provider.dart';
@@ -11,7 +12,6 @@ class ProvReward extends StatefulWidget {
 }
 
 class _ProvRewardState extends State<ProvReward> {
-  UserProvider userProvider = UserProvider();
 
   @override
   void initState() {
@@ -21,13 +21,17 @@ class _ProvRewardState extends State<ProvReward> {
   }
 
   void _updateUserPointAfterDelay() async {
-    await Future.delayed(const Duration(seconds: 3), () {
+    await Future.delayed(const Duration(seconds: 3), () async {
       // 유저 아이디에 100 포인트 추가
+      UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
       userProvider.addPointsToUser();
+      // 유저 아이디에 혼잡도 제보 1 추가
+      userProvider.addCountToUser();
       // 3초 후에 화면 전환
       _navigateToOtherScreen();
     });
   }
+
 
   void _navigateToOtherScreen() {
     Navigator.pushReplacement(
@@ -38,6 +42,9 @@ class _ProvRewardState extends State<ProvReward> {
 
   @override
   Widget build(BuildContext context) {
+    // UserProvider에서 정보를 가져옵니다.
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.fetchUserInfo();
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -91,7 +98,7 @@ class _ProvRewardState extends State<ProvReward> {
                       ),
                     ),
                     Text(
-                      "혼잡도 정보를 총 7회 제공하셨어요!",
+                      "혼잡도 정보를 총 ${userProvider.count}회 제공하셨어요!",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -102,7 +109,7 @@ class _ProvRewardState extends State<ProvReward> {
               ),
             ),
             Text(
-              "현재 포인트 : 600",
+              "현재 포인트 : ${userProvider.point}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:test1/prov_reawrd.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/startpage.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/provider_code/data_provider.dart';
-import 'package:test1/login_widgets/login_ui.dart';
-import 'package:test1/search_widgets/notification_service.dart';
-//import 'package:flutter/services.dart';
-//import 'package:test1/menu_widgets/station_bulletin.dart';
-//import 'package:flutter/services.dart';station_bulletin
-//import 'package:test1/menu_widgets/.dart';
-//import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-//import 'package:test1/algorithm_code/graph.dart';
-// import 'package:test1/home_UI.dart';
 
 int array = 0; //역 정보 데이터 배열
 String currentUI = "login"; //home, stationdata, routesearch, routeresult
@@ -169,10 +159,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  //알림 설정 초기화
-  //final notificationService = NotificationService();
-  //await notificationService.init();
 
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
