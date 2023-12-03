@@ -214,6 +214,7 @@ class _InterFaceState extends State<InterFace> {
                               child: IconButton(
                                 onPressed: () {
                                   setState(() {
+                                    array = 0;
                                     currentUI = 'home';
                                     Navigator.pushReplacement(
                                       context,

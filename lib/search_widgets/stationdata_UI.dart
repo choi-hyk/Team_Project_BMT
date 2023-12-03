@@ -52,15 +52,23 @@ class _StationDataState extends State<StationData> {
   int congestionP = -1;
 
   bool isRunTime = false;
-
+  bool isLoading = true;
   // 게시글 목록을 가져오는 Future
   late Future<List<DocumentSnapshot>> bulletinBoardPosts;
 
   @override
   void initState() {
     super.initState();
+
     calculateIsRunTime();
-    loadCongestionData();
+
+    loadCongestionData(0).then((_) {
+      // 데이터 로딩 완료 후 상태 변경
+      setState(() {
+        isLoading = false;
+      });
+    });
+
     bulletinBoardPosts = fetchBulletinBoardPosts();
   }
 
@@ -89,16 +97,18 @@ class _StationDataState extends State<StationData> {
     });
   }
 
-  Future<void> loadCongestionData() async {
+  Future<void> loadCongestionData(int array) async {
     int congestionDataN =
         await getCongestionData(int.parse(widget.nName[array]));
     int congestionDataP =
         await getCongestionData(int.parse(widget.pName[array]));
 
-    setState(() {
-      congestionN = congestionDataN; // 혼잡도 값을 상태로 업데이트
-      congestionP = congestionDataP;
-    });
+    congestionN = congestionDataN;
+    congestionP = congestionDataP;
+
+    print(congestionDataN);
+    print(congestionN);
+    print(congestionP);
   }
 
   Future<int> getCongestionData(int link) async {
@@ -168,7 +178,7 @@ class _StationDataState extends State<StationData> {
                     onTap: () {
                       setState(() {
                         array = 0;
-                        loadCongestionData();
+                        loadCongestionData(0);
                       });
                     },
                     child: Container(
@@ -199,7 +209,7 @@ class _StationDataState extends State<StationData> {
                       onTap: () {
                         setState(() {
                           array = 1;
-                          loadCongestionData();
+                          loadCongestionData(1);
                         });
                       },
                       child: Container(
@@ -590,7 +600,9 @@ class _StationDataState extends State<StationData> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Icon(
-                                  getIconForIndex(congestionN),
+                                  getIconForIndex(
+                                    congestionN,
+                                  ),
                                   color: getColorForIndex(congestionN),
                                   size: 40,
                                 ),
