@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test1/algorithm_code/graph.dart';
+import 'package:test1/Algorithm/graph.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 //사용자 정보 프로바이더 클래스 -> 파이어베이스로 사용자 정보와 데이터베이스 정보 가져오는 클래스
-// FirebaseAuth : 사용자 정보
-// FirebaseFirestore : 데이터 베이스
+//FirebaseAuth : 사용자 정보
+//FirebaseFirestore : 데이터 베이스
 class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance; //사용자 정보 객체 변수
   final FirebaseFirestore _firestore =
@@ -116,17 +116,17 @@ class UserProvider with ChangeNotifier {
       String? userUid = _user!.uid;
       List<Map<String, dynamic>> writtenPosts = [];
 
-      // Fetch posts from Bulletin_Board
-      QuerySnapshot bulletinBoardSnapshot = await FirebaseFirestore.instance
+      //역별게시판
+      QuerySnapshot BoardSnapshot = await FirebaseFirestore.instance
           .collection('Bulletin_Board')
           .where('User_ID', isEqualTo: userUid)
           .get();
 
-      for (QueryDocumentSnapshot doc in bulletinBoardSnapshot.docs) {
+      for (QueryDocumentSnapshot doc in BoardSnapshot.docs) {
         writtenPosts.add(doc.data() as Map<String, dynamic>);
       }
 
-      // Fetch posts from Inquiry
+      //문의글
       QuerySnapshot inquirySnapshot = await FirebaseFirestore.instance
           .collection('Inquiry')
           .where('User_ID', isEqualTo: userUid)
@@ -151,19 +151,19 @@ class UserProvider with ChangeNotifier {
           FirebaseFirestore.instance.collection('Users');
       DocumentReference userDocRef = users.doc(userUid);
 
-      // 해당 사용자 문서 가져오기
+      //해당 사용자 문서 가져오기
       DocumentSnapshot userSnapshot = await userDocRef.get();
 
-      // 사용자 문서가 존재하면
+      //사용자 문서가 존재하면
       if (userSnapshot.exists) {
-        // 현재 포인트 가져오기
+        //현재 포인트 가져오기
         int currentPoints =
             (userSnapshot.data() as Map<String, dynamic>?)?['point'] ?? 0;
 
-        // 포인트 필드에 100 추가
+        //포인트 필드에 100 추가
         int updatedPoints = currentPoints + 100;
 
-        // 업데이트된 포인트로 업데이트
+        //변경된 포인트로 업데이트
         await userDocRef.update({'point': updatedPoints});
       }
     } catch (e) {
@@ -179,19 +179,19 @@ class UserProvider with ChangeNotifier {
           FirebaseFirestore.instance.collection('Users');
       DocumentReference userDocRef = users.doc(userUid);
 
-      // 해당 사용자 문서 가져오기
+      //해당 사용자 문서 가져오기
       DocumentSnapshot userSnapshot = await userDocRef.get();
 
-      // 사용자 문서가 존재하면
+      //사용자 문서가 존재하면
       if (userSnapshot.exists) {
         // 현재 혼잡도 제공 횟수 가져오기
         int currentCount =
             (userSnapshot.data() as Map<String, dynamic>?)?['count'] ?? 0;
 
-        // 혼젭도 제공 횟수에 1 추가
+        //혼잡도 제공 횟수에 1 추가
         int updatedCount = currentCount + 1;
 
-        // 업데이트된 포인트로 업데이트
+        //업데이트된 포인트로 업데이트
         await userDocRef.update({'count': updatedCount});
       }
     } catch (e) {
@@ -229,7 +229,7 @@ class UserProvider with ChangeNotifier {
       String storedStation1 = doc['station1_ID'];
       String storedStation2 = doc['station2_ID'];
 
-      //두 역의 값이 모두 일치하는 경우 true를 반환합니다.
+      //두 역의 값이 모두 일치하는 경우 true를 반환
       if (station1 == storedStation1 && station2 == storedStation2) {
         return true;
       }
@@ -313,6 +313,7 @@ class UserProvider with ChangeNotifier {
   Future<List<Map<String, dynamic>>> getBookmarkList() async {
     String? userUid = _user!.uid;
     List<Map<String, dynamic>> bookmarkList = [];
+
     //역 즐겨찾기 가져오기
     QuerySnapshot stationSnapshot = await FirebaseFirestore.instance
         .collection('Users')

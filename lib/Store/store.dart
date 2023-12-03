@@ -20,7 +20,7 @@ class _StorePageState extends State<StorePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryPage(category: category),
+        builder: (context) => Category(category: category),
       ),
     );
   }
@@ -84,7 +84,7 @@ class _StorePageState extends State<StorePage> {
             icon: const Icon(
               Icons.arrow_back_ios_new,
               color: Colors.black,
-            ), // 뒤로 가기 아이콘
+            ),
             onPressed: () {
               Navigator.pop(context);
               currentUI = "home";
@@ -127,7 +127,7 @@ class _StorePageState extends State<StorePage> {
                     const SizedBox(
                       width: 100.0,
                     ),
-                    // 리워드 포인트
+                    //리워드 포인트
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
@@ -183,11 +183,11 @@ class _StorePageState extends State<StorePage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  // 이미지를 탭하면 구매 페이지로 이동
+                                  //이미지를 탭하면 구매 페이지로 이동
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => BuyPage(
+                                      builder: (context) => BeforeBuy(
                                         category: store['category'],
                                         categoryname: store['category_name'],
                                         icon: store['icon'],

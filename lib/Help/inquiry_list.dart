@@ -2,23 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:test1/Help/inquiary.dart';
+import 'package:test1/Help/inquiry.dart';
 
-class Inquiry extends StatefulWidget {
-  const Inquiry({super.key});
+class InquiryList extends StatefulWidget {
+  const InquiryList({super.key});
 
   @override
-  State<Inquiry> createState() => _InquiryState();
+  State<InquiryList> createState() => _InquiryListState();
 }
 
-class _InquiryState extends State<Inquiry> {
+class _InquiryListState extends State<InquiryList> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Inquiry 테이블의 데이터를 가져옴
+  //InquiryList 테이블의 데이터를 가져옴
   CollectionReference product =
       FirebaseFirestore.instance.collection('Inquiry');
 
-  // 댓글을 저장할 서브컬렉션을 위한 참조 생성
+  //답글을 저장할 서브컬렉션을 위한 참조 생성
   CollectionReference commentsReference(String postId) {
     return product.doc(postId).collection('comments');
   }
@@ -26,13 +26,12 @@ class _InquiryState extends State<Inquiry> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
 
-  // 게시물 편집
+  //문의글을 편집하는 메소드
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (documentSnapshot['User_ID'] == currentUserId) {
       titleController.text = documentSnapshot['title'];
       contentController.text = documentSnapshot['content'];
@@ -92,12 +91,12 @@ class _InquiryState extends State<Inquiry> {
         },
       );
     } else {
-      // 작성자가 아닌 경우 수정 권한이 없음을 알림
+      //작성자가 아닌 경우 수정 권한이 없음을 알림
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('권한 없음'),
-          content: const Text('자신이 작성한 게시글만 수정할 수 있습니다.'),
+          content: const Text('자신이 작성한 문의글만 수정할 수 있습니다.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -111,9 +110,8 @@ class _InquiryState extends State<Inquiry> {
     }
   }
 
-  //게시글 생성
+  //문의글을 작성하는 메소드
   Future<void> _create() async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
@@ -171,19 +169,18 @@ class _InquiryState extends State<Inquiry> {
     );
   }
 
-  //게시글 삭제
+  //문의글을 삭제하는 메소드
   Future<void> _delete(String productId) async {
-    // 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     DocumentSnapshot documentSnapshot = await product.doc(productId).get();
 
     if (documentSnapshot['User_ID'] == currentUserId) {
       await product.doc(productId).delete();
     } else {
-      // 작성자가 아닌 경우 삭제 권한이 없음을 알림
+      //작성자가 아닌 경우 삭제 권한이 없음을 알림
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -254,7 +251,7 @@ class _InquiryState extends State<Inquiry> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            InquiryCommentPage(postSnapshot: documentSnapshot),
+                            Inquiry(postSnapshot: documentSnapshot),
                       ),
                     );
                   },
@@ -295,12 +292,12 @@ class _InquiryState extends State<Inquiry> {
                                     if (userSnapshot.hasData &&
                                         userSnapshot.data != null &&
                                         userSnapshot.data!.exists) {
-                                      // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                      //Users 테이블에서 해당 사용자의 닉네임 가져오기
                                       Map<String, dynamic> userData =
                                           userSnapshot.data!.data()
                                               as Map<String, dynamic>;
                                       String nickname = userData['nickname'];
-                                      // 닉네임으로 사용자 구분
+                                      //닉네임으로 사용자 구분
                                       return Text('사용자: $nickname');
                                     } else {
                                       return const SizedBox();
@@ -348,7 +345,7 @@ class _InquiryState extends State<Inquiry> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      // 글 작성 버튼
+      //글 작성 버튼
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple[300],
         onPressed: () {

@@ -6,23 +6,23 @@ import 'package:test1/Board/station_board.dart';
 import 'package:test1/Interface/menu.dart';
 import 'package:test1/main.dart';
 
-class StationBulletin extends StatefulWidget {
-  const StationBulletin({super.key});
+class StationBoardList extends StatefulWidget {
+  const StationBoardList({super.key});
 
   @override
-  State<StationBulletin> createState() => _StationBulletinState();
+  State<StationBoardList> createState() => _StationBulletinState();
 }
 
-class _StationBulletinState extends State<StationBulletin> {
-  List<int> stationIds = []; // station_ID 목록을 저장할 리스트
-  int selectedStation = 101; // 초기 선택된 station_ID
+class _StationBulletinState extends State<StationBoardList> {
+  List<int> stationIds = []; //station_ID 목록을 저장할 리스트
+  int selectedStation = 101; //초기 선택된 station_ID
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Bulletin_Board테이블의 데이터를 가져옴
+  //StationBoardList 테이블의 데이터를 가져옴
   CollectionReference product =
       FirebaseFirestore.instance.collection('Bulletin_Board');
 
-  // 댓글을 저장할 서브컬렉션을 위한 참조 생성
+  //댓글을 저장할 서브컬렉션을 위한 참조 생성
   CollectionReference commentsReference(String postId) {
     return product.doc(postId).collection('comments');
   }
@@ -31,13 +31,12 @@ class _StationBulletinState extends State<StationBulletin> {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController stationController = TextEditingController();
 
-  // 게시물 편집
+  //게시물을 편집하는 메소드
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (documentSnapshot['User_ID'] == currentUserId) {
       titleController.text = documentSnapshot['title'];
       contentController.text = documentSnapshot['content'];
@@ -111,7 +110,7 @@ class _StationBulletinState extends State<StationBulletin> {
         },
       );
     } else {
-      // 작성자가 아닌 경우 수정 권한이 없음을 알림
+      //작성자가 아닌 경우 수정 권한이 없음을 알림
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -130,9 +129,8 @@ class _StationBulletinState extends State<StationBulletin> {
     }
   }
 
-  //게시글 생성
+  //게시글을 생성하는 함수
   Future<void> _create() async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
@@ -213,19 +211,18 @@ class _StationBulletinState extends State<StationBulletin> {
     );
   }
 
-  //게시글 삭제
+  //게시글을 삭제하는 메소드
   Future<void> _delete(String productId) async {
-    // 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     DocumentSnapshot documentSnapshot = await product.doc(productId).get();
 
     if (documentSnapshot['User_ID'] == currentUserId) {
       await product.doc(productId).delete();
     } else {
-      // 작성자가 아닌 경우 삭제 권한이 없음을 알림
+      //작성자가 아닌 경우 삭제 권한이 없음을 알림
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -247,10 +244,10 @@ class _StationBulletinState extends State<StationBulletin> {
   @override
   void initState() {
     super.initState();
-    fetchStationIds(); // initState에서 station_ID 목록을 가져오도록 설정
+    fetchStationIds(); //initState에서 station_ID 목록을 가져오도록 설정
   }
 
-  // Firestore에서 station_ID 목록을 가져오는 메서드
+  //Firestore에서 station_ID 목록을 가져오는 메소드
   Future<void> fetchStationIds() async {
     QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('Bulletin_Board').get();
@@ -301,7 +298,7 @@ class _StationBulletinState extends State<StationBulletin> {
             },
           ),
           title: const Text(
-            '역 별 게시판',
+            '역별 게시판',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -333,7 +330,7 @@ class _StationBulletinState extends State<StationBulletin> {
                       ),
                     );
                   }).toList(),
-                  underline: Container(), // 밑줄을 없애는 부분
+                  underline: Container(),
                   onChanged: (int? value) {
                     if (value != null) {
                       setState(() {
@@ -381,7 +378,7 @@ class _StationBulletinState extends State<StationBulletin> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CommentPage(
+                                    builder: (context) => StationBoard(
                                         postSnapshot: documentSnapshot),
                                   ),
                                 );
@@ -501,8 +498,8 @@ class _StationBulletinState extends State<StationBulletin> {
                     },
                   ),
                   Positioned(
-                    right: 15.0, // 이미지를 버튼 오른쪽에 배치
-                    bottom: 70.0, // 이미지를 버튼 아래에 배치
+                    right: 15.0,
+                    bottom: 70.0,
                     child: SizedBox(
                       width: 100.0,
                       height: 40.0,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/Provider/user_provider.dart';
-import 'package:test1/algorithm_code/graph.dart';
+import 'package:test1/Algorithm/graph.dart';
 import 'package:test1/main.dart';
 
 //데이터 프로바이더 함수 -> 데이터 프로바이더 객체 선언후 함수 사용가능

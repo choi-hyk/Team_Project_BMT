@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+class ResetPassword extends StatefulWidget {
+  const ResetPassword({super.key});
 
   @override
-  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
+  _ResetPasswordState createState() => _ResetPasswordState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordState extends State<ResetPassword> {
   final _emailController = TextEditingController();
   final _auth = FirebaseAuth.instance;
 
@@ -39,13 +39,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           icon: const Icon(
             Icons.arrow_back_ios_new,
             color: Colors.black,
-          ), // 뒤로 가기 아이콘
+          ),
           onPressed: () {
-            Navigator.pop(context); // 뒤로 가기 버튼을 누르면 현재 화면에서 빠져나감
+            Navigator.pop(context);
           },
         ),
         title: const Text(
-          '게정 찾기',
+          '비밀번호 재설정',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -95,13 +95,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
-                                        Theme.of(context)
-                                            .primaryColorDark), // 버튼의 배경색
+                                        Theme.of(context).primaryColorDark),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        20.0), // 버튼의 모서리를 둥글게 만듭니다.
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
                               ),

@@ -12,6 +12,7 @@ class Notice extends StatefulWidget {
 class _NoticeState extends State<Notice> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //공지사항의 내용을 보여주는 다이어로그
   void _showContentDialog(String title, String content) {
     showDialog(
       context: context,

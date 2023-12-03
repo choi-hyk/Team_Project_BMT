@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:test1/Store/store.dart';
 
-class GiftPage extends StatefulWidget {
+class AfterBuy extends StatefulWidget {
   final String giftUrl;
 
-  const GiftPage({Key? key, required this.giftUrl}) : super(key: key);
+  const AfterBuy({Key? key, required this.giftUrl}) : super(key: key);
 
   @override
-  State<GiftPage> createState() => _GiftPageState();
+  State<AfterBuy> createState() => _AfterBuyState();
 }
 
-class _GiftPageState extends State<GiftPage> {
+class _AfterBuyState extends State<AfterBuy> {
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
@@ -62,12 +62,12 @@ class _GiftPageState extends State<GiftPage> {
               ),
               const SizedBox(height: 20.0),
               const Text(
-                '축하합니다!',
+                '교환권 저장',
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10.0),
               const Text(
-                '기프티콘을 성공적으로 획득하셨습니다.',
+                '사용 가능한 매장을 확인해주세요',
                 style: TextStyle(fontSize: 16.0),
                 textAlign: TextAlign.center,
               ),

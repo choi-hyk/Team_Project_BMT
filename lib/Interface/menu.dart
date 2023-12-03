@@ -15,7 +15,7 @@ import 'package:test1/main.dart';
 
 //Menu 클래스
 //메인 화면 : 역검색, 노선도, 사용자 메뉴
-//드로어 : 설정, 스토어, 즐겨찾기, 게시판, 분실물 게시판, 로그아웃
+//드로어 : 설정, 스토어, 즐겨찾기, 역별 게시판, 분실물 게시판, 로그아웃
 class Menu extends StatefulWidget {
   const Menu({
     super.key,
@@ -44,7 +44,7 @@ class _MenuState extends State<Menu> {
     _scaffoldKey.currentState?.openDrawer();
   }
 
-  //역 검색시 역 정보 불러오는 함수
+  //역 검색 시에역 정보 불러오는 함수
   Future<void> waitData(int searchStation) async {
     await dataProvider.searchData(searchStation);
     if (!dataProvider.found) {
@@ -86,7 +86,7 @@ class _MenuState extends State<Menu> {
     }
   }
 
-  //뒤로가기 누를 경우 로그아웃 확인 다이얼로그 팝업창 띄우는 메소드
+  //뒤로가기 터치할 경우에 로그아웃 확인 다이얼로그 보여주는 메소드
   Future<bool> _onWillPop(BuildContext context) async {
     return (await showDialog(
           context: context,
@@ -149,7 +149,7 @@ class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context); //사용자 정보 사용을 위해
+    final userProvider = Provider.of<UserProvider>(context);
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
@@ -451,8 +451,7 @@ class _MenuState extends State<Menu> {
                     currentUI = 'home';
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const BookmarkPage()),
+                      MaterialPageRoute(builder: (context) => const Bookmark()),
                     );
                   },
                   child: Row(
@@ -484,7 +483,7 @@ class _MenuState extends State<Menu> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const StationBulletin(),
+                        builder: (context) => const StationBoardList(),
                       ),
                     );
                   },
@@ -516,7 +515,7 @@ class _MenuState extends State<Menu> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LostAndFound()),
+                          builder: (context) => const LostBoardList()),
                     );
                   },
                   child: Row(

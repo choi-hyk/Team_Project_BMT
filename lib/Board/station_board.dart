@@ -3,16 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class CommentPage extends StatefulWidget {
+class StationBoard extends StatefulWidget {
   final DocumentSnapshot postSnapshot;
 
-  const CommentPage({Key? key, required this.postSnapshot}) : super(key: key);
+  const StationBoard({Key? key, required this.postSnapshot}) : super(key: key);
 
   @override
-  State<CommentPage> createState() => _CommentPageState();
+  State<StationBoard> createState() => _CommentPageState();
 }
 
-class _CommentPageState extends State<CommentPage> {
+class _CommentPageState extends State<StationBoard> {
   late TextEditingController commentController;
   final ScrollController _commentScrollController = ScrollController();
   @override
@@ -99,7 +99,7 @@ class _CommentPageState extends State<CommentPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // 게시글 작성자 정보 가져오기
+                //게시글 작성자의 정보 가져오기
                 FutureBuilder<DocumentSnapshot>(
                   future: FirebaseFirestore.instance
                       .collection('Users')
@@ -110,7 +110,7 @@ class _CommentPageState extends State<CommentPage> {
                     if (userSnapshot.hasData &&
                         userSnapshot.data != null &&
                         userSnapshot.data!.exists) {
-                      // 게시글 작성자의 닉네임 가져오기
+                      //게시글 작성자의 닉네임 가져오기
                       String? nickname = userSnapshot.data!['nickname'];
                       return Text(
                         '작성자: ${nickname ?? '사용자'}',
@@ -142,14 +142,12 @@ class _CommentPageState extends State<CommentPage> {
                   '댓글',
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
-                // 댓글 목록을 표시하는 부분
+                //댓글 목록을 표시하는 부분
                 buildCommentsSection(postSnapshot.id),
-
                 const SizedBox(
                   height: 14,
                 ),
-
-                // 댓글 입력 필드 및 추가 버튼
+                //댓글 입력 필드 및 추가 버튼
                 buildCommentInputField(postSnapshot.id),
               ],
             ),
@@ -159,6 +157,7 @@ class _CommentPageState extends State<CommentPage> {
     );
   }
 
+  //댓글 관련 위젯
   Widget buildCommentsSection(String postId) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -204,6 +203,7 @@ class _CommentPageState extends State<CommentPage> {
     );
   }
 
+  //댓글 작성 위젯
   Widget buildCommentInputField(String postId) {
     return Container(
       decoration: BoxDecoration(
@@ -229,21 +229,19 @@ class _CommentPageState extends State<CommentPage> {
             onPressed: () async {
               final String commentText = commentController.text;
               if (commentText.isNotEmpty) {
-                // 현재 사용자 정보 가져오기
                 User? currentUser = FirebaseAuth.instance.currentUser;
                 String? currentUserNickname = currentUser?.displayName;
 
-                // 댓글을 Firestore에 추가
+                //댓글을 Firestore에 추가
                 await FirebaseFirestore.instance
                     .collection('Bulletin_Board')
                     .doc(postId)
                     .collection('comments')
                     .add({
                   'text': commentText,
-                  'user': currentUser?.uid, // 사용자 ID 또는 다른 사용자 정보 추가 가능
+                  'user': currentUser?.uid, //사용자 ID 또는 다른 사용자 정보 추가 가능
                   'timestamp': FieldValue.serverTimestamp(),
                 });
-
                 commentController.clear();
               }
             },

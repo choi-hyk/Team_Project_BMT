@@ -11,7 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //전역 변수
 int current_trans = 0;
-// Station데이터 값 배열 순서
+//Station데이터 값 배열 순서
 //StationData에서 검색한 역이 환승 가능한경우 호선 순서상 첫번쨰 호선 array = 0, 두번째 호선 array = 1
 
 String currentUI = "login";

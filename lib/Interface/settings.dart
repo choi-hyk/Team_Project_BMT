@@ -21,9 +21,9 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-//계정을 삭제하는 화면을 보여주는 함수
+//계정을 삭제하는 다이얼로그를 보여주는 함수
   Future<void> _showDeleteAccountDialog() async {
-    String password = ''; // 비밀번호 저장 변수
+    String password = ''; //비밀번호 저장 변수
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -39,7 +39,7 @@ class _SettingsState extends State<Settings> {
                 TextField(
                   obscureText: true,
                   onChanged: (value) {
-                    password = value; // 비밀번호 업데이트
+                    password = value; //비밀번호 확인
                   },
                   decoration: const InputDecoration(
                     labelText: '비밀번호',
@@ -127,6 +127,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  //위젯
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,7 +171,7 @@ class _SettingsState extends State<Settings> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Inquiry()));
+                              builder: (context) => const InquiryList()));
                     },
                   ),
                   settingsOption(
@@ -179,7 +180,7 @@ class _SettingsState extends State<Settings> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const MyPost()));
+                              builder: (context) => const MyBoard()));
                     },
                   ),
                   sectionTitle("약관 및 정책"),
@@ -208,7 +209,7 @@ class _SettingsState extends State<Settings> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ResetPasswordScreen()));
+                            builder: (context) => const ResetPassword()));
                   }),
                   settingsOption("계정 삭제", onTap: () {
                     _showDeleteAccountDialog();

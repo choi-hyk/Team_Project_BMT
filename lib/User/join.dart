@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/User/info.dart';
 
-class JoinAccount extends StatefulWidget {
-  const JoinAccount({Key? key}) : super(key: key);
+class Join extends StatefulWidget {
+  const Join({Key? key}) : super(key: key);
   @override
-  State<JoinAccount> createState() => _JoinAccountState();
+  State<Join> createState() => _JoinAccountState();
 }
 
-class _JoinAccountState extends State<JoinAccount> {
+class _JoinAccountState extends State<Join> {
   final _authentication = FirebaseAuth.instance; //Authentication 인증 객체 생성
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -44,7 +44,7 @@ class _JoinAccountState extends State<JoinAccount> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => InfoPage(user: newUser.user!), //user 객체 넘겨주기
+          builder: (context) => Info(user: newUser.user!), //user 객체 넘겨주기
         ),
       );
     } on FirebaseAuthException catch (e) {

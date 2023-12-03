@@ -7,24 +7,24 @@ import 'package:test1/Interface/menu.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/main.dart';
 
-class LostAndFound extends StatefulWidget {
-  const LostAndFound({super.key});
+class LostBoardList extends StatefulWidget {
+  const LostBoardList({super.key});
 
   @override
-  State<LostAndFound> createState() => _LostAndFoundState();
+  State<LostBoardList> createState() => LostBoardListState();
 }
 
-class _LostAndFoundState extends State<LostAndFound> {
+class LostBoardListState extends State<LostBoardList> {
   final bool _isSearching = false;
   List<int> stationIds = []; // station_ID 목록을 저장할 리스트
   int selectedStation = 101; // 초기 선택된 station_ID
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Bulletin_Board테이블의 데이터를 가져옴
+  //StationBoardList테이블의 데이터를 가져옴
   CollectionReference product =
       FirebaseFirestore.instance.collection('LostAndFound');
 
-  // 댓글을 저장할 서브컬렉션을 위한 참조 생성
+  //댓글을 저장할 서브컬렉션을 위한 참조 생성
   CollectionReference commentsReference(String postId) {
     return product.doc(postId).collection('comments');
   }
@@ -33,14 +33,13 @@ class _LostAndFoundState extends State<LostAndFound> {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController stationController = TextEditingController();
 
-  // 게시물 편집
+  //게시물 편집
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
     DataProvider dataProvider1 = DataProvider();
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (documentSnapshot['User_ID'] == currentUserId) {
       titleController.text = documentSnapshot['title'];
       contentController.text = documentSnapshot['content'];
@@ -118,7 +117,7 @@ class _LostAndFoundState extends State<LostAndFound> {
         },
       );
     } else {
-      // 작성자가 아닌 경우 수정 권한이 없음을 알림
+      //작성자가 아닌 경우 수정 권한이 없음을 알림
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -137,9 +136,8 @@ class _LostAndFoundState extends State<LostAndFound> {
     }
   }
 
-  //게시글 생성
+  //게시글을 작성하는 메소드
   Future<void> _create() async {
-    // 이 부분에서 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
     DataProvider dataProvider1 = DataProvider();
@@ -225,13 +223,13 @@ class _LostAndFoundState extends State<LostAndFound> {
     );
   }
 
-  //게시글 삭제
+  //게시글을 삭제하는 메소드
   Future<void> _delete(String productId) async {
     // 현재 사용자의 정보를 가져옴
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
 
-    // 게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
+    //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     DocumentSnapshot documentSnapshot = await product.doc(productId).get();
 
     if (documentSnapshot['User_ID'] == currentUserId) {
@@ -262,7 +260,7 @@ class _LostAndFoundState extends State<LostAndFound> {
     fetchStationIds(); // initState에서 station_ID 목록을 가져오도록 설정
   }
 
-  // Firestore에서 station_ID 목록을 가져오는 메서드
+  //Firestore에서 station_ID 목록을 가져오는 메서드
   Future<void> fetchStationIds() async {
     QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('LostAndFound').get();
@@ -339,7 +337,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                     ),
                   );
                 }).toList(),
-                underline: Container(), // 밑줄을 없애는 부분
+                underline: Container(),
                 onChanged: (int? value) {
                   if (value != null) {
                     setState(() {
@@ -387,7 +385,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => LostCommentPage(
+                                    builder: (context) => LostBoard(
                                         postSnapshot: documentSnapshot),
                                   ),
                                 );
@@ -439,7 +437,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                                                 if (userSnapshot.hasData &&
                                                     userSnapshot.data != null &&
                                                     userSnapshot.data!.exists) {
-                                                  // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                                  //Users 테이블에서 해당 사용자의 닉네임 가져오기
                                                   Map<String, dynamic>
                                                       userData =
                                                       userSnapshot.data!.data()
@@ -447,7 +445,7 @@ class _LostAndFoundState extends State<LostAndFound> {
                                                               dynamic>;
                                                   String nickname =
                                                       userData['nickname'];
-                                                  // 닉네임으로 사용자 구분
+                                                  //닉네임으로 사용자 구분
                                                   return Padding(
                                                     padding:
                                                         const EdgeInsets.only(
@@ -510,8 +508,8 @@ class _LostAndFoundState extends State<LostAndFound> {
                     },
                   ),
                   Positioned(
-                    right: 15.0, // 이미지를 버튼 오른쪽에 배치
-                    bottom: 70.0, // 이미지를 버튼 아래에 배치
+                    right: 15.0,
+                    bottom: 70.0,
                     child: SizedBox(
                       width: 100.0,
                       height: 40.0,

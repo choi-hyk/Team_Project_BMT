@@ -23,7 +23,7 @@ class _Service_TermsState extends State<Service_Terms> {
         future: loadTerms(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            // 데이터가 로드되면 표시
+            //데이터가 로드되면 표시
             return SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -32,7 +32,7 @@ class _Service_TermsState extends State<Service_Terms> {
               ),
             );
           } else {
-            // 데이터 로딩 중에는 로딩 인디케이터 표시
+            //데이터 로딩 중에는 로딩 인디케이터 표시
             return Center(child: CircularProgressIndicator());
           }
         },

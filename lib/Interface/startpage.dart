@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test1/User/login.dart';
 
-//앱 시작하고 처음 진입하는 페이지 -> 로그인 텍스트 눌러서 이동 가능
+//앱 시작하고 처음 진입하는 페이지 -> 로그인 텍스트 눌러서 로그인페이지로 이동 가능
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
 
