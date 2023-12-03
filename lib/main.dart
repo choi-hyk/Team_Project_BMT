@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/Interface/startpage.dart';
-import 'firebase_options.dart';
+import 'SRC/firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

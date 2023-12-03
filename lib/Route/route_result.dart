@@ -6,7 +6,7 @@ import 'package:test1/main.dart';
 import 'package:test1/Interface/menu.dart';
 import 'package:test1/Congestion/congestion.dart';
 import 'package:intl/intl.dart';
-import 'package:test1/notification_service.dart';
+import 'package:test1/Notification/notification_service.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //drawRouteResult에서 반환값으로 사용하기 위한 클래스
