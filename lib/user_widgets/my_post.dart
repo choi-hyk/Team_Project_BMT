@@ -4,14 +4,14 @@ import 'package:test1/provider_code/user_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class WrittenPage extends StatefulWidget {
-  const WrittenPage({super.key});
+class MyPost extends StatefulWidget {
+  const MyPost({super.key});
 
   @override
-  State<WrittenPage> createState() => _WrittenPageState();
+  State<MyPost> createState() => _MyPostState();
 }
 
-class _WrittenPageState extends State<WrittenPage> {
+class _MyPostState extends State<MyPost> {
   late Future<List<Map<String, dynamic>>> _writtenPosts;
 
   @override
