@@ -70,7 +70,6 @@ class _RouteResultsState extends State<RouteResults> {
   late DataProvider dataProvider;
 
   late int travelTime;
-
   late bool isBook;
 
   //클래스 진입 시 초기화
@@ -122,34 +121,6 @@ class _RouteResultsState extends State<RouteResults> {
     isBook = await userProvider.isRouteBookmarked(
         widget.startStation, widget.arrivStation);
   }
-/*
-  Future<void> _scheduleAlarm(int seconds) async {
-    const int alarmID = 0;
-    final Duration duration = Duration(seconds: seconds);
-
-    await AndroidAlarmManager.oneShot(
-      duration,
-      alarmID,
-      _showNotification, //알림이 울릴 때 실행할 콜백 함수
-      exact: true,
-      wakeup: true,
-    );
-    print("스케쥴알람 실행");
-  }
-
-  void _showNotification() {
-    try {
-      print("알림 설정 시작");
-      final notificationService = NotificationService();
-      String title = '도착 알림';
-      String body = '곧 목적지에 도착합니다!';
-      print("알림 설정 진행 중");
-      notificationService.showNotification(0, title, body);
-      print("알림 설정 완료");
-    } catch (e) {
-      print("알림 설정 중 오류 발생: $e");
-    }
-  }*/
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
   Future<void> fetchData() async {
@@ -494,7 +465,8 @@ class _RouteResultsState extends State<RouteResults> {
                         travelTime = timeOfCostPath;
                       }
                       //_scheduleAlarm(10);
-                      NotificationService.showNotification();
+                      NotificationService.showDelayedNotification(
+                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
                       print("알림 시작 버튼 터치");
                     },
                     child: const Row(

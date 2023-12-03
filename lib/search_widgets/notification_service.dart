@@ -1,3 +1,5 @@
+//알림 설정하는 파일
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -23,18 +25,31 @@ class NotificationService {
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  static Future<void> showNotification() async {
+  //알림을 보내는 함수
+  static Future<void> showNotification(String title, String body) async {
     const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('channel id', 'channel name',
-            channelDescription: 'channel Description',
+        AndroidNotificationDetails('channelId', 'channelName',
+            channelDescription: 'channel description',
             importance: Importance.max,
-            priority: Priority.high,
+            priority: Priority.max,
             showWhen: false);
 
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin.show(
-        0, 'test title', 'test body', notificationDetails);
+        0, title, body, notificationDetails);
+  }
+
+  //정해진 시간 이후에 알림 보여주기
+  static Future<void> showDelayedNotification(
+      int seconds, String title, String body) async {
+    //Delay 설정
+    Duration delay = Duration(seconds: seconds);
+
+    //Delay 후 알림 트리거
+    Timer(delay, () async {
+      await showNotification(title, body);
+    });
   }
 }
