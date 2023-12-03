@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:test1/main.dart';
 import 'package:test1/prov_reawrd.dart';
 
+
 class ProvConf extends StatefulWidget {
   final String currentStaion;
   final String linkStaion;
@@ -59,6 +60,7 @@ class ProvConfState extends State<ProvConf> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

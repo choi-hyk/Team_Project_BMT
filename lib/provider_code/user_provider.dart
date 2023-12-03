@@ -166,6 +166,34 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  //혼잡도 제공 횟수 더하는 함수
+  Future<void> addCountToUser() async {
+    try {
+      String? userUid = _user!.uid;
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('Users');
+      DocumentReference userDocRef = users.doc(userUid);
+
+      // 해당 사용자 문서 가져오기
+      DocumentSnapshot userSnapshot = await userDocRef.get();
+
+      // 사용자 문서가 존재하면
+      if (userSnapshot.exists) {
+        // 현재 혼잡도 제공 횟수 가져오기
+        int currentCount =
+            (userSnapshot.data() as Map<String, dynamic>?)?['count'] ?? 0;
+
+        // 혼젭도 제공 횟수에 1 추가
+        int updatedCount = currentCount + 1;
+
+        // 업데이트된 포인트로 업데이트
+        await userDocRef.update({'count': updatedCount});
+      }
+    } catch (e) {
+      print('Error adding count to user: $e');
+    }
+  }
+
   //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
   //역 즐겨찾기 여부를 확인하는 메소드
