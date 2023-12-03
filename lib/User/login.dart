@@ -5,7 +5,7 @@ import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
 import 'package:test1/User/join.dart';
-import 'package:test1/User/reset_pwd.dart';
+import 'package:test1/User/reset_passwd.dart';
 import 'package:test1/Interface/menu.dart';
 
 class LoginUI extends StatefulWidget {

@@ -10,7 +10,7 @@ import 'package:test1/Terms/location_terms.dart';
 import 'package:test1/Terms/privacy_terms.dart';
 import 'package:test1/Terms/service_terms.dart';
 import 'package:test1/User/login.dart';
-import 'package:test1/User/reset_pwd.dart';
+import 'package:test1/User/reset_passwd.dart';
 
 class SettingsUI extends StatefulWidget {
   const SettingsUI({super.key});
