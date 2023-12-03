@@ -14,7 +14,7 @@ class CommentPage extends StatefulWidget {
 
 class _CommentPageState extends State<CommentPage> {
   late TextEditingController commentController;
-
+  final ScrollController _commentScrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -36,8 +36,8 @@ class _CommentPageState extends State<CommentPage> {
     createdAt = createdAt.add(const Duration(hours: 9));
 
     String formattedDate =
-        DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR').format(createdAt);
-
+        DateFormat('yyyy.MM.dd hh : mm', 'ko_KR').format(createdAt);
+    final ScrollController scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -51,63 +51,109 @@ class _CommentPageState extends State<CommentPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
+        controller: scrollController,
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              postSnapshot['title'],
-              style:
-                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+        child: Container(
+          width: double.infinity,
+          height: 750,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
             ),
-            const SizedBox(height: 10),
-            Text(
-              postSnapshot['content'],
-              style: const TextStyle(fontSize: 18.0),
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey,
+              width: 1,
             ),
-            const SizedBox(height: 10),
-            // 게시글 작성자 정보 가져오기
-            FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(postSnapshot['User_ID'])
-                  .get(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                if (userSnapshot.hasData &&
-                    userSnapshot.data != null &&
-                    userSnapshot.data!.exists) {
-                  // 게시글 작성자의 닉네임 가져오기
-                  String? nickname = userSnapshot.data!['nickname'];
-                  return Text(
-                    '작성자: ${nickname ?? '사용자'}',
-                    style: const TextStyle(fontSize: 16.0),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  postSnapshot['title'],
+                  style: const TextStyle(
+                      fontSize: 24.0, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 1,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      postSnapshot['content'],
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // 게시글 작성자 정보 가져오기
+                FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(postSnapshot['User_ID'])
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                    if (userSnapshot.hasData &&
+                        userSnapshot.data != null &&
+                        userSnapshot.data!.exists) {
+                      // 게시글 작성자의 닉네임 가져오기
+                      String? nickname = userSnapshot.data!['nickname'];
+                      return Text(
+                        '작성자: ${nickname ?? '사용자'}',
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '작성일: $formattedDate',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Divider(
+                  thickness: 1.0,
+                  color: Colors.black,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  '댓글',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+                // 댓글 목록을 표시하는 부분
+                buildCommentsSection(postSnapshot.id),
+
+                const SizedBox(
+                  height: 14,
+                ),
+
+                // 댓글 입력 필드 및 추가 버튼
+                buildCommentInputField(postSnapshot.id),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              '작성일: $formattedDate',
-              style: const TextStyle(fontSize: 16.0),
-            ),
-            const SizedBox(height: 10),
-            const Divider(
-              thickness: 1.0,
-              color: Colors.black,
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              '댓글',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            // 댓글 목록을 표시하는 부분
-            buildCommentsSection(postSnapshot.id),
-            // 댓글 입력 필드 및 추가 버튼
-            buildCommentInputField(postSnapshot.id),
-          ],
+          ),
         ),
       ),
     );
@@ -122,35 +168,34 @@ class _CommentPageState extends State<CommentPage> {
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
-                  in snapshot.data!.docs
-                      .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
-                // 댓글 작성자 정보 가져오기
-                FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(commentSnapshot['user'])
-                      .get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                    if (userSnapshot.hasData &&
-                        userSnapshot.data != null &&
-                        userSnapshot.data!.exists) {
-                      // 댓글 작성자의 닉네임 가져오기
-                      String? nickname = userSnapshot.data!['nickname'];
-                      return ListTile(
-                        title: Text(commentSnapshot['text']),
-                        subtitle: Text('작성자: ${nickname ?? '사용자'}'),
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  },
-                ),
-            ],
+          return ListView.builder(
+            controller: _commentScrollController,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (BuildContext context, int index) {
+              QueryDocumentSnapshot<Object?> commentSnapshot =
+                  snapshot.data!.docs[index];
+
+              return FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('Users')
+                    .doc(commentSnapshot['user'])
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                  if (userSnapshot.hasData &&
+                      userSnapshot.data != null &&
+                      userSnapshot.data!.exists) {
+                    String? nickname = userSnapshot.data!['nickname'];
+                    return ListTile(
+                      title: Text(commentSnapshot['text']),
+                      subtitle: Text('작성자: ${nickname ?? '사용자'}'),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              );
+            },
           );
         } else {
           return const CircularProgressIndicator();
@@ -160,49 +205,61 @@ class _CommentPageState extends State<CommentPage> {
   }
 
   Widget buildCommentInputField(String postId) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: commentController,
-            decoration: const InputDecoration(
-              hintText: '댓글을 입력하세요',
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
+        border: Border.all(
+          color: Colors.grey,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: commentController,
+              decoration: const InputDecoration(
+                hintText: '댓글을 입력하세요',
+              ),
             ),
           ),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final String commentText = commentController.text;
-            if (commentText.isNotEmpty) {
-              // 현재 사용자 정보 가져오기
-              User? currentUser = FirebaseAuth.instance.currentUser;
-              String? currentUserNickname = currentUser?.displayName;
+          ElevatedButton(
+            onPressed: () async {
+              final String commentText = commentController.text;
+              if (commentText.isNotEmpty) {
+                // 현재 사용자 정보 가져오기
+                User? currentUser = FirebaseAuth.instance.currentUser;
+                String? currentUserNickname = currentUser?.displayName;
 
-              // 댓글을 Firestore에 추가
-              await FirebaseFirestore.instance
-                  .collection('Bulletin_Board')
-                  .doc(postId)
-                  .collection('comments')
-                  .add({
-                'text': commentText,
-                'user': currentUser?.uid, // 사용자 ID 또는 다른 사용자 정보 추가 가능
-                'timestamp': FieldValue.serverTimestamp(),
-              });
+                // 댓글을 Firestore에 추가
+                await FirebaseFirestore.instance
+                    .collection('Bulletin_Board')
+                    .doc(postId)
+                    .collection('comments')
+                    .add({
+                  'text': commentText,
+                  'user': currentUser?.uid, // 사용자 ID 또는 다른 사용자 정보 추가 가능
+                  'timestamp': FieldValue.serverTimestamp(),
+                });
 
-              commentController.clear();
-            }
-          },
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white)),
-          child: const Text(
-            '댓글 추가',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+                commentController.clear();
+              }
+            },
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.white)),
+            child: const Text(
+              '댓글 추가',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

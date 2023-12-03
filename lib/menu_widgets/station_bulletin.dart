@@ -14,7 +14,6 @@ class StationBulletin extends StatefulWidget {
 }
 
 class _StationBulletinState extends State<StationBulletin> {
-  final bool _isSearching = false;
   List<int> stationIds = []; // station_ID 목록을 저장할 리스트
   int selectedStation = 101; // 초기 선택된 station_ID
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -315,8 +314,8 @@ class _StationBulletinState extends State<StationBulletin> {
           children: [
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
               ),
               child: Center(
                 child: DropdownButton<int>(
@@ -326,10 +325,11 @@ class _StationBulletinState extends State<StationBulletin> {
                       value: stationId,
                       child: Text(
                         '$stationId',
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColorDark),
                       ),
                     );
                   }).toList(),
@@ -373,7 +373,7 @@ class _StationBulletinState extends State<StationBulletin> {
                             createdAt = createdAt.add(const Duration(hours: 9));
 
                             String formattedDate =
-                                DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                                DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
                                     .format(createdAt);
 
                             return GestureDetector(
@@ -386,93 +386,112 @@ class _StationBulletinState extends State<StationBulletin> {
                                   ),
                                 );
                               },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 5),
-                                  ListTile(
-                                    title: Text(
-                                      documentSnapshot['title'],
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(10),
                                     ),
-                                    subtitle: Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: 5.0,
-                                        bottom: 5.0,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          FutureBuilder<DocumentSnapshot>(
-                                            future: FirebaseFirestore.instance
-                                                .collection('Users')
-                                                .doc(
-                                                    documentSnapshot['User_ID'])
-                                                .get(),
-                                            builder: (BuildContext context,
-                                                AsyncSnapshot<DocumentSnapshot>
-                                                    userSnapshot) {
-                                              if (userSnapshot.hasData &&
-                                                  userSnapshot.data != null &&
-                                                  userSnapshot.data!.exists) {
-                                                // Users 테이블에서 해당 사용자의 닉네임 가져오기
-                                                Map<String, dynamic> userData =
-                                                    userSnapshot.data!.data()
-                                                        as Map<String, dynamic>;
-                                                String nickname =
-                                                    userData['nickname'];
-                                                // 닉네임으로 사용자 구분
-                                                return Text(
-                                                  '작성자: $nickname',
-                                                  style: const TextStyle(
-                                                      fontSize: 13),
-                                                );
-                                              } else {
-                                                return const SizedBox();
-                                              }
-                                            },
-                                          ),
-                                          Text(
-                                            '작성일: $formattedDate',
-                                            style:
-                                                const TextStyle(fontSize: 13),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    trailing: SizedBox(
-                                      width: 100,
-                                      child: Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              _update(documentSnapshot);
-                                            },
-                                            icon: const Icon(Icons.edit),
-                                            color: Theme.of(context)
-                                                .primaryColorDark,
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              _delete(documentSnapshot.id);
-                                            },
-                                            icon: const Icon(Icons.delete),
-                                            color: Theme.of(context)
-                                                .primaryColorDark,
-                                          ),
-                                        ],
-                                      ),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
                                     ),
                                   ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    color: Colors.black,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      ListTile(
+                                        title: Text(
+                                          documentSnapshot['title'],
+                                          style: const TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        subtitle: Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 5.0,
+                                            bottom: 5.0,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FutureBuilder<DocumentSnapshot>(
+                                                future: FirebaseFirestore
+                                                    .instance
+                                                    .collection('Users')
+                                                    .doc(documentSnapshot[
+                                                        'User_ID'])
+                                                    .get(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<
+                                                            DocumentSnapshot>
+                                                        userSnapshot) {
+                                                  if (userSnapshot.hasData &&
+                                                      userSnapshot.data !=
+                                                          null &&
+                                                      userSnapshot
+                                                          .data!.exists) {
+                                                    // Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                                    Map<String, dynamic>
+                                                        userData = userSnapshot
+                                                                .data!
+                                                                .data()
+                                                            as Map<String,
+                                                                dynamic>;
+                                                    String nickname =
+                                                        userData['nickname'];
+                                                    // 닉네임으로 사용자 구분
+                                                    return Text(
+                                                      '작성자: $nickname',
+                                                      style: const TextStyle(
+                                                          fontSize: 13),
+                                                    );
+                                                  } else {
+                                                    return const SizedBox();
+                                                  }
+                                                },
+                                              ),
+                                              Text(
+                                                '작성일: $formattedDate',
+                                                style: const TextStyle(
+                                                    fontSize: 13),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        trailing: SizedBox(
+                                          width: 100,
+                                          child: Row(
+                                            children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  _update(documentSnapshot);
+                                                },
+                                                icon: const Icon(Icons.edit),
+                                                color: Theme.of(context)
+                                                    .primaryColorDark,
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  _delete(documentSnapshot.id);
+                                                },
+                                                icon: const Icon(Icons.delete),
+                                                color: Theme.of(context)
+                                                    .primaryColorDark,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             );
                           },
@@ -510,11 +529,10 @@ class _StationBulletinState extends State<StationBulletin> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
+                    child: SizedBox(
                       //광고배너 컨테이너
                       width: double.infinity,
                       height: 60.0,
-                      color: Colors.green,
                       child: Image.asset(
                         'assets/images/광고1.png',
                         fit: BoxFit.fill,

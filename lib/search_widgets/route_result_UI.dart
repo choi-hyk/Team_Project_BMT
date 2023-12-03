@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/search_widgets/notification_service.dart';
 import 'package:test1/prov_conf.dart';
@@ -201,15 +199,19 @@ class _RouteResultsState extends State<RouteResults> {
     //첫번쨰 역 처리
     await dataProvider.searchData(path[leng]);
 
-    if (int.parse(dataProvider.nName[0]) == path[leng - 1] ||
-        int.parse(dataProvider.pName[0]) == path[leng - 1]) {
+    if (217 == path[leng]) {
       saveline.add(dataProvider.line[0]);
       prevline = dataProvider.line[0];
     } else {
-      saveline.add(dataProvider.line[1]);
-      prevline = dataProvider.line[1];
+      if (int.parse(dataProvider.nName[0]) == path[leng - 1] ||
+          int.parse(dataProvider.pName[0]) == path[leng - 1]) {
+        saveline.add(dataProvider.line[0]);
+        prevline = dataProvider.line[0];
+      } else {
+        saveline.add(dataProvider.line[1]);
+        prevline = dataProvider.line[1];
+      }
     }
-
     //첫번째역의 호선을 저장하고 그호선을 다음 역과 비교
     for (int i = 1; i < leng; i++) {
       await dataProvider.searchData(path[leng - i]);
