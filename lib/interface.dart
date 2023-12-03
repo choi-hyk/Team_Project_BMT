@@ -212,6 +212,12 @@ class _InterFaceState extends State<InterFace> {
                                 onPressed: () {
                                   setState(() {
                                     currentUI = 'home';
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const InterFace()),
+                                    );
                                   });
                                 },
                                 icon: const Icon(Icons.home),

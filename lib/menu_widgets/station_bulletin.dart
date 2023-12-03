@@ -91,7 +91,7 @@ class _StationBulletinState extends State<StationBulletin> {
                       await dataProvider1.searchData(station);
 
                       if (dataProvider1.found) {
-                        await product.doc(documentSnapshot.id).update({
+                        await product.add({
                           'title': title,
                           'content': content,
                           'station_ID': station,
@@ -556,3 +556,4 @@ class _StationBulletinState extends State<StationBulletin> {
     );
   }
 }
+

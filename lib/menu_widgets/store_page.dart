@@ -98,38 +98,12 @@ class _StorePageState extends State<StorePage> {
               );
             },
           ),
-          title: _isSearching
-              ? TextField(
-                  // 검색 모드에서는 검색 창을 표시
-                  style: const TextStyle(color: Colors.black),
-                  decoration: const InputDecoration(
-                    hintText: '검색어를 입력하세요',
-                    hintStyle: TextStyle(color: Colors.black),
-                  ),
-                  onChanged: (searchQuery) {
-                    // 검색어 입력 시 동작할 작업 추가
-                  },
-                )
-              : const Text(
-                  '스토어',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+          title: const Text(
+            '스토어',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: Theme.of(context).primaryColor,
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                _isSearching ? Icons.cancel : Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching; // 검색 버튼을 누를 때 검색 모드 토글
-                });
-              },
-            ),
-          ],
         ),
         body: Container(
           color: Theme.of(context).canvasColor,
@@ -206,7 +180,7 @@ class _StorePageState extends State<StorePage> {
                         var store = stores[index].data();
 
                         return Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(4.0),
                           child: Column(
                             children: [
                               GestureDetector(

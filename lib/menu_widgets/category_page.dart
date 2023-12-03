@@ -41,7 +41,7 @@ class _CategoryPageState extends State<CategoryPage> {
               var store = stores[index].data();
 
               return Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Column(
                   children: [
                     GestureDetector(
@@ -65,9 +65,15 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: Container(
                         width: double.infinity,
                         height: 110,
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            color: Colors.white),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
                         child: ListTile(
                           title: Text(
                             store['name'],
