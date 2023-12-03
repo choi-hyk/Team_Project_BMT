@@ -40,13 +40,11 @@ class _LogInState extends State<LoginUI> {
             width: 500,
             height: 400,
             child: Center(
-              child: Text(
-                "Fast",
-                style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: Theme.of(context).cardColor),
+              child: Image.asset(
+                "assets/images/Fast2.png",
+                fit: BoxFit.contain,
+                width: 300,
+                height: 300,
               ),
             ),
           ),

@@ -213,8 +213,13 @@ class ProvConfState extends State<ProvConf> {
                           width: double.infinity,
                           height: 190,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Theme.of(context).canvasColor),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Theme.of(context).canvasColor,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.5,
+                            ),
+                          ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -250,7 +255,11 @@ class ProvConfState extends State<ProvConf> {
                           height: 150,
                           decoration: BoxDecoration(
                               borderRadius: const BorderRadius.all(
-                                Radius.circular(10),
+                                Radius.circular(20),
+                              ),
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 0.5,
                               ),
                               color: Theme.of(context).canvasColor),
                           child: Row(
@@ -317,6 +326,10 @@ class ProvConfState extends State<ProvConf> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 0.5,
+                        ),
                         borderRadius: const BorderRadius.all(
                           Radius.circular(10),
                         ),

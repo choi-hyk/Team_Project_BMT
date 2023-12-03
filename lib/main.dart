@@ -109,32 +109,56 @@ Text getConfText(int index) {
     case 0:
       return const Text(
         "여유롭게 지하철을 이용하세요!",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
     case 1:
       return const Text(
         "좌석에 앉을수 있을것 같습니다!",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
     case 2:
       return const Text(
         "어느정도 사람이 있습니다!",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
     case 3:
       return const Text(
         "좌석에는 못 앉을것 같네요...",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
     case 4:
       return const Text(
         "출퇴근 시간인가봐요...",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
     default:
       return const Text(
         "혼잡도 정보가 제공되지 않습니다.",
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
       );
   }
 }

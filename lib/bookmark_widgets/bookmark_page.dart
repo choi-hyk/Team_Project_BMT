@@ -219,15 +219,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
-                    ),
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 0.5,
+                  ), // 컨테이너의 모서리를 둥글게 만듭니다.
+                ),
                 child: ListTile(
                   title: Text(
-                    '${document['station']}',
+                    '${document['station']} Station',
                     style: TextStyle(
                         color: Theme.of(context).primaryColorDark,
                         fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
                         fontSize: 20),
                   ),
                   trailing: IconButton(
@@ -269,17 +274,22 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Colors.white // 컨테이너의 모서리를 둥글게 만듭니다.
-                        ),
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 0.5,
+                      ), // 컨테이너의 모서리를 둥글게 만듭니다.
+                    ),
                     child: ListTile(
                       title: Row(
                         children: [
                           Text(
-                            '${document['station1_ID']}',
+                            '${document['station1_ID']} Station',
                             style: TextStyle(
                               color: Theme.of(context).primaryColorDark,
                               fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
                               fontSize: 20,
                             ),
                           ),
@@ -294,10 +304,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
                             width: 6.5,
                           ),
                           Text(
-                            '${document['station2_ID']}',
+                            '${document['station2_ID']} Station',
                             style: TextStyle(
                               color: Theme.of(context).primaryColorDark,
                               fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
                               fontSize: 20,
                             ),
                           ),
@@ -373,11 +384,16 @@ class _BookmarkPageState extends State<BookmarkPage> {
               width: 50,
               height: 40,
               decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  color: Theme.of(context).canvasColor),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                color: Theme.of(context).canvasColor,
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 0.5,
+                ),
+              ),
               child: IconButton(
                 icon: Icon(
-                  FontAwesomeIcons.locationDot, // 변경할 아이콘
+                  FontAwesomeIcons.locationDot,
                   color: Theme.of(context).primaryColorDark, // 아이콘 색상
                 ),
                 onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
@@ -390,8 +406,13 @@ class _BookmarkPageState extends State<BookmarkPage> {
               width: 50,
               height: 40,
               decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  color: Theme.of(context).canvasColor),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                color: Theme.of(context).canvasColor,
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 0.5,
+                ),
+              ),
               child: IconButton(
                 icon: Icon(
                   FontAwesomeIcons.route, // 변경할 아이콘

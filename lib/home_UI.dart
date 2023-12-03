@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 
 class HomeUI extends StatefulWidget {
+  const HomeUI({super.key});
   @override
   State<HomeUI> createState() => _HomeUIState();
 }
@@ -43,23 +44,28 @@ class _HomeUIState extends State<HomeUI> {
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Fast",
-                      style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Theme.of(context).cardColor),
-                    ),
-                    Text(
-                      "User widgets",
-                      style: TextStyle(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Theme.of(context).cardColor),
+                    Row(
+                      children: [
+                        Image.asset(
+                          "assets/images/Fast1.png",
+                          fit: BoxFit.contain,
+                          width: 100,
+                          height: 100,
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Text(
+                          "Fast UI!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                              fontStyle: FontStyle.italic,
+                              color: Theme.of(context).cardColor),
+                        ),
+                      ],
                     ),
                   ],
                 ),

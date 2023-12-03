@@ -381,13 +381,11 @@ class _RouteSearchState extends State<RouteSearch> {
                               ),
                               color: Theme.of(context).canvasColor),
                           child: Center(
-                            child: Text(
-                              "Fast",
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic,
-                                  color: Theme.of(context).cardColor),
+                            child: Image.asset(
+                              "assets/images/Fast1.png",
+                              fit: BoxFit.contain,
+                              width: 100,
+                              height: 100,
                             ),
                           ),
                         ),

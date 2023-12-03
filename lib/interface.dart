@@ -296,11 +296,10 @@ class _InterFaceState extends State<InterFace> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Container(
+              child: SizedBox(
                 //광고배너 컨테이너
                 width: double.infinity,
                 height: 55.0,
-                color: Colors.green,
                 child: Image.asset(
                   'assets/images/광고1.png',
                   fit: BoxFit.fill,
@@ -316,6 +315,12 @@ class _InterFaceState extends State<InterFace> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               UserAccountsDrawerHeader(
+                currentAccountPicture: Image.asset(
+                  "assets/images/Fast1.png",
+                  fit: BoxFit.contain,
+                  width: 300,
+                  height: 300,
+                ),
                 accountName: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -324,9 +329,25 @@ class _InterFaceState extends State<InterFace> {
                           builder: (context) => const AccountUI()),
                     );
                   },
-                  child: Text(
-                    userProvider.nickname,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  child: Row(
+                    children: [
+                      Text(
+                        "USER  ",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColor),
+                      ),
+                      Text(
+                        userProvider.nickname,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColorDark),
+                      ),
+                    ],
                   ),
                 ),
                 accountEmail: InkWell(
@@ -340,14 +361,31 @@ class _InterFaceState extends State<InterFace> {
                   },
                   child: Row(
                     children: [
-                      Text(userProvider.email),
+                      Text(
+                        "E-Mail ",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColor),
+                      ),
+                      Text(
+                        userProvider.email,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColorDark),
+                      ),
                       const SizedBox(
-                        width: 70.0,
+                        width: 40.0,
                       ),
                       Container(
+                        width: 60,
+                        height: 35,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF7C61FF),
-                          borderRadius: BorderRadius.circular(16.0),
+                          color: Colors.deepPurple[200],
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
@@ -373,8 +411,10 @@ class _InterFaceState extends State<InterFace> {
                             builder: (context) => const SettingsUI()),
                       );
                     },
-                    child: const Icon(
+                    child: Icon(
                       Icons.settings,
+                      color: Theme.of(context).primaryColorDark,
+                      size: 30,
                     ),
                   ),
                 ],
@@ -397,7 +437,12 @@ class _InterFaceState extends State<InterFace> {
                       const SizedBox(
                         width: 5,
                       ),
-                      const Text('스토어'),
+                      Text(
+                        '스토어',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColorDark),
+                      ),
                     ],
                   ),
                 ),
@@ -424,7 +469,13 @@ class _InterFaceState extends State<InterFace> {
                       const SizedBox(
                         width: 5,
                       ),
-                      const Text('즐겨찾기'),
+                      Text(
+                        '즐겨찾기',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -451,7 +502,12 @@ class _InterFaceState extends State<InterFace> {
                       const SizedBox(
                         width: 5,
                       ),
-                      const Text('역별 게시판'),
+                      Text(
+                        '역별 게시판',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColorDark),
+                      ),
                     ],
                   ),
                 ),
@@ -477,7 +533,13 @@ class _InterFaceState extends State<InterFace> {
                       const SizedBox(
                         width: 5,
                       ),
-                      const Text('분실물 게시판'),
+                      Text(
+                        '분실물 게시판',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -505,7 +567,13 @@ class _InterFaceState extends State<InterFace> {
                       const SizedBox(
                         width: 5,
                       ),
-                      const Text('로그아웃'),
+                      Text(
+                        '로그아웃',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
                     ],
                   ),
                 ),
