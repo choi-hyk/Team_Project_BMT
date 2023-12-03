@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test1/algorithm_code/graph.dart';
+import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
@@ -22,12 +23,14 @@ class StationRouteResult {
 class RouteResults extends StatefulWidget {
   final String startStation;
   final String arrivStation;
-  final String? stopoStation;
-  const RouteResults(
-      {super.key,
-      required this.startStation,
-      required this.arrivStation,
-      this.stopoStation});
+  final bool check;
+
+  const RouteResults({
+    super.key,
+    required this.startStation,
+    required this.arrivStation,
+    required this.check,
+  });
 
   @override
   State<RouteResults> createState() => _RouteResultsState();
@@ -475,6 +478,7 @@ class _RouteResultsState extends State<RouteResults> {
                       print("알림 시작 버튼 터치");
                       //팝업 표시
                       bool confirm = await showDialog(
+
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
@@ -505,6 +509,7 @@ class _RouteResultsState extends State<RouteResults> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
+                              
                                 currentStaion: optmPath[timePath.length-1].toString(),
                                 linkStaion: optmPath[timePath.length-2].toString(),
                                 line: line[0],
@@ -518,6 +523,7 @@ class _RouteResultsState extends State<RouteResults> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
+                              
                                 currentStaion: timePath[timePath.length-1].toString(),
                                 linkStaion:  timePath[timePath.length-2].toString(),
                                 line: line[0],
@@ -531,6 +537,7 @@ class _RouteResultsState extends State<RouteResults> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
+                              
                                 currentStaion: costPath[timePath.length-1].toString(),
                                 linkStaion:  costPath[timePath.length-1].toString(),
                                 line: line[0],
@@ -763,100 +770,128 @@ class _RouteResultsState extends State<RouteResults> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).canvasColor,
-      body: isLoading // 로딩 중일 때
-          ? const Center(
-              child: CircularProgressIndicator(), // 로딩 인디케이터를 보여줍니다.
-            )
-          : Column(
-              children: [
-                Container(
-                  decoration:
-                      BoxDecoration(color: Theme.of(context).primaryColor),
-                  width: double.infinity,
-                  height: 125,
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              FontAwesomeIcons.angleLeft,
-                              color: Theme.of(context).primaryColorDark,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        if (widget.check == true) {
+          return true; // 이벤트 처리를 여기서 마칩니다.
+        } else {
+          currentUI = 'home';
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const InterFace()),
+          );
+          return false; // 이벤트 처리를 여기서 막습니다.
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).canvasColor,
+        body: isLoading // 로딩 중일 때
+            ? const Center(
+                child: CircularProgressIndicator(), // 로딩 인디케이터를 보여줍니다.
+              )
+            : Column(
+                children: [
+                  Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).primaryColor),
+                    width: double.infinity,
+                    height: 125,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                FontAwesomeIcons.angleLeft,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                if (widget.check == true) {
+                                } else {
+                                  currentUI = 'home';
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const InterFace()),
+                                  );
+                                }
+                              },
                             ),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // 뒤로가기 기능 수행
-                            },
-                          ),
-                          const SizedBox(
-                            width: 95,
-                          ),
-                          Container(
-                            height: 40.5,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .primaryColorDark, // 테두리 색상 설정
-                                  width: 0.75, // 테두리 두께 설정
+                            const SizedBox(
+                              width: 95,
+                            ),
+                            Container(
+                              height: 40.5,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .primaryColorDark, // 테두리 색상 설정
+                                    width: 0.75, // 테두리 두께 설정
+                                  ),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10))),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      widget.startStation,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .primaryColorDark,
+                                          fontSize: 22.5,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(
+                                      width: 6.5,
+                                    ),
+                                    Icon(
+                                      FontAwesomeIcons.rightLong,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                    const SizedBox(
+                                      width: 6.5,
+                                    ),
+                                    Text(
+                                      widget.arrivStation,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .primaryColorDark,
+                                          fontSize: 22.5,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(10))),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    widget.startStation,
-                                    style: TextStyle(
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                        fontSize: 22.5,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(
-                                    width: 6.5,
-                                  ),
-                                  Icon(
-                                    FontAwesomeIcons.rightLong,
-                                    color: Theme.of(context).primaryColorDark,
-                                  ),
-                                  const SizedBox(
-                                    width: 6.5,
-                                  ),
-                                  Text(
-                                    widget.arrivStation,
-                                    style: TextStyle(
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                        fontSize: 22.5,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          routeContainer(
-                              "앱 추천 경로", currentSearch == "recommend"),
-                          routeContainer("최단 시간", currentSearch == "shortest"),
-                          routeContainer("최소 비용", currentSearch == "cheapest"),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            routeContainer(
+                                "앱 추천 경로", currentSearch == "recommend"),
+                            routeContainer(
+                                "최단 시간", currentSearch == "shortest"),
+                            routeContainer(
+                                "최소 비용", currentSearch == "cheapest"),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(child: routeResultContainer(currentpath))
-              ],
-            ),
+                  Expanded(child: routeResultContainer(currentpath))
+                ],
+              ),
+      ),
     );
   }
 }
