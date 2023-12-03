@@ -90,7 +90,10 @@ flutter:
     - assets\terms\service_terms.txt
     - assets\terms\location_terms.txt
     - assets\terms\privacy_terms.txt
-    - assets/images/리워드.png
+    - assets\images\리워드.png
+    - assets\images\Fast1.png
+    - assets\images\Fast2.png
+    - assets\images\Fast3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
