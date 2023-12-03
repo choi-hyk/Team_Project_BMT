@@ -29,8 +29,6 @@ class RouteResults extends StatefulWidget {
 }
 
 class _RouteResultsState extends State<RouteResults> {
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   UserProvider userProvider = UserProvider();
 
   bool isLoading = true; //로딩 여부
@@ -75,18 +73,16 @@ class _RouteResultsState extends State<RouteResults> {
 
   late bool isBook;
 
-  // ignore: unused_field
-
   //클래스 진입 시 초기화
   @override
   void initState() {
+    NotificationService.init();
+    Future.delayed(const Duration(seconds: 3),
+        NotificationService.requestNotificationPermission());
     super.initState();
 
     isBook = false;
-
     checkBookRoute();
-
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     optmPath = [];
     timePath = [];
@@ -126,7 +122,7 @@ class _RouteResultsState extends State<RouteResults> {
     isBook = await userProvider.isRouteBookmarked(
         widget.startStation, widget.arrivStation);
   }
-
+/*
   Future<void> _scheduleAlarm(int seconds) async {
     const int alarmID = 0;
     final Duration duration = Duration(seconds: seconds);
@@ -153,7 +149,7 @@ class _RouteResultsState extends State<RouteResults> {
     } catch (e) {
       print("알림 설정 중 오류 발생: $e");
     }
-  }
+  }*/
 
   //그래프 객체를 선언하고 각 그래프의 변수 선언
   Future<void> fetchData() async {
@@ -497,8 +493,9 @@ class _RouteResultsState extends State<RouteResults> {
                       } else if (currentpath == costPath) {
                         travelTime = timeOfCostPath;
                       }
-                      _scheduleAlarm(10);
-                      print("알림 왜 안 돼");
+                      //_scheduleAlarm(10);
+                      NotificationService.showNotification();
+                      print("알림 시작 버튼 터치");
                     },
                     child: const Row(
                       children: [

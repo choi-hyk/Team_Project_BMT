@@ -145,8 +145,8 @@ void main() async {
   );
 
   //알림 설정 초기화
-  final notificationService = NotificationService();
-  await notificationService.init();
+  //final notificationService = NotificationService();
+  //await notificationService.init();
 
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
