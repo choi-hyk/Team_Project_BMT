@@ -17,16 +17,16 @@ class RouteSearch extends StatefulWidget {
 
 class _RouteSearchState extends State<RouteSearch> {
   final TextEditingController _searchStartController = TextEditingController();
-  final TextEditingController _searchStopoContraller = TextEditingController();
   final TextEditingController _searchArrivController = TextEditingController();
 
   String? _tempStartStation;
   String? _tempArrivStation;
+  String? tappedStationKey;
+
   DataProvider dataProvider1 = DataProvider();
   DataProvider dataProvider2 = DataProvider();
-  DataProvider dataProvider3 = DataProvider();
 
-  bool isStopOver = false;
+  bool isSearchong = false;
 
   @override
   void initState() {
@@ -37,6 +37,12 @@ class _RouteSearchState extends State<RouteSearch> {
     } else if (widget.arrivStation != null) {
       _searchArrivController.text = widget.arrivStation!;
     }
+  }
+
+  void onTapStation(String stationKey) {
+    setState(() {
+      tappedStationKey = stationKey;
+    });
   }
 
 //두 검색어를 스위치하는 함수
@@ -52,51 +58,25 @@ class _RouteSearchState extends State<RouteSearch> {
 
   Future<void> _searchRoute() async {
     String startStation = _searchStartController.text;
-
     String arrivStation = _searchArrivController.text;
 
     await dataProvider1.searchData(int.parse(startStation));
     await dataProvider2.searchData(int.parse(arrivStation));
 
-    if (isStopOver) {
-      String stopoStation = _searchStopoContraller.text;
-      await dataProvider3.searchData(int.parse(stopoStation));
-
-      if (!dataProvider1.found ||
-          !dataProvider2.found ||
-          !dataProvider3.found) {
-        showSnackBar(context, const Text("존재하지 않는 역입니다"));
-      } else if (startStation == stopoStation || stopoStation == arrivStation) {
-        showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
-      } else {
-        // 네비게이션 및 데이터 전달
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RouteResults(
-              startStation: startStation,
-              arrivStation: arrivStation,
-              stopoStation: stopoStation,
-            ),
-          ),
-        );
-      }
+    if (!dataProvider1.found || !dataProvider2.found) {
+      showSnackBar(context, const Text("존재하지 않는 역입니다"));
+    } else if (startStation == arrivStation) {
+      showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
     } else {
-      if (!dataProvider1.found || !dataProvider2.found) {
-        showSnackBar(context, const Text("존재하지 않는 역입니다"));
-      } else if (startStation == arrivStation) {
-        showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
-      } else {
-        // 네비게이션 및 데이터 전달
-        // 네비게이션 및 데이터 전달
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RouteResults(
-                startStation: startStation, arrivStation: arrivStation),
-          ),
-        );
-      }
+      // 네비게이션 및 데이터 전달
+      // 네비게이션 및 데이터 전달
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RouteResults(
+              startStation: startStation, arrivStation: arrivStation),
+        ),
+      );
     }
   }
 
@@ -117,18 +97,7 @@ class _RouteSearchState extends State<RouteSearch> {
               width: 500,
               height: 560,
               child: StationMap(
-                onTapStation: (String stationKey) {
-                  InteractiveViewer(
-                    minScale: 1,
-                    maxScale: 5,
-                    child: Image.asset(
-                      "assets/images/노선도.png",
-                      width: 500,
-                      height: 560,
-                      fit: BoxFit.contain,
-                    ),
-                  );
-                },
+                onTapStation: onTapStation,
               ),
             ),
           ),
@@ -141,7 +110,7 @@ class _RouteSearchState extends State<RouteSearch> {
                   color: Theme.of(context).primaryColor,
                 ),
                 width: double.infinity,
-                height: isStopOver ? 200 : 150, // is
+                height: 150, // is
                 child: Padding(
                   padding: const EdgeInsets.only(top: 28.5),
                   child: Row(
@@ -200,54 +169,6 @@ class _RouteSearchState extends State<RouteSearch> {
                           const SizedBox(
                             height: 6.5,
                           ),
-                          if (isStopOver) ...[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  width: 43.5,
-                                ),
-                                SizedBox(
-                                  width: 240,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    controller: _searchStopoContraller,
-                                    onSubmitted: (String value) {
-                                      int? searchStation = int.tryParse(value);
-                                      if (searchStation != null) {
-                                        _searchRoute();
-                                      }
-                                    },
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        vertical: 13,
-                                        horizontal: 10,
-                                      ),
-                                      border: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
-                                        ),
-                                      ),
-                                      hintText: '경유 역',
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          Icons.cancel,
-                                          color: Theme.of(context)
-                                              .primaryColorDark,
-                                        ),
-                                        onPressed: () {
-                                          _searchStopoContraller.clear();
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
                           const SizedBox(
                             height: 6.5,
                           ),
@@ -306,6 +227,15 @@ class _RouteSearchState extends State<RouteSearch> {
                         children: [
                           IconButton(
                             icon: Icon(
+                              FontAwesomeIcons.search,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                            onPressed: () {
+                              _searchRoute();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
                               FontAwesomeIcons.repeat,
                               color: Theme.of(context).primaryColorDark,
                             ),
@@ -315,7 +245,7 @@ class _RouteSearchState extends State<RouteSearch> {
                           ),
                           const SizedBox(
                             height: 14,
-                          )
+                          ),
                         ],
                       ),
                     ],
@@ -325,179 +255,143 @@ class _RouteSearchState extends State<RouteSearch> {
             ],
           ),
           Positioned(
-            bottom: 0,
+            bottom: 56,
             left: 0,
             right: 0,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.825),
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.10,
-                maxChildSize: 0.99,
-                minChildSize: 0.10,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return SingleChildScrollView(
-                    controller: scrollController,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(13.0),
-                          topRight: Radius.circular(13.0),
-                        ),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1.5,
-                        ),
-                      ),
-                      width: 379.5,
-                      height: 640.0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.grey),
-                              width: 50,
-                              height: 10,
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            const Divider(
-                              height: 1, // 구분선의 높이
-                              thickness: 1, // 구분선의 두께
-                              color: Colors.grey, // 구분선의 색상
-                            ),
-                            const Text("검색 기록"),
-                            const Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
-                            Expanded(
-                              // 최근 검색 섹션
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Column(
-                                  children: [
-                                    for (var i = 0; i < 10; i++)
-                                      Column(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  255, 255, 255, 255),
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                                width: 0.5,
-                                              ),
-                                            ),
-                                            width: double.infinity,
-                                            height: 50,
-                                          ),
-                                        ],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                height: 80,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: tappedStationKey !=
+                        null // tappedStationKey가 존재할 때 텍스트를 표시
+                    ? Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _searchStartController.text =
+                                          tappedStationKey!;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      border: Border.all(
+                                        color:
+                                            const Color.fromARGB(255, 0, 0, 0),
+                                        width: 2.0,
                                       ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 13,
-                            ),
-                            const Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
-                            const Text("즐겨 찾기"),
-                            const Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(
-                              height: 6.5,
-                            ),
-                            Expanded(
-                              // 즐겨 찾기 섹션
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Column(
-                                  children: [
-                                    for (var i = 0; i < 4; i++)
-                                      Column(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  255, 255, 255, 255),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            width: double.infinity,
-                                            height: 100,
-                                            child: const Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                SizedBox(
-                                                  width: 90,
-                                                  child: Align(
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "역,경로",
-                                                      style: TextStyle(
-                                                          fontSize: 15),
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 90,
-                                                  child: Align(
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "장소",
-                                                      style: TextStyle(
-                                                          fontSize: 15),
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 90,
-                                                  child: Align(
-                                                    alignment: Alignment.center,
-                                                    child: Icon(
-                                                      Icons.star,
-                                                      color: Colors.amber,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          )
-                                        ],
+                                    ),
+                                    width: 60,
+                                    height: 35,
+                                    child: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '출발',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                  ],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Container(
+                                  width: 140,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(30),
+                                      ),
+                                      color: perlinedata(
+                                          int.parse(tappedStationKey!) ~/ 100)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(18.0),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(20),
+                                          ),
+                                          color: Colors.white),
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          tappedStationKey!,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _searchArrivController.text =
+                                          tappedStationKey!;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      border: Border.all(
+                                        color:
+                                            const Color.fromARGB(255, 0, 0, 0),
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    width: 60,
+                                    height: 35,
+                                    child: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '도착',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ],
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                              color: Theme.of(context).canvasColor),
+                          child: Center(
+                            child: Text(
+                              "Fast",
+                              style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(context).cardColor),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      ), // tappedStationKey가 null일 경우 텍스트를 표시하지 않음
               ),
             ),
           ),
@@ -514,7 +408,7 @@ class _RouteSearchState extends State<RouteSearch> {
             ),
           ),
           Positioned(
-            top: 60.5, // 뒤로가기 버튼의 위치 조정 (값을 조절하여 원하는 위치로 이동 가능)
+            top: 60.5,
             left: 25,
             child: Container(
               decoration: BoxDecoration(
@@ -523,21 +417,20 @@ class _RouteSearchState extends State<RouteSearch> {
                 ),
                 color: Theme.of(context).canvasColor,
               ),
-              child: IconButton(
-                icon: isStopOver
-                    ? Icon(
-                        FontAwesomeIcons.minus,
-                        color: Theme.of(context).primaryColorDark,
-                      )
-                    : Icon(
-                        FontAwesomeIcons.plus,
-                        color: Theme.of(context).primaryColorDark,
-                      ),
-                onPressed: () {
-                  setState(() {
-                    isStopOver = !isStopOver;
-                  });
-                },
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              //광고배너 컨테이너
+              width: double.infinity,
+              height: 55.0,
+              color: Colors.green,
+              child: Image.asset(
+                'assets/images/광고1.png',
+                fit: BoxFit.fill,
               ),
             ),
           ),

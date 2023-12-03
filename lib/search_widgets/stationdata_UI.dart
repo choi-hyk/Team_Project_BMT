@@ -89,8 +89,10 @@ class _StationDataState extends State<StationData> {
   }
 
   Future<void> loadCongestionData() async {
-    int congestionDataN = await getCongestionData(true);
-    int congestionDataP = await getCongestionData(false);
+    int congestionDataN =
+        await getCongestionData(int.parse(widget.nName[array]));
+    int congestionDataP =
+        await getCongestionData(int.parse(widget.pName[array]));
 
     setState(() {
       congestionN = congestionDataN; // 혼잡도 값을 상태로 업데이트
@@ -98,9 +100,9 @@ class _StationDataState extends State<StationData> {
     });
   }
 
-  Future<int> getCongestionData(bool direct) async {
+  Future<int> getCongestionData(int link) async {
     int station = int.parse(widget.name);
-    bool direction = direct;
+    int next = link;
     int line = widget.line[array];
     int hour = currentHour;
     int minute = getMinuteRange(currentMinute);
@@ -110,7 +112,7 @@ class _StationDataState extends State<StationData> {
 
     QuerySnapshot snapshot = await congestionCollection
         .where('station', isEqualTo: station)
-        .where('direction', isEqualTo: direction)
+        .where('next', isEqualTo: next)
         .where('line', isEqualTo: line)
         .where('hour', isEqualTo: hour)
         .where('minute', isEqualTo: minute)
@@ -509,7 +511,6 @@ class _StationDataState extends State<StationData> {
                                   linkStaion: widget.pName[array],
                                   confg: congestionP.toString(),
                                   line: widget.line[array],
-                                  direction: false,
                                 ),
                               ),
                             );
@@ -606,7 +607,6 @@ class _StationDataState extends State<StationData> {
                                   linkStaion: widget.nName[array],
                                   confg: congestionN.toString(),
                                   line: widget.line[array],
-                                  direction: true,
                                 ),
                               ),
                             );

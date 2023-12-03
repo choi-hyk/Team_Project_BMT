@@ -135,46 +135,23 @@ class _RouteResultsState extends State<RouteResults> {
     Graph costGraph = dataProvider.getCostGraph();
 
     setState(() {
-      if (widget.stopoStation == null) {
-        optimum = optmGraph.dijkstra(
-          int.parse(widget.startStation),
-          int.parse(widget.arrivStation),
-          optmPath,
-        );
+      optimum = optmGraph.dijkstra(
+        int.parse(widget.startStation),
+        int.parse(widget.arrivStation),
+        optmPath,
+      );
 
-        minCost = costGraph.dijkstra(
-          int.parse(widget.startStation),
-          int.parse(widget.arrivStation),
-          costPath,
-        );
+      minCost = costGraph.dijkstra(
+        int.parse(widget.startStation),
+        int.parse(widget.arrivStation),
+        costPath,
+      );
 
-        minTime = timeGraph.dijkstra(
-          int.parse(widget.startStation),
-          int.parse(widget.arrivStation),
-          timePath,
-        );
-      } else {
-        optimum = optmGraph.dijkstraWithStop(
-          int.parse(widget.startStation),
-          int.parse(widget.stopoStation!),
-          int.parse(widget.arrivStation),
-          optmPath,
-        );
-
-        minCost = costGraph.dijkstraWithStop(
-          int.parse(widget.startStation),
-          int.parse(widget.stopoStation!),
-          int.parse(widget.arrivStation),
-          costPath,
-        );
-
-        minTime = timeGraph.dijkstraWithStop(
-          int.parse(widget.startStation),
-          int.parse(widget.stopoStation!),
-          int.parse(widget.arrivStation),
-          timePath,
-        );
-      }
+      minTime = timeGraph.dijkstra(
+        int.parse(widget.startStation),
+        int.parse(widget.arrivStation),
+        timePath,
+      );
     });
 
     timeOfOptmPath = weightOfPath(dataProvider.getTimeGraph(), optmPath);
@@ -316,7 +293,7 @@ class _RouteResultsState extends State<RouteResults> {
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).cardColor
+              ? Theme.of(context).canvasColor
               : Theme.of(context).primaryColor,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
@@ -717,7 +694,7 @@ class _RouteResultsState extends State<RouteResults> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).canvasColor,
       body: isLoading // 로딩 중일 때
           ? const Center(
               child: CircularProgressIndicator(), // 로딩 인디케이터를 보여줍니다.

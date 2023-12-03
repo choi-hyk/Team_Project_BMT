@@ -8,17 +8,16 @@ import 'package:test1/prov_reawrd.dart';
 class ProvConf extends StatefulWidget {
   final String currentStaion;
   final String linkStaion;
-  final bool direction;
-  final String confg;
   final int line;
+  final String confg;
 
-  const ProvConf(
-      {super.key,
-      required this.currentStaion,
-      required this.linkStaion,
-      required this.line,
-      required this.confg,
-      required this.direction});
+  const ProvConf({
+    Key? key,
+    required this.currentStaion,
+    required this.linkStaion,
+    required this.line,
+    required this.confg,
+  }) : super(key: key);
 
   @override
   State<ProvConf> createState() => ProvConfState();
@@ -37,7 +36,7 @@ class ProvConfState extends State<ProvConf> {
       // 데이터
       int station = int.parse(widget.currentStaion);
       int line = widget.line;
-      bool direction = widget.direction;
+      int next = int.parse(widget.linkStaion);
       int hour = currentHour;
       int minute = getMinuteRange(currentMinute);
 
@@ -45,7 +44,7 @@ class ProvConfState extends State<ProvConf> {
       await _firestore.collection('Congestion').add({
         'station': station,
         'line': line,
-        'direction': direction,
+        'next': next,
         'hour': hour,
         'minute': minute,
         'cong': congestionLevel,
