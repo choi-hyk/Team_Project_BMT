@@ -3,29 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
+import 'package:test1/User/reset_passwd.dart';
 import 'package:test1/main.dart';
 import 'package:test1/User/join.dart';
-import 'package:test1/User/reset_pwd.dart';
 import 'package:test1/Interface/menu.dart';
 
-class LoginUI extends StatefulWidget {
-  const LoginUI({Key? key}) : super(key: key);
+class LogIn extends StatefulWidget {
+  const LogIn({Key? key}) : super(key: key);
 
   @override
-  State<LoginUI> createState() => _LogInState();
+  State<LogIn> createState() => _LogInState();
 }
 
-class _LogInState extends State<LoginUI> {
+class _LogInState extends State<LogIn> {
+  //이메일과 비밀번호 입력하는 텍스트필드 컨트롤러 선언
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  DataProvider dataProvider = DataProvider(); //프로바이더 객체 변수
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  //프로바이더 객체 선언
+  DataProvider dataProvider = DataProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -109,18 +105,17 @@ class _LogInState extends State<LoginUI> {
 
                                     if (errorMessage == null &&
                                         userProvider.user != null) {
-                                      // 로그인 성공 및 user가 null이 아닌 경우
                                       setState(() {
                                         currentUI = 'home';
                                       });
+                                      // ignore: avoid_print
                                       print(
                                           '로그인 성공: ${userProvider.user!.email}');
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => NextPage(
-                                            currentUser: userProvider
-                                                .user!, //null이 아닌 것이 보장된 User 객체
+                                          builder: (context) => EnterMenu(
+                                            currentUser: userProvider.user!,
                                             dataProvider: dataProvider,
                                           ),
                                         ),
@@ -239,11 +234,12 @@ class _LogInState extends State<LoginUI> {
   }
 }
 
-class NextPage extends StatelessWidget {
+//로그인 성공시 메뉴화면에 진입하는 클래스
+class EnterMenu extends StatelessWidget {
   final User currentUser;
   final DataProvider dataProvider;
 
-  const NextPage({
+  const EnterMenu({
     Key? key,
     required this.currentUser,
     required this.dataProvider,
@@ -251,6 +247,6 @@ class NextPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const InterFace();
+    return const Menu();
   }
 }

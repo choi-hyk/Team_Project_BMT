@@ -291,7 +291,7 @@ class _LostAndFoundState extends State<LostAndFound> {
         currentUI = 'home';
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const InterFace()),
+          MaterialPageRoute(builder: (context) => const Menu()),
         );
 
         return false;
@@ -308,7 +308,7 @@ class _LostAndFoundState extends State<LostAndFound> {
               currentUI = 'home';
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const InterFace()),
+                MaterialPageRoute(builder: (context) => const Menu()),
               );
             },
           ),

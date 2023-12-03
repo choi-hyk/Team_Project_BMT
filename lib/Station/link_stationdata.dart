@@ -3,7 +3,8 @@ import 'package:test1/main.dart';
 import 'package:test1/Interface/menu.dart';
 import 'package:test1/Station/stationdata.dart';
 
-class StationDataPage extends StatefulWidget {
+//즐겨찾기 탭에서 StationData로 이동하기 위해 페이지를 새로 빌드하는 클래스
+class LinkStationData extends StatefulWidget {
   final List line;
   final String name;
   final bool cStore;
@@ -11,18 +12,15 @@ class StationDataPage extends StatefulWidget {
   final bool isBkMk;
   final List nName;
   final List pName;
-  final List nCong;
-  final List pCong;
+
   final bool check;
 
-  const StationDataPage({
+  const LinkStationData({
     super.key,
     required this.line,
     required this.name,
     required this.cStore,
     required this.nRoom,
-    required this.nCong,
-    required this.pCong,
     required this.nName,
     required this.pName,
     required this.isBkMk,
@@ -30,10 +28,10 @@ class StationDataPage extends StatefulWidget {
   });
 
   @override
-  State<StationDataPage> createState() => _StationDataPageState();
+  State<LinkStationData> createState() => _LinkStationDataState();
 }
 
-class _StationDataPageState extends State<StationDataPage> {
+class _LinkStationDataState extends State<LinkStationData> {
   late bool isBkMk = false;
 
   @override
@@ -54,7 +52,7 @@ class _StationDataPageState extends State<StationDataPage> {
           currentUI = 'home';
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const InterFace()),
+            MaterialPageRoute(builder: (context) => const Menu()),
           );
           return false; // 이벤트 처리를 여기서 막습니다.
         }
@@ -73,7 +71,7 @@ class _StationDataPageState extends State<StationDataPage> {
                 currentUI = 'home';
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const InterFace()),
+                  MaterialPageRoute(builder: (context) => const Menu()),
                 );
               }
             },
@@ -96,9 +94,7 @@ class _StationDataPageState extends State<StationDataPage> {
                     name: widget.name,
                     nRoom: widget.nRoom,
                     cStore: widget.cStore,
-                    isBkMk: isBkMk,
-                    nCong: widget.nCong,
-                    pCong: widget.pCong,
+                    isBook: isBkMk,
                     line: widget.line,
                     nName: widget.nName,
                     pName: widget.pName,

@@ -6,13 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:test1/Reward/reward.dart';
 import 'package:test1/main.dart';
 
-class ProvConf extends StatefulWidget {
+//혼잡도 정보 제공 페이지
+class Congestion extends StatefulWidget {
   final String currentStaion;
   final String linkStaion;
   final int line;
   final String confg;
 
-  const ProvConf({
+  const Congestion({
     Key? key,
     required this.currentStaion,
     required this.linkStaion,
@@ -21,10 +22,10 @@ class ProvConf extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ProvConf> createState() => ProvConfState();
+  State<Congestion> createState() => CongestionState();
 }
 
-class ProvConfState extends State<ProvConf> {
+class CongestionState extends State<Congestion> {
   int selectedIconIndex = -1;
   String currentTime = DateFormat('HH:mm').format(DateTime.now());
   int currentHour = DateTime.now().hour;
@@ -32,9 +33,9 @@ class ProvConfState extends State<ProvConf> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //파이어베이스에 데이터 추가하는 함수
   Future<void> addCongestionData(int congestionLevel) async {
     try {
-      // 데이터
       int station = int.parse(widget.currentStaion);
       int line = widget.line;
       int next = int.parse(widget.linkStaion);

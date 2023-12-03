@@ -73,7 +73,7 @@ class _StorePageState extends State<StorePage> {
         currentUI = 'home';
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const InterFace()),
+          MaterialPageRoute(builder: (context) => const Menu()),
         );
 
         return false;
@@ -91,7 +91,7 @@ class _StorePageState extends State<StorePage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const InterFace(),
+                  builder: (context) => const Menu(),
                 ),
               );
             },
