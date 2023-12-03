@@ -17,12 +17,16 @@ class RouteSearch extends StatefulWidget {
 
 class _RouteSearchState extends State<RouteSearch> {
   final TextEditingController _searchStartController = TextEditingController();
+  final TextEditingController _searchStopoContraller = TextEditingController();
   final TextEditingController _searchArrivController = TextEditingController();
 
   String? _tempStartStation;
   String? _tempArrivStation;
   DataProvider dataProvider1 = DataProvider();
   DataProvider dataProvider2 = DataProvider();
+  DataProvider dataProvider3 = DataProvider();
+
+  bool isStopOver = false;
 
   @override
   void initState() {
@@ -48,25 +52,51 @@ class _RouteSearchState extends State<RouteSearch> {
 
   Future<void> _searchRoute() async {
     String startStation = _searchStartController.text;
+
     String arrivStation = _searchArrivController.text;
 
     await dataProvider1.searchData(int.parse(startStation));
     await dataProvider2.searchData(int.parse(arrivStation));
 
-    if (!dataProvider1.found || !dataProvider2.found) {
-      showSnackBar(context, const Text("존재하지 않는 역입니다"));
-    } else if (startStation == arrivStation) {
-      showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
+    if (isStopOver) {
+      String stopoStation = _searchStopoContraller.text;
+      await dataProvider3.searchData(int.parse(stopoStation));
+
+      if (!dataProvider1.found ||
+          !dataProvider2.found ||
+          !dataProvider3.found) {
+        showSnackBar(context, const Text("존재하지 않는 역입니다"));
+      } else if (startStation == stopoStation || stopoStation == arrivStation) {
+        showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
+      } else {
+        // 네비게이션 및 데이터 전달
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RouteResults(
+              startStation: startStation,
+              arrivStation: arrivStation,
+              stopoStation: stopoStation,
+            ),
+          ),
+        );
+      }
     } else {
-      // 네비게이션 및 데이터 전달
-      // 네비게이션 및 데이터 전달
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RouteResults(
-              startStation: startStation, arrivStation: arrivStation),
-        ),
-      );
+      if (!dataProvider1.found || !dataProvider2.found) {
+        showSnackBar(context, const Text("존재하지 않는 역입니다"));
+      } else if (startStation == arrivStation) {
+        showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
+      } else {
+        // 네비게이션 및 데이터 전달
+        // 네비게이션 및 데이터 전달
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RouteResults(
+                startStation: startStation, arrivStation: arrivStation),
+          ),
+        );
+      }
     }
   }
 
@@ -88,21 +118,20 @@ class _RouteSearchState extends State<RouteSearch> {
               height: 560,
               child: StationMap(
                 onTapStation: (String stationKey) {
-                  child: InteractiveViewer(
+                  InteractiveViewer(
                     minScale: 1,
                     maxScale: 5,
                     child: Image.asset(
                       "assets/images/노선도.png",
                       width: 500,
                       height: 560,
-                      fit: BoxFit.contain, 
+                      fit: BoxFit.contain,
                     ),
                   );
                 },
               ),
             ),
           ),
-          
 
           // 검색 바
           Column(
@@ -112,7 +141,7 @@ class _RouteSearchState extends State<RouteSearch> {
                   color: Theme.of(context).primaryColor,
                 ),
                 width: double.infinity,
-                height: 150,
+                height: isStopOver ? 200 : 150, // is
                 child: Padding(
                   padding: const EdgeInsets.only(top: 28.5),
                   child: Row(
@@ -171,6 +200,57 @@ class _RouteSearchState extends State<RouteSearch> {
                           const SizedBox(
                             height: 6.5,
                           ),
+                          if (isStopOver) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  width: 43.5,
+                                ),
+                                SizedBox(
+                                  width: 240,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    controller: _searchStopoContraller,
+                                    onSubmitted: (String value) {
+                                      int? searchStation = int.tryParse(value);
+                                      if (searchStation != null) {
+                                        _searchRoute();
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        vertical: 13,
+                                        horizontal: 10,
+                                      ),
+                                      border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                      ),
+                                      hintText: '경유 역',
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          Icons.cancel,
+                                          color: Theme.of(context)
+                                              .primaryColorDark,
+                                        ),
+                                        onPressed: () {
+                                          _searchStopoContraller.clear();
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          const SizedBox(
+                            height: 6.5,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -208,7 +288,7 @@ class _RouteSearchState extends State<RouteSearch> {
                                             Theme.of(context).primaryColorDark,
                                       ),
                                       onPressed: () {
-                                        _searchStartController.clear();
+                                        _searchArrivController.clear();
                                       },
                                     ),
                                   ),
@@ -431,6 +511,34 @@ class _RouteSearchState extends State<RouteSearch> {
               onPressed: () {
                 Navigator.of(context).pop(); // 뒤로가기 기능 수행
               },
+            ),
+          ),
+          Positioned(
+            top: 60.5, // 뒤로가기 버튼의 위치 조정 (값을 조절하여 원하는 위치로 이동 가능)
+            left: 25,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                color: Theme.of(context).canvasColor,
+              ),
+              child: IconButton(
+                icon: isStopOver
+                    ? Icon(
+                        FontAwesomeIcons.minus,
+                        color: Theme.of(context).primaryColorDark,
+                      )
+                    : Icon(
+                        FontAwesomeIcons.plus,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                onPressed: () {
+                  setState(() {
+                    isStopOver = !isStopOver;
+                  });
+                },
+              ),
             ),
           ),
         ],

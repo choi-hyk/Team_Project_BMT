@@ -50,6 +50,7 @@ dependencies:
   permission_handler: ^11.1.0
   android_alarm_manager_plus: ^3.0.3
   firebase_app_check: ^0.2.1+6
+  flutter_local_notifications: ^16.2.0
   
 
 dev_dependencies:
@@ -84,6 +85,7 @@ flutter:
     - assets\terms\service_terms.txt
     - assets\terms\location_terms.txt
     - assets\terms\privacy_terms.txt
+    - assets/images/리워드.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

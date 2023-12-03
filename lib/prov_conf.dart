@@ -88,7 +88,7 @@ class ProvConfState extends State<ProvConf> {
             color: Colors.white,
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
                 Container(
@@ -296,6 +296,9 @@ class ProvConfState extends State<ProvConf> {
                   thickness: 1,
                   color: Colors.grey,
                 ),
+                const SizedBox(
+                  height: 40,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: InkWell(
@@ -321,7 +324,7 @@ class ProvConfState extends State<ProvConf> {
                       ),
                       child: const Center(
                         child: Text(
-                          "정보 제공하고 리워드 받기",
+                          "정보 제공하고 리워드 받기!",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,

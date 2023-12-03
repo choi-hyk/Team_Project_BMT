@@ -182,7 +182,7 @@ class _JoinAccountState extends State<JoinAccount> {
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
                               ),
@@ -191,6 +191,9 @@ class _JoinAccountState extends State<JoinAccount> {
                               },
                               child: const Text(
                                 "다음",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                             ),
                           ),

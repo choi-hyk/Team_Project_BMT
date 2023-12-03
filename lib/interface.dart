@@ -9,6 +9,7 @@ import 'package:test1/menu_widgets/station_bulletin.dart';
 import 'package:test1/menu_widgets/store_page.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
+import 'package:test1/startpage.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
 import 'user_widgets/Account_UI.dart';
@@ -88,16 +89,42 @@ class _InterFaceState extends State<InterFace> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('로그아웃'),
-            content: const Text('로그아웃 하시겟습니까?'),
+            title: const Text(
+              '로그아웃',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: const Text(
+              '로그아웃 하시겟습니까?',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('취소'),
+                child: Text(
+                  '취소',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColorDark),
+                ),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StartPage()),
+                  );
+                },
+                child: Text(
+                  '확인',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColorDark),
+                ),
               ),
             ],
           ),
@@ -138,85 +165,92 @@ class _InterFaceState extends State<InterFace> {
                     color: Theme.of(context).primaryColor,
                   ),
                   width: double.infinity,
-                  height: 110,
+                  height: 90,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: Column(
                       children: [
-                        Builder(builder: (BuildContext builderContext) {
-                          return GestureDetector(
-                            onTap: () {
-                              Scaffold.of(builderContext).openDrawer();
-                            },
-                            child: const SizedBox(
-                              width: 40.0,
-                              height: 43.5,
-                              child: Icon(Icons.menu),
-                            ),
-                          );
-                        }),
-                        Container(
-                          width: 40.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: currentUI == 'home'
-                                ? Theme.of(context).primaryColorDark
-                                : Theme.of(context).primaryColor,
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                currentUI = 'home';
-                              });
-                            },
-                            icon: const Icon(Icons.home),
-                          ),
-                        ),
                         const SizedBox(
-                          width: 6.5,
+                          height: 19,
                         ),
-                        SizedBox(
-                          width: 240,
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            controller: station,
-                            onSubmitted: (String value) {
-                              int? searchStation = int.tryParse(value);
-                              if (searchStation != null) {
-                                setState(() {
-                                  waitData(searchStation);
-                                });
-                              }
-                            },
-                            decoration: InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 13,
-                                horizontal: 10,
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: '역을 입력하세요',
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  Icons.cancel,
-                                  color: Theme.of(context).primaryColorDark,
-                                ),
-                                onPressed: () {
-                                  station.clear();
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Builder(builder: (BuildContext builderContext) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Scaffold.of(builderContext).openDrawer();
                                 },
+                                child: const SizedBox(
+                                  width: 40.0,
+                                  height: 43.5,
+                                  child: Icon(Icons.menu),
+                                ),
+                              );
+                            }),
+                            Container(
+                              width: 40.0,
+                              height: 40.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: currentUI == 'home'
+                                    ? Theme.of(context).primaryColorDark
+                                    : Theme.of(context).primaryColor,
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    currentUI = 'home';
+                                  });
+                                },
+                                icon: const Icon(Icons.home),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 23.5,
+                            const SizedBox(
+                              width: 6.5,
+                            ),
+                            SizedBox(
+                              width: 240,
+                              child: TextField(
+                                keyboardType: TextInputType.number,
+                                controller: station,
+                                onSubmitted: (String value) {
+                                  int? searchStation = int.tryParse(value);
+                                  if (searchStation != null) {
+                                    setState(() {
+                                      waitData(searchStation);
+                                    });
+                                  }
+                                },
+                                decoration: InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                    horizontal: 10,
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  hintText: '역을 입력하세요',
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      Icons.cancel,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                    onPressed: () {
+                                      station.clear();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 23.5,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -225,16 +259,16 @@ class _InterFaceState extends State<InterFace> {
               ],
             ),
             Positioned(
-              bottom: 59,
+              bottom: 56,
               left: 0,
               right: 0,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.825),
+                    maxHeight: MediaQuery.of(context).size.height * 0.841),
                 child: DraggableScrollableSheet(
-                  initialChildSize: 0.23,
-                  maxChildSize: 0.99,
-                  minChildSize: 0.23,
+                  initialChildSize: 0.21,
+                  maxChildSize: .99,
+                  minChildSize: 0.21,
                   builder: (BuildContext context,
                       ScrollController scrollController) {
                     return SingleChildScrollView(
@@ -251,7 +285,7 @@ class _InterFaceState extends State<InterFace> {
               child: Container(
                 //광고배너 컨테이너
                 width: double.infinity,
-                height: 60.0,
+                height: 55.0,
                 color: Colors.green,
                 child: const Center(
                   child: Text("광고 배너"),
@@ -267,20 +301,6 @@ class _InterFaceState extends State<InterFace> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               UserAccountsDrawerHeader(
-                currentAccountPicture: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountUI(),
-                      ),
-                    );
-                  },
-                  child: const CircleAvatar(
-                    backgroundImage: AssetImage("assets/images/사용자 프로필.png"),
-                    backgroundColor: Colors.white,
-                  ),
-                ),
                 accountName: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -289,18 +309,25 @@ class _InterFaceState extends State<InterFace> {
                           builder: (context) => const AccountUI()),
                     );
                   },
-                  child: Text(userProvider.nickname),
+                  child: Text(
+                    userProvider.nickname,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 accountEmail: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AccountUI(),
-                        ),
-                      );
-                    },
-                    child: Text(userProvider.email)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountUI(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    userProvider.email,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.background,
                   borderRadius: const BorderRadius.only(
@@ -435,7 +462,7 @@ class _InterFaceState extends State<InterFace> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LoginUI(),
+                        builder: (context) => const StartPage(),
                       ),
                       (Route<dynamic> route) => false, //네비게이터 초기화
                     );

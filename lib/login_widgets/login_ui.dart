@@ -20,6 +20,12 @@ class _LogInState extends State<LoginUI> {
   final TextEditingController _passwordController = TextEditingController();
 
   DataProvider dataProvider = DataProvider(); //프로바이더 객체 변수
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +35,20 @@ class _LogInState extends State<LoginUI> {
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-                borderRadius: BorderRadius.circular(10.0)),
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(5.0)),
             width: 500,
-            height: 250,
-            child: const Center(child: Text("앱 아이콘 들어갈 곳")),
+            height: 400,
+            child: Center(
+              child: Text(
+                "Fast",
+                style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Theme.of(context).cardColor),
+              ),
+            ),
           ),
           GestureDetector(
             onTap: () {
@@ -50,14 +65,14 @@ class _LogInState extends State<LoginUI> {
                         builder: (context) {
                           return Column(
                             children: [
-                              TextField(
+                              TextFormField(
                                 controller: _emailController,
                                 autofocus: true,
                                 decoration:
                                     const InputDecoration(labelText: '이메일'),
                                 keyboardType: TextInputType.emailAddress,
                               ),
-                              TextField(
+                              TextFormField(
                                 controller: _passwordController,
                                 decoration:
                                     const InputDecoration(labelText: '비밀번호'),
@@ -80,7 +95,7 @@ class _LogInState extends State<LoginUI> {
                                         RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                          16.0,
+                                          20.0,
                                         ),
                                       ),
                                     ),
@@ -151,7 +166,7 @@ class _LogInState extends State<LoginUI> {
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                              16.0,
+                                              20.0,
                                             ),
                                           ),
                                         ),
@@ -167,6 +182,9 @@ class _LogInState extends State<LoginUI> {
                                       },
                                       child: const Text(
                                         "회원 가입",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -186,7 +204,7 @@ class _LogInState extends State<LoginUI> {
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                              16.0,
+                                              20.0,
                                             ),
                                           ),
                                         ),
@@ -196,12 +214,15 @@ class _LogInState extends State<LoginUI> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                ResetPasswordScreen(),
+                                                const ResetPasswordScreen(),
                                           ),
                                         );
                                       },
                                       child: const Text(
                                         "비밀번호 찾기",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   ),

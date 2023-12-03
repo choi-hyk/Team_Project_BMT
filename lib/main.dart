@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:test1/prov_reawrd.dart';
 import 'package:test1/provider_code/user_provider.dart';
+import 'package:test1/startpage.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -179,20 +181,20 @@ class MyApp extends StatelessWidget {
       //앱 테마
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: const Color.fromARGB(255, 163, 201, 205),
+          backgroundColor: const Color.fromARGB(255, 175, 222, 227),
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
             color: Color(0xFF232B55),
           ),
         ),
-        primaryColorLight: const Color.fromARGB(255, 61, 188, 202),
+        primaryColorLight: const Color.fromARGB(255, 117, 154, 167),
         primaryColor: const Color.fromARGB(255, 108, 159, 164),
         primaryColorDark: const Color.fromARGB(255, 22, 73, 79),
         cardColor: const Color.fromARGB(255, 233, 255, 243),
       ),
       //InterFace 호출
-      home: const LoginUI(),
+      home: const StartPage(),
     );
   }
 }

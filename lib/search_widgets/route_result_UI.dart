@@ -21,8 +21,12 @@ class StationRouteResult {
 class RouteResults extends StatefulWidget {
   final String startStation;
   final String arrivStation;
+  final String? stopoStation;
   const RouteResults(
-      {super.key, required this.startStation, required this.arrivStation});
+      {super.key,
+      required this.startStation,
+      required this.arrivStation,
+      this.stopoStation});
 
   @override
   State<RouteResults> createState() => _RouteResultsState();
@@ -164,32 +168,55 @@ class _RouteResultsState extends State<RouteResults> {
     Graph costGraph = dataProvider.getCostGraph();
 
     setState(() {
-      optimum = optmGraph.dijkstra(
-        int.parse(widget.startStation),
-        int.parse(widget.arrivStation),
-        optmPath,
-      );
+      if (widget.stopoStation == null) {
+        optimum = optmGraph.dijkstra(
+          int.parse(widget.startStation),
+          int.parse(widget.arrivStation),
+          optmPath,
+        );
 
-      minCost = costGraph.dijkstra(
-        int.parse(widget.startStation),
-        int.parse(widget.arrivStation),
-        costPath,
-      );
+        minCost = costGraph.dijkstra(
+          int.parse(widget.startStation),
+          int.parse(widget.arrivStation),
+          costPath,
+        );
 
-      minTime = timeGraph.dijkstra(
-        int.parse(widget.startStation),
-        int.parse(widget.arrivStation),
-        timePath,
-      );
+        minTime = timeGraph.dijkstra(
+          int.parse(widget.startStation),
+          int.parse(widget.arrivStation),
+          timePath,
+        );
+      } else {
+        optimum = optmGraph.dijkstraWithStop(
+          int.parse(widget.startStation),
+          int.parse(widget.stopoStation!),
+          int.parse(widget.arrivStation),
+          optmPath,
+        );
 
-      timeOfOptmPath = weightOfPath(dataProvider.getTimeGraph(), optmPath);
+        minCost = costGraph.dijkstraWithStop(
+          int.parse(widget.startStation),
+          int.parse(widget.stopoStation!),
+          int.parse(widget.arrivStation),
+          costPath,
+        );
 
-      costOfOptmPath = weightOfPath(dataProvider.getCostGraph(), optmPath);
-
-      timeOfCostPath = weightOfPath(dataProvider.getTimeGraph(), costPath);
-
-      costOfTimePath = weightOfPath(dataProvider.getCostGraph(), timePath);
+        minTime = timeGraph.dijkstraWithStop(
+          int.parse(widget.startStation),
+          int.parse(widget.stopoStation!),
+          int.parse(widget.arrivStation),
+          timePath,
+        );
+      }
     });
+
+    timeOfOptmPath = weightOfPath(dataProvider.getTimeGraph(), optmPath);
+
+    costOfOptmPath = weightOfPath(dataProvider.getCostGraph(), optmPath);
+
+    timeOfCostPath = weightOfPath(dataProvider.getTimeGraph(), costPath);
+
+    costOfTimePath = weightOfPath(dataProvider.getCostGraph(), timePath);
 
     StationRouteResult optm = await drawStationRoute(optmPath);
     StationRouteResult time = await drawStationRoute(timePath);
@@ -328,7 +355,7 @@ class _RouteResultsState extends State<RouteResults> {
               topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
         ),
         width: 90,
-        height: 35,
+        height: 45,
         child: Align(
           alignment: Alignment.center,
           child: Text(
