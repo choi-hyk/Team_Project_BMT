@@ -16,16 +16,16 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
   bool service_check = false;
   bool location_check = false;
   bool privacy_check = false;
 
-  //약관을 보여주는 함수
+  //약관을 가져오는 메소드
   Future<String> loadTerms(String filename) async {
     return await rootBundle.loadString('assets/terms/$filename');
   }
 
+  //약관 화면을 보여주는 메소드
   void _showTerms(String filename, String title) async {
     String terms = await loadTerms(filename);
     showDialog(
@@ -86,11 +86,6 @@ class _InfoPageState extends State<InfoPage> {
               keyboardType: TextInputType.text,
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: _ageController,
-              decoration: const InputDecoration(labelText: '출생연도'),
-              keyboardType: TextInputType.number,
-            ),
             CheckboxListTile(
               title: InkWell(
                 onTap: () => _showTerms('service_terms.txt', '서비스 이용약관'),
@@ -130,13 +125,25 @@ class _InfoPageState extends State<InfoPage> {
             const SizedBox(height: 60),
             ElevatedButton(
               onPressed: () {
-                // 모든 정보가 입력되었는지 확인
-                if (_phoneController.text.isEmpty ||
-                    _nicknameController.text.isEmpty ||
-                    _ageController.text.isEmpty) {
+                //에러 핸들링
+                if (_phoneController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('모든 정보를 입력하세요.'),
+                      content: Text('전화 번호를 입력하세요.'),
+                      backgroundColor: Color.fromARGB(255, 112, 48, 48),
+                    ),
+                  );
+                } else if (_phoneController.text.length != 11) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('전화번호가 올바른지 확인하세요.'),
+                      backgroundColor: Color.fromARGB(255, 112, 48, 48),
+                    ),
+                  );
+                } else if (_nicknameController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('닉네임을 입력하세요.'),
                       backgroundColor: Color.fromARGB(255, 112, 48, 48),
                     ),
                   );
@@ -171,13 +178,11 @@ class _InfoPageState extends State<InfoPage> {
   void _saveAdditionalInfo() {
     final phone = _phoneController.text.trim();
     final nickname = _nicknameController.text.trim();
-    final age = _ageController.text.trim();
 
     //Firestore에 추가 정보 저장
     FirebaseFirestore.instance.collection('Users').doc(widget.user.uid).update({
       'phone': phone,
       'nickname': nickname,
-      'age': age,
       'point': 0,
       'service_check': service_check,
       'location_check': location_check,

@@ -24,7 +24,6 @@ class UserProvider with ChangeNotifier {
   String get email => _userInfo?['email'] ?? 'No Email';
   String get phone => _userInfo?['phone'] ?? 'No PhoneNumber';
   String get point => _userInfo?['point'].toString() ?? '0';
-  String get age => (2024 - _userInfo?['age']).toString();
   String get mainStation => _userInfo?['mainStation'].toString() ?? "101";
 
   //DB의 mainStaiton값을 변경하는 메소드
