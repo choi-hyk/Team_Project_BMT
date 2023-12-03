@@ -56,8 +56,6 @@ class DataProvider with ChangeNotifier {
     nRoom = false;
     cStore = false;
     isBkmk = false;
-    nCong.clear();
-    pCong.clear();
     line.clear();
     nName.clear();
     pName.clear();
@@ -68,8 +66,6 @@ class DataProvider with ChangeNotifier {
           name = documentDataList[i]['station'][j].toString();
           nRoom = documentDataList[i]['nRoom'][j];
           cStore = documentDataList[i]['cStore'][j];
-          nCong.add(documentDataList[i]['next_congestion'][j].toString());
-          pCong.add(documentDataList[i]['prev_congestion'][j].toString());
           line.add(i + 1);
           //순환하는 호선인 1호선과 6호선 처리 과정
           //순환하는 호선이면 맨처음 역과 마지막역을 이어줘야함
