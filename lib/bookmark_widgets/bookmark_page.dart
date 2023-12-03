@@ -27,13 +27,13 @@ class _BookmarkPageState extends State<BookmarkPage> {
   DataProvider dataProvider = DataProvider();
   UserProvider userProvider = UserProvider();
 
-  //현재 로그인한 사용자의 UID를 가져오는 메소드
+  // 현재 로그인된 사용자의 UID를 가져오는 메소드
   String? getCurrentUserUid() {
     final User? user = FirebaseAuth.instance.currentUser;
     return user?.uid;
   }
 
-  //즐겨찾기에 역을 추가할 때 오류 처리하는 메소드
+  //즐겨찾기 역 추가 메소드
   Future<void> addStation(String station) async {
     await dataProvider.searchData(int.parse(station));
     if (!dataProvider.found) {
@@ -48,7 +48,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.of(context).pop();
   }
 
-  //즐겨찾기에 경로를 추가할 때 오류 처리하는 메소드
+//경로 추가 메소드
   Future<void> addRoute(String station1, String station2) async {
     await dataProvider.searchData(int.parse(station1));
     if (!dataProvider.found) {
@@ -71,7 +71,15 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.of(context).pop();
   }
 
-  //역 또는 경로를 추가하는 화면을 보여주는 메소드
+//역 제거 메소드
+  void removeStation(String station) async {
+    await userProvider.removeBookmarkStation(station);
+  }
+
+  void removeRoute(String station1, String station2) async {
+    await userProvider.removeBookmarkRoute(station1, station2);
+  }
+
   void showAddDialog(bool isRoute) {
     showDialog(
       context: context,
@@ -86,9 +94,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                if (!isRoute) //False일 때 역 추가
+                if (!isRoute) // 역 추가
                   TextField(
-                    autofocus: true,
                     controller: stationController,
                     decoration: const InputDecoration(
                       labelText: '역',
@@ -98,10 +105,9 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                   ),
-                if (isRoute) //True일 때 경로 추가
+                if (isRoute) // 경로 추가
                   ...[
                   TextField(
-                    autofocus: true,
                     controller: station1Controller,
                     decoration: const InputDecoration(
                       labelText: '출발역',
@@ -156,7 +162,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  //역 데이터를 반환하는 메소드
   Future<void> returnStationData(String station) async {
     await dataProvider.searchData(int.parse(station));
     Navigator.push(
@@ -177,7 +182,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  //경로 데이터를 반환하는 메소드
   Future<void> returnRouteData(String statin1, String station2) async {
     Navigator.push(
       context,
@@ -188,9 +192,9 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  //즐겨찾기 목록을 보여주는 위젯
+  // 즐겨찾기 목록을 보여주는 위젯
   Widget buildBookmarkList() {
-    String? userUid = getCurrentUserUid(); //로그인한 사용자의 uid 가져오기
+    String? userUid = getCurrentUserUid();
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -206,8 +210,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
         if (stationSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        //역 위젯
         var stationWidgets = stationSnapshot.data!.docs.map((document) {
           return Padding(
             padding: const EdgeInsets.all(5.0),
@@ -224,8 +226,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                     width: 0.5,
                   ), // 컨테이너의 모서리를 둥글게 만듭니다.
                 ),
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white),
                 child: ListTile(
                   title: Text(
                     '${document['station']} Station',
@@ -241,8 +241,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       color: Theme.of(context).primaryColorDark,
                     ),
                     onPressed: () {
-                      //해당 역을 즐겨찾기에서 제거
-                      userProvider.removeBookmarkStation(document['station']);
+                      removeStation(document['station']);
                     },
                   ),
                 ),
@@ -265,7 +264,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            //경로 위젯
             var routeWidgets = routeSnapshot.data!.docs.map((document) {
               return Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -322,8 +320,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                           color: Theme.of(context).primaryColorDark,
                         ),
                         onPressed: () {
-                          //해당 경로를 즐겨찾기에서 제거
-                          userProvider.removeBookmarkRoute(
+                          removeRoute(
                               document['station1_ID'], document['station2_ID']);
                         },
                       ),
@@ -345,7 +342,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  //역 또는 경로 추가할 때의 화면을 보여주는 메소드
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
@@ -372,7 +368,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
               currentUI = "home";
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const InterFace()),
+                MaterialPageRoute(
+                    builder: (context) => const InterFace()), // 다음으로 이동할 페이지
               );
             },
           ),
@@ -399,7 +396,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   FontAwesomeIcons.locationDot,
                   color: Theme.of(context).primaryColorDark, // 아이콘 색상
                 ),
-                onPressed: () => showAddDialog(false), //역 추가 다이얼로그
+                onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
               ),
             ),
             const SizedBox(
@@ -418,10 +415,10 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
               child: IconButton(
                 icon: Icon(
-                  FontAwesomeIcons.route,
-                  color: Theme.of(context).primaryColorDark,
+                  FontAwesomeIcons.route, // 변경할 아이콘
+                  color: Theme.of(context).primaryColorDark, // 아이콘 색상
                 ),
-                onPressed: () => showAddDialog(true), //경로 추가 다이얼로그
+                onPressed: () => showAddDialog(true), // 역 추가 다이얼로그
               ),
             ),
             const SizedBox(
