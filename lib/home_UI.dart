@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 
 class HomeUI extends StatefulWidget {
+  const HomeUI({super.key});
   @override
   State<HomeUI> createState() => _HomeUIState();
 }

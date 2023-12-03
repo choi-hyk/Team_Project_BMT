@@ -91,7 +91,6 @@ class _InterFaceState extends State<InterFace> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-
             title: const Text(
               '로그아웃',
               style: TextStyle(
@@ -104,7 +103,6 @@ class _InterFaceState extends State<InterFace> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -331,22 +329,6 @@ class _InterFaceState extends State<InterFace> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                accountEmail: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountUI(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    userProvider.email,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-
-
                 accountEmail: InkWell(
                   onTap: () {
                     Navigator.push(
