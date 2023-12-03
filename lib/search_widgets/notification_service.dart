@@ -10,7 +10,7 @@ class NotificationService {
 
   static init() async {
     AndroidInitializationSettings androidInitializationSettings =
-        const AndroidInitializationSettings('mipmap/ic_bmt');
+        const AndroidInitializationSettings('mipmap/ic_launcher');
 
     InitializationSettings initializationSettings =
         InitializationSettings(android: androidInitializationSettings);

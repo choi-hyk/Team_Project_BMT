@@ -34,9 +34,7 @@ class _LogInState extends State<LoginUI> {
       body: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(5.0)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0)),
             width: 500,
             height: 400,
             child: Center(
@@ -55,7 +53,6 @@ class _LogInState extends State<LoginUI> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const Padding(padding: EdgeInsets.only(top: 50)),
                   Form(
                     child: Container(
                       padding: const EdgeInsets.all(40.0),

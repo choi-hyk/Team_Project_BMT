@@ -177,6 +177,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
+          check: true,
         ),
       ),
     );
@@ -186,8 +187,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            RouteResults(startStation: statin1, arrivStation: station2),
+        builder: (context) => RouteResults(
+            startStation: statin1, arrivStation: station2, check: true),
       ),
     );
   }

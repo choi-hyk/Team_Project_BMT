@@ -3,7 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:test1/main.dart';
+import 'package:test1/menu_widgets/stationdata.dart';
+import 'package:test1/provider_code/data_provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
+import 'package:test1/search_widgets/route_result_UI.dart';
 
 class HomeUI extends StatefulWidget {
   const HomeUI({super.key});
@@ -12,6 +16,29 @@ class HomeUI extends StatefulWidget {
 }
 
 class _HomeUIState extends State<HomeUI> {
+  DataProvider dataProvider = DataProvider();
+
+  Future<void> returnStationData(String station) async {
+    await dataProvider.searchData(int.parse(station));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StationDataPage(
+          name: dataProvider.name,
+          nRoom: dataProvider.nRoom,
+          cStore: dataProvider.cStore,
+          isBkMk: dataProvider.isBkmk,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
+          line: dataProvider.line,
+          nName: dataProvider.nName,
+          pName: dataProvider.pName,
+          check: false,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -176,48 +203,33 @@ class _HomeUIState extends State<HomeUI> {
   Widget buildStationBookmark(String station) {
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Theme.of(context).primaryColorDark, // 테두리 색상
-              width: 0.5, // 테두리 두께
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              returnStationData(station);
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).primaryColorDark, // 테두리 색상
+                width: 0.5, // 테두리 두께
+              ),
             ),
-          ),
-          width: double.infinity,
-          height: 100,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                width: 90,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "$station Station",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColorDark,
-                        fontStyle: FontStyle.italic),
-                  ),
-                ),
+            width: double.infinity,
+            height: 100,
+            child: Center(
+              child: Text(
+                "$station Station",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColorDark,
+                    fontStyle: FontStyle.italic),
               ),
-              const SizedBox(
-                width: 90,
-              ),
-              const SizedBox(
-                width: 90,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 10),
@@ -232,60 +244,64 @@ class _HomeUIState extends State<HomeUI> {
 
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Theme.of(context).primaryColorDark, // 테두리 색상
-              width: 0.5, // 테두리 두께
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RouteResults(
+                  startStation: station1,
+                  arrivStation: station2,
+                  check: false,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).primaryColorDark, // 테두리 색상
+                width: 0.5, // 테두리 두께
+              ),
             ),
-          ),
-          width: double.infinity,
-          height: 100,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "$station1 Station",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColorDark,
-                      fontStyle: FontStyle.italic),
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Icon(
-                  FontAwesomeIcons.rightLong,
-                  color: Theme.of(context).primaryColorDark,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "$station2 Station",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColorDark,
-                      fontStyle: FontStyle.italic),
-                ),
-              ),
-              const SizedBox(
-                width: 115,
-                child: Align(
+            width: double.infinity,
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Align(
                   alignment: Alignment.center,
-                  child: Icon(
-                    Icons.star,
-                    color: Colors.amber,
+                  child: Text(
+                    "$station1 Station",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColorDark,
+                        fontStyle: FontStyle.italic),
                   ),
                 ),
-              ),
-            ],
+                Align(
+                  alignment: Alignment.center,
+                  child: Icon(
+                    FontAwesomeIcons.rightLong,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "$station2 Station",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColorDark,
+                        fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 10),
@@ -308,9 +324,7 @@ class _HomeUIState extends State<HomeUI> {
         DateFormat('yyyy.MM.dd  hh :  mm', 'ko_KR').format(createdAt);
 
     return GestureDetector(
-      onTap: () {
-        //
-      },
+      onTap: () {},
       child: Container(
         color: Colors.white,
         child: Column(

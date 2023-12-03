@@ -50,13 +50,11 @@ class _ProvRewardState extends State<ProvReward> {
             const SizedBox(
               height: 100,
             ),
-            Text(
-              "Fast",
-              style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: Theme.of(context).cardColor),
+            Image.asset(
+              "assets/images/Fast2.png",
+              fit: BoxFit.contain,
+              width: 200,
+              height: 200,
             ),
             const SizedBox(
               height: 90,

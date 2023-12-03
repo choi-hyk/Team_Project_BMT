@@ -74,7 +74,9 @@ class _RouteSearchState extends State<RouteSearch> {
         context,
         MaterialPageRoute(
           builder: (context) => RouteResults(
-              startStation: startStation, arrivStation: arrivStation),
+              startStation: startStation,
+              arrivStation: arrivStation,
+              check: true),
         ),
       );
     }
