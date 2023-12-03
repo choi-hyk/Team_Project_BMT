@@ -52,8 +52,11 @@ class _StartPageState extends State<StartPage> {
               ],
             ),
           ),
-          const SizedBox(
-            height: 80,
+          Image.asset(
+            "assets/images/Fast2.png",
+            fit: BoxFit.contain,
+            width: 200,
+            height: 200,
           ),
           Text(
             "지하철 타고 기프티콘 받자!",
@@ -117,7 +120,7 @@ class _StartPageState extends State<StartPage> {
           ),
           Container(
             width: 350,
-            height: 427,
+            height: 307,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(30), topLeft: Radius.circular(30)),

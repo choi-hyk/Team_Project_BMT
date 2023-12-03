@@ -518,6 +518,10 @@ class _StationDataState extends State<StationData> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.5,
+                                ),
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(10)),
                                 color: Theme.of(context).canvasColor),
@@ -614,6 +618,10 @@ class _StationDataState extends State<StationData> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.5,
+                                ),
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(10)),
                                 color: Theme.of(context).canvasColor),
@@ -663,7 +671,13 @@ class _StationDataState extends State<StationData> {
             const SizedBox(
               height: 10,
             ),
-            const Text("시설정보"),
+            Text(
+              "시설정보",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ),
             SizedBox(
               height: 100,
               child: Row(
@@ -697,7 +711,13 @@ class _StationDataState extends State<StationData> {
             const SizedBox(
               height: 10,
             ),
-            const Text("역 게시판"),
+            Text(
+              "역 게시판",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ),
             Expanded(
               child: FutureBuilder<List<DocumentSnapshot>>(
                 future: bulletinBoardPosts,
@@ -728,37 +748,45 @@ class _StationDataState extends State<StationData> {
                               createdAt =
                                   createdAt.add(const Duration(hours: 9));
                               String formattedCreatedAt =
-                                  DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                                  DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
                                       .format(createdAt);
 
                               return Column(
                                 children: [
-                                  ListTile(
-                                    title: Text(
-                                      post['title'],
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          post['content'],
+                                  Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(20),
+                                          ),
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .primaryColorDark, // 테두리 색상
+                                            width: 0.5, // 테두리 두께
+                                          ),
+                                          color: Theme.of(context).canvasColor),
+                                      child: ListTile(
+                                        title: Text(
+                                          post['title'],
                                           style: const TextStyle(
-                                            fontSize: 15.0,
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Text("작성자: $nickname"),
-                                        Text("작성일: $formattedCreatedAt"),
-                                      ],
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text("작성자: $nickname"),
+                                            Text("작성일: $formattedCreatedAt"),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    color: Colors.black,
+                                  const SizedBox(
+                                    height: 10.5,
                                   ),
                                 ],
                               );

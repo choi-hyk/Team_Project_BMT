@@ -58,21 +58,45 @@ class _StationDataPageState extends State<StationDataPage> {
         centerTitle: true,
         actions: const [],
       ),
-      body: StationData(
-        name: widget.name,
-        nRoom: widget.nRoom,
-        cStore: widget.cStore,
-        isBkMk: isBkMk,
-        nCong: widget.nCong,
-        pCong: widget.pCong,
-        line: widget.line,
-        nName: widget.nName,
-        pName: widget.pName,
-        updateIsBookmark: (bool newValue) {
-          setState(() {
-            isBkMk = newValue;
-          });
-        },
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Positioned(
+                bottom: 40,
+                child: StationData(
+                  name: widget.name,
+                  nRoom: widget.nRoom,
+                  cStore: widget.cStore,
+                  isBkMk: isBkMk,
+                  nCong: widget.nCong,
+                  pCong: widget.pCong,
+                  line: widget.line,
+                  nName: widget.nName,
+                  pName: widget.pName,
+                  updateIsBookmark: (bool newValue) {
+                    setState(() {
+                      isBkMk = newValue;
+                    });
+                  },
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: SizedBox(
+                  //광고배너 컨테이너
+                  width: double.infinity,
+                  height: 55.0,
+                  child: Image.asset(
+                    'assets/images/광고3.png',
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

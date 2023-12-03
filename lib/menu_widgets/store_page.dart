@@ -32,6 +32,10 @@ class _StorePageState extends State<StorePage> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
+          border: Border.all(
+            color: Colors.grey,
+            width: 1,
+          ),
           color: Colors.white,
         ),
         width: 70,
@@ -40,7 +44,10 @@ class _StorePageState extends State<StorePage> {
           alignment: Alignment.center,
           child: Text(
             categoryName,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColorDark),
           ),
         ),
       ),
@@ -146,7 +153,7 @@ class _StorePageState extends State<StorePage> {
                     ),
                     buildCategoryContainer("상품권", showCategoryList),
                     const SizedBox(
-                      width: 80.0,
+                      width: 100.0,
                     ),
                     // 리워드 포인트
                     Padding(
@@ -154,6 +161,10 @@ class _StorePageState extends State<StorePage> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50.0),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 0.5,
+                          ),
                           color: Colors.deepPurple[200],
                         ),
                         width: 60,
@@ -219,10 +230,15 @@ class _StorePageState extends State<StorePage> {
                                 child: Container(
                                   width: double.infinity,
                                   height: 110,
-                                  decoration: const BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      color: Colors.white),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(20)),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
+                                  ),
                                   child: ListTile(
                                     title: Text(
                                       store['name'],
