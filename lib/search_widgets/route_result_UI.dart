@@ -474,85 +474,81 @@ class _RouteResultsState extends State<RouteResults> {
                       }
                       //_scheduleAlarm(10);
                       NotificationService.showDelayedNotification(
-                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
+                          10, '곧 도착 예정', '잠시 후 역에 도착합니다.');
                       print("알림 시작 버튼 터치");
                       //팝업 표시
                       bool confirm = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('알림 시작'),
-                                content: const Text(
-                                    '알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('아니오'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(false); // 아니오를 누르면 false를 반환
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('예'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(true); // 예를 누르면 true를 반환
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          ) ??
-                          false;
 
-                      if (confirm) {
-                        if (currentpath == optmPath) {
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('알림 시작'),
+                            content: const Text('알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('아니오'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(false); // 아니오를 누르면 false를 반환
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('예'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(true); // 예를 누르면 true를 반환
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ) ?? false;
+                      
+                      if(confirm) {
+                        if(currentpath == optmPath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
-                                currentStaion:
-                                    optmPath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    optmPath[timePath.length - 2].toString(),
+                              
+                                currentStaion: optmPath[timePath.length-1].toString(),
+                                linkStaion: optmPath[timePath.length-2].toString(),
                                 line: line[0],
                                 confg: '0',
+                                ),
                               ),
-                            ),
-                          );
-                        } else if (currentpath == timePath) {
+                            );
+                        } else if(currentpath == timePath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
-                                currentStaion:
-                                    timePath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    timePath[timePath.length - 2].toString(),
+                              
+                                currentStaion: timePath[timePath.length-1].toString(),
+                                linkStaion:  timePath[timePath.length-2].toString(),
                                 line: line[0],
                                 confg: '0',
+                                ),
                               ),
-                            ),
-                          );
-                        } else if (currentpath == costPath) {
+                            );
+                        } else if(currentpath == costPath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
-                                currentStaion:
-                                    costPath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    costPath[timePath.length - 1].toString(),
+                              
+                                currentStaion: costPath[timePath.length-1].toString(),
+                                linkStaion:  costPath[timePath.length-1].toString(),
                                 line: line[0],
                                 confg: '0',
+                                ),
                               ),
-                            ),
-                          );
+                            );
                         }
                       }
+
+
                     },
                     child: const Row(
                       children: [
