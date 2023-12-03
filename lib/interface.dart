@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/bookmark_widgets/bookmark_page.dart';
 import 'package:test1/home_UI.dart';
-import 'package:test1/login_widgets/login_ui.dart';
 import 'package:test1/main.dart';
 import 'package:test1/menu_widgets/lost_and_found.dart';
 import 'package:test1/menu_widgets/station_bulletin.dart';
@@ -12,9 +11,7 @@ import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/startpage.dart';
 import 'search_widgets/stationdata_UI.dart';
 import 'settings_widgets/settings_UI.dart';
-import 'user_widgets/Account_UI.dart';
 import 'StationMap.dart';
-//import 'package:test1/algorithm_code/graph.dart';
 
 //InterFace 클래스
 class InterFace extends StatefulWidget {
@@ -323,11 +320,7 @@ class _InterFaceState extends State<InterFace> {
                 ),
                 accountName: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AccountUI()),
-                    );
+                
                   },
                   child: Row(
                     children: [
@@ -352,12 +345,7 @@ class _InterFaceState extends State<InterFace> {
                 ),
                 accountEmail: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountUI(),
-                      ),
-                    );
+                    
                   },
                   child: Row(
                     children: [

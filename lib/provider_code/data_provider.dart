@@ -22,6 +22,8 @@ class DataProvider with ChangeNotifier {
   List<int> line = [];
 
   UserProvider userProvider = UserProvider();
+  
+  get lines => null;
 
   Future<void> fetchDocumentList() async {
     // Firestore에서 데이터 가져오기
