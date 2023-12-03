@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:test1/interface.dart';
 import 'package:test1/main.dart';
 import 'package:test1/provider_code/data_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:test1/provider_code/user_provider.dart';
 import 'package:test1/search_widgets/notification_service.dart';
 import 'package:test1/prov_conf.dart';
@@ -201,15 +199,19 @@ class _RouteResultsState extends State<RouteResults> {
     //첫번쨰 역 처리
     await dataProvider.searchData(path[leng]);
 
-    if (int.parse(dataProvider.nName[0]) == path[leng - 1] ||
-        int.parse(dataProvider.pName[0]) == path[leng - 1]) {
+    if (217 == path[leng]) {
       saveline.add(dataProvider.line[0]);
       prevline = dataProvider.line[0];
     } else {
-      saveline.add(dataProvider.line[1]);
-      prevline = dataProvider.line[1];
+      if (int.parse(dataProvider.nName[0]) == path[leng - 1] ||
+          int.parse(dataProvider.pName[0]) == path[leng - 1]) {
+        saveline.add(dataProvider.line[0]);
+        prevline = dataProvider.line[0];
+      } else {
+        saveline.add(dataProvider.line[1]);
+        prevline = dataProvider.line[1];
+      }
     }
-
     //첫번째역의 호선을 저장하고 그호선을 다음 역과 비교
     for (int i = 1; i < leng; i++) {
       await dataProvider.searchData(path[leng - i]);
@@ -474,81 +476,85 @@ class _RouteResultsState extends State<RouteResults> {
                       }
                       //_scheduleAlarm(10);
                       NotificationService.showDelayedNotification(
-                          10, '곧 도착 예정', '잠시 후 역에 도착합니다.');
+                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
                       print("알림 시작 버튼 터치");
                       //팝업 표시
                       bool confirm = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('알림 시작'),
+                                content: const Text(
+                                    '알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('아니오'),
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(false); // 아니오를 누르면 false를 반환
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('예'),
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(true); // 예를 누르면 true를 반환
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          ) ??
+                          false;
 
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('알림 시작'),
-                            content: const Text('알림이 시작되었습니다!\n혼잡도 정보를 제공하시겠습니까?'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('아니오'),
-                                onPressed: () {
-                                  Navigator.of(context).pop(false); // 아니오를 누르면 false를 반환
-                                },
+                      if (confirm) {
+                        if (currentpath == optmPath) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProvConf(
+                                currentStaion:
+                                    optmPath[timePath.length - 1].toString(),
+                                linkStaion:
+                                    optmPath[timePath.length - 2].toString(),
+                                line: line[0],
+                                confg: '0',
                               ),
-                              TextButton(
-                                child: const Text('예'),
-                                onPressed: () {
-                                  Navigator.of(context).pop(true); // 예를 누르면 true를 반환
-                                },
-                              ),
-                            ],
+                            ),
                           );
-                        },
-                      ) ?? false;
-                      
-                      if(confirm) {
-                        if(currentpath == optmPath) {
+                        } else if (currentpath == timePath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
-                              
-                                currentStaion: optmPath[timePath.length-1].toString(),
-                                linkStaion: optmPath[timePath.length-2].toString(),
+                                currentStaion:
+                                    timePath[timePath.length - 1].toString(),
+                                linkStaion:
+                                    timePath[timePath.length - 2].toString(),
                                 line: line[0],
                                 confg: '0',
-                                ),
                               ),
-                            );
-                        } else if(currentpath == timePath) {
+                            ),
+                          );
+                        } else if (currentpath == costPath) {
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProvConf(
-                              
-                                currentStaion: timePath[timePath.length-1].toString(),
-                                linkStaion:  timePath[timePath.length-2].toString(),
+                                currentStaion:
+                                    costPath[timePath.length - 1].toString(),
+                                linkStaion:
+                                    costPath[timePath.length - 1].toString(),
                                 line: line[0],
                                 confg: '0',
-                                ),
                               ),
-                            );
-                        } else if(currentpath == costPath) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProvConf(
-                              
-                                currentStaion: costPath[timePath.length-1].toString(),
-                                linkStaion:  costPath[timePath.length-1].toString(),
-                                line: line[0],
-                                confg: '0',
-                                ),
-                              ),
-                            );
+                            ),
+                          );
                         }
                       }
-
-
                     },
                     child: const Row(
                       children: [
