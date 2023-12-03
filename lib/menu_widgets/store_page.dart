@@ -15,7 +15,6 @@ class StorePage extends StatefulWidget {
 }
 
 class _StorePageState extends State<StorePage> {
-  bool _isSearching = false;
   UserProvider userProvider = UserProvider();
   void showCategoryList(String category) {
     Navigator.push(
@@ -78,11 +77,10 @@ class _StorePageState extends State<StorePage> {
             icon: const Icon(
               Icons.arrow_back_ios_new,
               color: Colors.black,
-            ), // 뒤로 가기 아이콘
+            ),
             onPressed: () {
               Navigator.pop(context);
               currentUI = "home";
-              _isSearching = false;
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -91,38 +89,15 @@ class _StorePageState extends State<StorePage> {
               );
             },
           ),
-          title: _isSearching
-              ? TextField(
-                  // 검색 모드에서는 검색 창을 표시
-                  style: const TextStyle(color: Colors.black),
-                  decoration: const InputDecoration(
-                    hintText: '검색어를 입력하세요',
-                    hintStyle: TextStyle(color: Colors.black),
-                  ),
-                  onChanged: (searchQuery) {
-                    // 검색어 입력 시 동작할 작업 추가
-                  },
-                )
-              : const Text(
-                  '스토어',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+          title: const Text(
+            '스토어',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           backgroundColor: Theme.of(context).primaryColor,
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                _isSearching ? Icons.cancel : Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching; // 검색 버튼을 누를 때 검색 모드 토글
-                });
-              },
-            ),
-          ],
         ),
         body: Container(
           color: Theme.of(context).canvasColor,
@@ -174,9 +149,6 @@ class _StorePageState extends State<StorePage> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 6.5,
-              ),
               Expanded(
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
@@ -194,71 +166,81 @@ class _StorePageState extends State<StorePage> {
                       itemBuilder: (context, index) {
                         var store = stores[index].data();
 
-                        return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // 이미지를 탭하면 구매 페이지로 이동
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BuyPage(
-                                        category: store['category'],
-                                        categoryname: store['category_name'],
-                                        icon: store['icon'],
-                                        imageUrl: store['image_url'],
-                                        name: store['name'],
-                                        pay: store['pay'],
-                                        giftUrl: store['gift_url'],
-                                      ),
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                // 이미지를 탭하면 구매 페이지로 이동
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BuyPage(
+                                      category: store['category'],
+                                      categoryname: store['category_name'],
+                                      icon: store['icon'],
+                                      imageUrl: store['image_url'],
+                                      name: store['name'],
+                                      pay: store['pay'],
+                                      giftUrl: store['gift_url'],
                                     ),
-                                  );
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 110,
-                                  decoration: const BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      color: Colors.white),
-                                  child: ListTile(
-                                    title: Text(
-                                      store['name'],
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .primaryColorDark),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: 120,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      width: 1.0,
+                                      color: Colors.black,
                                     ),
-                                    subtitle: Text(
-                                      ' ${store['pay']}p',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .primaryColorDark),
-                                    ),
-                                    leading: SizedBox(
-                                      width: 90,
-                                      height: 130,
-                                      child: Image.network(
-                                        store['image_url'],
-                                        fit: BoxFit.fill,
-                                      ),
+                                  ),
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    store['name'],
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Theme.of(context).primaryColorDark),
+                                  ),
+                                  subtitle: Text(
+                                    ' ${store['pay']}p',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Theme.of(context).primaryColorDark),
+                                  ),
+                                  leading: SizedBox(
+                                    width: 100,
+                                    height: 120,
+                                    child: Image.network(
+                                      store['image_url'],
+                                      fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         );
                       },
                     );
                   },
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 60.0,
+                child: Image.asset(
+                  'assets/images/광고2.png',
+                  fit: BoxFit.fill,
                 ),
               ),
             ],

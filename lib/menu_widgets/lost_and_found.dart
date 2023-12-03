@@ -317,7 +317,6 @@ class _LostAndFoundState extends State<LostAndFound> {
                 items: stationIds.map((int stationId) {
                   return DropdownMenuItem<int>(
                     value: stationId,
-
                     child: Text(
                       '$stationId',
                       style: const TextStyle(
@@ -325,7 +324,6 @@ class _LostAndFoundState extends State<LostAndFound> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                   );
                 }).toList(),
                 underline: Container(), // 밑줄을 없애는 부분
