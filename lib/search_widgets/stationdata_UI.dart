@@ -52,11 +52,34 @@ class _StationDataState extends State<StationData> {
 
   bool isRunTime = false;
 
+  // 게시글 목록을 가져오는 Future
+  late Future<List<DocumentSnapshot>> bulletinBoardPosts;
+
   @override
   void initState() {
     super.initState();
     calculateIsRunTime();
     loadCongestionData();
+    bulletinBoardPosts = fetchBulletinBoardPosts();
+  }
+
+  // Firestore 쿼리를 사용하여 특정 역의 게시글 가져오기
+  Future<List<DocumentSnapshot>> fetchBulletinBoardPosts() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('Bulletin_Board')
+        .where('station_ID', isEqualTo: int.parse(widget.name))
+        .get();
+
+    return snapshot.docs;
+  }
+
+  // Firestore에서 사용자 닉네임 가져오는 비동기 함수
+  Future<String?> getUserNickname(String userId) async {
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+
+    return userSnapshot['nickname'];
   }
 
   void toggleBookmark() {
@@ -674,6 +697,81 @@ class _StationDataState extends State<StationData> {
               height: 10,
             ),
             const Text("역 게시판"),
+            Expanded(
+              child: FutureBuilder<List<DocumentSnapshot>>(
+                future: bulletinBoardPosts,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    // 게시글을 나타내는 UI 작성
+                    List<DocumentSnapshot>? posts = snapshot.data;
+                    if (posts != null && posts.isNotEmpty) {
+                      return ListView.builder(
+                        shrinkWrap: false, // 스크롤이 가능하도록 설정
+                        physics:
+                            const AlwaysScrollableScrollPhysics(), // 항상 스크롤 가능하도록 설정
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot post = posts[index];
+                          // 각 게시글의 UI를 작성하는 코드를 추가
+                          return FutureBuilder<String?>(
+                            future: getUserNickname(post['User_ID']),
+                            builder: (context, nicknameSnapshot) {
+                              String nickname = nicknameSnapshot.data ?? "익명";
+
+                              DateTime createdAt =
+                                  (post['created_at'] as Timestamp).toDate();
+                              createdAt =
+                                  createdAt.add(const Duration(hours: 9));
+                              String formattedCreatedAt =
+                                  DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                                      .format(createdAt);
+
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      post['title'],
+                                      style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          post['content'],
+                                          style: const TextStyle(
+                                            fontSize: 15.0,
+                                          ),
+                                        ),
+                                        Text("작성자: $nickname"),
+                                        Text("작성일: $formattedCreatedAt"),
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(
+                                    thickness: 1.0,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                    } else {
+                      return const Text('해당 역에 작성된 게시글이 없습니다.');
+                    }
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),

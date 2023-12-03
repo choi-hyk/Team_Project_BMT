@@ -2,21 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
 
 class HomeUI extends StatefulWidget {
-  const HomeUI({super.key});
-
   @override
   State<HomeUI> createState() => _HomeUIState();
 }
 
 class _HomeUIState extends State<HomeUI> {
-  UserProvider userProvider = UserProvider();
-  int selectedStation = 101;
-
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -137,24 +134,29 @@ class _HomeUIState extends State<HomeUI> {
               height: 4.3,
             ),
             Expanded(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('Bulletin_Board')
+                    .where('station_ID',
+                        isEqualTo: int.parse(userProvider.mainStation))
                     .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        final DocumentSnapshot documentSnapshot =
-                            snapshot.data!.docs[index];
-                        return buildBulletinPost(
-                            documentSnapshot.data() as Map<String, dynamic>);
-                      },
-                    );
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
                   }
-                  return const Center(child: CircularProgressIndicator());
+                  if (snapshot.hasError) {
+                    return Text('에러: ${snapshot.error}');
+                  }
+                  if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                    return ListView(
+                      children: snapshot.data!.docs.map((doc) {
+                        return buildBulletinPost(
+                            doc.data() as Map<String, dynamic>);
+                      }).toList(),
+                    );
+                  } else {
+                    return const Center(child: Text('해당 역의 게시글이 없습니다'));
+                  }
                 },
               ),
             ),

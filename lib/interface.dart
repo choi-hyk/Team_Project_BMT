@@ -27,6 +27,7 @@ class InterFace extends StatefulWidget {
 
 class _InterFaceState extends State<InterFace> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  UserProvider userProvider = UserProvider();
   DataProvider dataProvider = DataProvider();
   String? tappedStationKey;
   final TextEditingController station = TextEditingController();
@@ -47,7 +48,7 @@ class _InterFaceState extends State<InterFace> {
   Future<void> waitData(int searchStation) async {
     await dataProvider.searchData(searchStation);
     if (!dataProvider.found) {
-      showSnackBar(context, const Text("존재하지 않는 역 입니다"));
+      showSnackBar(context, const Text("존재하지 않는 역입니다"));
       setState(() {
         currentUI = "home";
       });
@@ -62,7 +63,8 @@ class _InterFaceState extends State<InterFace> {
   Widget buildContentWidget() {
     switch (currentUI) {
       case "home":
-        return const HomeUI();
+        return HomeUI();
+
       case "stationdata":
         return StationData(
           name: dataProvider.name,
@@ -81,7 +83,7 @@ class _InterFaceState extends State<InterFace> {
           },
         );
       default:
-        return const HomeUI();
+        return HomeUI();
     }
   }
 
@@ -89,6 +91,7 @@ class _InterFaceState extends State<InterFace> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
+
             title: const Text(
               '로그아웃',
               style: TextStyle(
@@ -101,6 +104,7 @@ class _InterFaceState extends State<InterFace> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -130,6 +134,18 @@ class _InterFaceState extends State<InterFace> {
           ),
         )) ??
         false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateUserProviderData();
+  }
+
+  // 유저 포인트 값을 받기 위함
+  Future<void> updateUserProviderData() async {
+    await userProvider.fetchUserInfo();
+    setState(() {});
   }
 
   @override
@@ -287,8 +303,9 @@ class _InterFaceState extends State<InterFace> {
                 width: double.infinity,
                 height: 55.0,
                 color: Colors.green,
-                child: const Center(
-                  child: Text("광고 배너"),
+                child: Image.asset(
+                  'assets/images/광고1.png',
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -326,6 +343,36 @@ class _InterFaceState extends State<InterFace> {
                   child: Text(
                     userProvider.email,
                     style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+
+
+                accountEmail: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountUI(),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Text(userProvider.email),
+                      const SizedBox(
+                        width: 100.0,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF7C61FF),
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${userProvider.point}p",
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 decoration: BoxDecoration(
