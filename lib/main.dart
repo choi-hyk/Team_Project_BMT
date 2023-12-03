@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:test1/provider_code/user_provider.dart';
-import 'package:test1/startpage.dart';
-import 'firebase_options.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/Provider/data_provider.dart';
+import 'package:test1/Provider/user_provider.dart';
+import 'package:test1/Interface/startpage.dart';
+import 'firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
-int array = 0; //역 정보 데이터 배열
+//전역 변수
+int array =
+    0; // Station데이터 값 배열 순서 -> StationData에서 검색한 역이 환승 가능한경우 호선 순서상 첫번쨰 호선 array = 0, 두번째 호선 array = 1
 String currentUI = "login"; //home, stationdata, routesearch, routeresult
 
 void showSnackBar(BuildContext context, Text text) {
