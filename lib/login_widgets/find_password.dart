@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
+
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
@@ -14,14 +16,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     try {
       await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('비밀번호 재설정 링크가 이메일로 전송되었습니다.'),
           backgroundColor: Color.fromARGB(255, 112, 48, 48),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('이메일 전송에 실패했습니다.'),
           backgroundColor: Color.fromARGB(255, 112, 48, 48),
         ),
@@ -99,7 +101,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        16.0), // 버튼의 모서리를 둥글게 만듭니다.
+                                        20.0), // 버튼의 모서리를 둥글게 만듭니다.
                                   ),
                                 ),
                               ),
@@ -108,6 +110,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               },
                               child: const Text(
                                 "이메일 발송",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                             ),
                           ),

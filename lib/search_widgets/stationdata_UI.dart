@@ -152,7 +152,7 @@ class _StationDataState extends State<StationData> {
         ),
       ),
       width: 440.5,
-      height: 710.0,
+      height: 723.0,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -328,7 +328,7 @@ class _StationDataState extends State<StationData> {
               color: Colors.grey,
             ),
             const SizedBox(
-              height: 15,
+              height: 6,
             ),
             Stack(
               alignment: Alignment.center,

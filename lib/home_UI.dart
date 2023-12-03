@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:test1/provider_code/user_provider.dart';
@@ -26,14 +27,64 @@ class _HomeUIState extends State<HomeUI> {
         ),
       ),
       width: 379.5,
-      height: 710.0,
+      height: 723.0,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text(
+            Container(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: Theme.of(context).canvasColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Fast",
+                      style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context).cardColor),
+                    ),
+                    Text(
+                      "User widgets",
+                      style: TextStyle(
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context).cardColor),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Divider(
+              height: 0.5, // 구분선의 높이
+              thickness: 0.5, // 구분선의 두께
+              color: Theme.of(context).primaryColorDark, // 구분선의 색상
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
               "즐겨찾기",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark),
+            ),
+            const SizedBox(
+              height: 4.3,
             ),
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -64,15 +115,24 @@ class _HomeUIState extends State<HomeUI> {
             const SizedBox(
               height: 20,
             ),
-            const Divider(
-              height: 1, // 구분선의 높이
-              thickness: 1, // 구분선의 두께
-              color: Colors.grey, // 구분선의 색상
+            Divider(
+              height: 0.5, // 구분선의 높이
+              thickness: 0.5, // 구분선의 두께
+              color: Theme.of(context).primaryColorDark, // 구분선의 색상
             ),
             const SizedBox(
               height: 10,
             ),
-            const Text('게시판'),
+            Text(
+              '게시판',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark),
+            ),
+            const SizedBox(
+              height: 4.3,
+            ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -112,10 +172,10 @@ class _HomeUIState extends State<HomeUI> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
+            color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: Colors.grey, // 테두리 색상
+              color: Theme.of(context).primaryColorDark, // 테두리 색상
               width: 0.5, // 테두리 두께
             ),
           ),
@@ -129,8 +189,12 @@ class _HomeUIState extends State<HomeUI> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    station,
-                    style: const TextStyle(fontSize: 15),
+                    "$station Station",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColorDark,
+                        fontStyle: FontStyle.italic),
                   ),
                 ),
               ),
@@ -164,11 +228,11 @@ class _HomeUIState extends State<HomeUI> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
+            color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: Colors.grey, // 테두리 색상
-              width: 1, // 테두리 두께
+              color: Theme.of(context).primaryColorDark, // 테두리 색상
+              width: 0.5, // 테두리 두께
             ),
           ),
           width: double.infinity,
@@ -176,33 +240,42 @@ class _HomeUIState extends State<HomeUI> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              SizedBox(
-                width: 90,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    station1,
-                    style: const TextStyle(fontSize: 15),
-                  ),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "$station1 Station",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColorDark,
+                      fontStyle: FontStyle.italic),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  FontAwesomeIcons.rightLong,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "$station2 Station",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColorDark,
+                      fontStyle: FontStyle.italic),
                 ),
               ),
               const SizedBox(
-                width: 90,
+                width: 115,
                 child: Align(
                   alignment: Alignment.center,
                   child: Icon(
-                    Icons.arrow_forward,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 90,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    station2,
-                    style: const TextStyle(fontSize: 15),
+                    Icons.star,
+                    color: Colors.amber,
                   ),
                 ),
               ),
@@ -226,68 +299,71 @@ class _HomeUIState extends State<HomeUI> {
     createdAt = createdAt.add(const Duration(hours: 9));
 
     String formattedDate =
-        DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR').format(createdAt);
+        DateFormat('yyyy.MM.dd  hh :  mm', 'ko_KR').format(createdAt);
 
     return GestureDetector(
       onTap: () {
         //
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 5),
-            ListTile(
-              title: Text(
-                data['title'],
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(
-                  top: 5.0,
-                  bottom: 5.0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data['content'],
-                    ),
-                    FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('Users')
-                          .doc(data['User_ID'])
-                          .get(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot> userSnapshot) {
-                        if (userSnapshot.hasData &&
-                            userSnapshot.data != null &&
-                            userSnapshot.data!.exists) {
-                          Map<String, dynamic> userData =
-                              userSnapshot.data!.data() as Map<String, dynamic>;
-                          String nickname = userData['nickname'];
-                          return Text('사용자: $nickname');
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
-                    ),
-                    Text(
-                      '작성일: $formattedDate',
-                    ),
-                  ],
-                ),
-              ),
-            ),
             Container(
-              height: 1,
-              width: double.infinity,
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color: Theme.of(context).canvasColor,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(10),
+                ),
+                border: Border.all(
+                  color: Theme.of(context).primaryColorDark, // 테두리 색상
+                  width: 0.5, // 테두리 두께
+                ),
+              ),
+              child: ListTile(
+                title: Text(
+                  data['title'],
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 5.0,
+                    bottom: 5.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(data['User_ID'])
+                            .get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                          if (userSnapshot.hasData &&
+                              userSnapshot.data != null &&
+                              userSnapshot.data!.exists) {
+                            Map<String, dynamic> userData = userSnapshot.data!
+                                .data() as Map<String, dynamic>;
+                            String nickname = userData['nickname'];
+                            return Text('작성자: $nickname');
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                      Text(
+                        '작성일: $formattedDate',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),

@@ -93,6 +93,7 @@ flutter:
     - assets\terms\service_terms.txt
     - assets\terms\location_terms.txt
     - assets\terms\privacy_terms.txt
+    - assets/images/리워드.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

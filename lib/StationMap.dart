@@ -141,52 +141,50 @@ class _StationMapState extends State<StationMap> {
     '904': const Offset(192, 197),
   };
 
-  TransformationController _transformationController = TransformationController();
-
   void _onTapUp(TapUpDetails details) {
-  final RenderBox renderBox = context.findRenderObject() as RenderBox;
-  final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
-  final double currentScale = _controller.value.getMaxScaleOnAxis();
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset localPosition =
+        renderBox.globalToLocal(details.globalPosition);
+    final double currentScale = _controller.value.getMaxScaleOnAxis();
 
-  print("Coordinates of tap: ${localPosition.dx}, ${localPosition.dy}");
+    print("Coordinates of tap: ${localPosition.dx}, ${localPosition.dy}");
 
-  // 행렬에서 이동 변환 값 가져오기
-  final Offset translation = Offset(
-    _controller.value.getTranslation().x,
-    _controller.value.getTranslation().y,
-  );
+    // 행렬에서 이동 변환 값 가져오기
+    final Offset translation = Offset(
+      _controller.value.getTranslation().x,
+      _controller.value.getTranslation().y,
+    );
 
-  // 이미지의 원점을 기준으로 탭 위치의 원본 이미지 상의 좌표 계산
-  final Offset originalImageCoordinates = (localPosition - translation) / currentScale;
+    // 이미지의 원점을 기준으로 탭 위치의 원본 이미지 상의 좌표 계산
+    final Offset originalImageCoordinates =
+        (localPosition - translation) / currentScale;
 
-  print("Original image coordinates of tap: ${originalImageCoordinates.dx}, ${originalImageCoordinates.dy}");
-  // 이제 transformedPosition을 사용하여 가장 가까운 역을 찾습니다.
-  String tappedStation = '';
-  double closestDistance = 5;
+    print(
+        "Original image coordinates of tap: ${originalImageCoordinates.dx}, ${originalImageCoordinates.dy}");
+    // 이제 transformedPosition을 사용하여 가장 가까운 역을 찾습니다.
+    String tappedStation = '';
+    double closestDistance = 10;
 
-  stationCoordinates.forEach((key, value) {
-
-    // 확대/축소된 이미지 상의 좌표와 역의 좌표 사이의 거리를 계산합니다.
-    double distance = (originalImageCoordinates - value).distance;
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      tappedStation = key;
-    }
-    
-  });
-
-  if (tappedStation.isNotEmpty) {
-    setState(() {
-      _tappedStationKey = tappedStation;
+    stationCoordinates.forEach((key, value) {
+      // 확대/축소된 이미지 상의 좌표와 역의 좌표 사이의 거리를 계산합니다.
+      double distance = (originalImageCoordinates - value).distance;
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        tappedStation = key;
+      }
     });
-    print('You tapped on station $tappedStation');
-    // Callback 함수를 호출하여 선택된 역의 정보를 부모 위젯에 전달합니다.
-    widget.onTapStation(tappedStation);
+
+    if (tappedStation.isNotEmpty) {
+      setState(() {
+        _tappedStationKey = tappedStation;
+      });
+      print('You tapped on station $tappedStation');
+      // Callback 함수를 호출하여 선택된 역의 정보를 부모 위젯에 전달합니다.
+      widget.onTapStation(tappedStation);
+    }
+
+    //print("Coordinates of tap: ${localPosition.dx}, ${localPosition.dy}");
   }
-
-  //print("Coordinates of tap: ${localPosition.dx}, ${localPosition.dy}");
-
-}
 
   @override
   Widget build(BuildContext context) {

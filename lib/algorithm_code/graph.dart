@@ -71,6 +71,60 @@ class Graph {
 
     return distances;
   }
+
+//경유지 고려 메소드
+  List<int> dijkstraWithStop(int start, int stopover, int end, List<int> path) {
+    List<int> distances = List.filled(vertices, 10000000000000);
+    distances[start] = 0;
+
+    List<Node> priorityQueue =
+        List<Node>.generate(vertices, (index) => Node(index, distances[index]));
+    priorityQueue.sort((a, b) => a.distance.compareTo(b.distance));
+
+    Map<int, int?> previousVertices = {};
+
+    while (priorityQueue.isNotEmpty) {
+      int currentVertex = priorityQueue.removeAt(0).vertex;
+
+      for (Edge edge in adjacencyList[currentVertex] ?? []) {
+        int newDistance = distances[currentVertex] + edge.weight;
+
+        if (newDistance < distances[edge.destination]) {
+          distances[edge.destination] = newDistance;
+          previousVertices[edge.destination] = currentVertex;
+          priorityQueue.add(Node(edge.destination, newDistance));
+          priorityQueue.sort((a, b) => a.distance.compareTo(b.distance));
+        }
+      }
+    }
+
+    if (path.isNotEmpty) {
+      path.clear();
+    }
+
+    int currentVertex = end;
+    while (currentVertex != start) {
+      path.add(currentVertex);
+      currentVertex = previousVertices[currentVertex]!;
+    }
+    path.add(start);
+    path = path.reversed.toList();
+
+    if (!path.contains(stopover)) {
+      // 중간 정거장이 경로에 없을 경우, 시작점부터 중간 정거장까지의 경로를 계산하여 반환
+      List<int> pathToStopover = dijkstra(start, stopover, []);
+      pathToStopover.add(stopover);
+
+      // 중간 정거장부터 도착점까지의 경로를 계산하여 반환
+      List<int> pathFromStopover = dijkstra(stopover, end, []);
+
+      // 중복되는 중간 정거장을 제외하고 경로를 연결
+      path.addAll(pathToStopover);
+      path.addAll(pathFromStopover.sublist(1)); // 중복되는 중간 정거장 제외
+    }
+
+    return path;
+  }
 }
 
 class Edge {
