@@ -54,10 +54,6 @@ dependencies:
   permission_handler: ^11.1.0
   android_alarm_manager_plus: ^3.0.3
 
-  firebase_app_check: ^0.2.1+6
-  flutter_local_notifications: ^16.2.0
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -85,15 +81,18 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
   
-    - assets\images\노선도.png
-    - assets\images\사용자 프로필.png
-    - assets\images\광고1.png
-    - assets\images\광고2.png
-    - assets\images\광고3.png
-    - assets\terms\service_terms.txt
-    - assets\terms\location_terms.txt
-    - assets\terms\privacy_terms.txt
+    - assets/images/노선도.png
+    - assets/images/사용자 프로필.png
+    - assets/images/광고1.png
+    - assets/images/광고2.png
+    - assets/images/광고3.png
+    - assets/terms/service_terms.txt
+    - assets/terms/location_terms.txt
+    - assets/terms/privacy_terms.txt
     - assets/images/리워드.png
+    - assets/images/Fast1.png
+    - assets/images/Fast2.png
+    - assets/images/Fast3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
