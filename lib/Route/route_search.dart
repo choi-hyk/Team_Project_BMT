@@ -5,7 +5,10 @@ import 'package:test1/Station/stationmap.dart';
 import 'package:test1/Route/route_result.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+//경로 검색 페이지 클래스 코드
 class RouteSearch extends StatefulWidget {
+  //매개변수
+  //시작 역, 도착 역
   final String? startStation;
   final String? arrivStation;
 
@@ -23,8 +26,8 @@ class _RouteSearchState extends State<RouteSearch> {
   String? _tempArrivStation;
   String? tappedStationKey;
 
-  DataProvider dataProvider1 = DataProvider();
-  DataProvider dataProvider2 = DataProvider();
+  DataProvider dataProvider1 = DataProvider(); //시작역 프로바이더
+  DataProvider dataProvider2 = DataProvider(); //도착역 프로바이더
 
   bool isSearchong = false;
 
@@ -39,13 +42,14 @@ class _RouteSearchState extends State<RouteSearch> {
     }
   }
 
+  //노선도 맵핑
   void onTapStation(String stationKey) {
     setState(() {
       tappedStationKey = stationKey;
     });
   }
 
-//두 검색어를 스위치하는 함수
+  //두 검색어를 스위치하는 함수
   void _swapSearchFields() {
     setState(() {
       _tempStartStation = _searchStartController.text;
@@ -56,6 +60,7 @@ class _RouteSearchState extends State<RouteSearch> {
     });
   }
 
+  //경로 검색 메소드
   Future<void> _searchRoute() async {
     String startStation = _searchStartController.text;
     String arrivStation = _searchArrivController.text;
@@ -68,11 +73,10 @@ class _RouteSearchState extends State<RouteSearch> {
     } else if (startStation == arrivStation) {
       showSnackBar(context, const Text("서로 다른 역을 입력하십시오"));
     } else {
-      // 네비게이션 및 데이터 전달
-      // 네비게이션 및 데이터 전달
       Navigator.push(
         context,
         MaterialPageRoute(
+          //RouteREsults 빌드
           builder: (context) => RouteResults(
               startStation: startStation,
               arrivStation: arrivStation,

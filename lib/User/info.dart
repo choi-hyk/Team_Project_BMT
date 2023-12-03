@@ -161,7 +161,7 @@ class _InfoPageState extends State<InfoPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginUI(), //로그인 화면으로
+                      builder: (context) => const LogIn(), //로그인 화면으로
                     ),
                   );
                 }

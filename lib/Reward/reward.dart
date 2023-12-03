@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
 
+//리워드 받을때 화면 빌드 페이지
+//3초 후 메뉴화면으로 이동
 class ProvReward extends StatefulWidget {
   const ProvReward({super.key});
 

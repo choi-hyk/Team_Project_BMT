@@ -13,23 +13,25 @@ import 'package:test1/Station/stationmap.dart';
 import 'package:test1/Store/store.dart';
 import 'package:test1/main.dart';
 
-//InterFace 클래스
-class InterFace extends StatefulWidget {
-  const InterFace({
+//Menu 클래스
+//메인 화면 : 역검색, 노선도, 사용자 메뉴
+//드로어 : 설정, 스토어, 즐겨찾기, 게시판, 분실물 게시판, 로그아웃
+class Menu extends StatefulWidget {
+  const Menu({
     super.key,
   });
   @override
-  State<InterFace> createState() => _InterFaceState();
+  State<Menu> createState() => _MenuState();
 }
 
-class _InterFaceState extends State<InterFace> {
+class _MenuState extends State<Menu> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   UserProvider userProvider = UserProvider();
   DataProvider dataProvider = DataProvider();
   String? tappedStationKey;
   final TextEditingController station = TextEditingController();
-  //검색되는 역
 
+  //노선도 맵핑 -> 노선도 상 터치된 역 가져오는 함수 역 터치할 경우 StationData에 해당 역 빌드
   void onTapStation(String stationKey) {
     setState(() {
       tappedStationKey = stationKey;
@@ -37,11 +39,12 @@ class _InterFaceState extends State<InterFace> {
     waitData(int.parse(stationKey));
   }
 
-//드로어 함수
+  //드로어 함수 -> 드로어 아이콘 누를경우 좌측에서 드로어 나옴
   void menuDrawer() {
     _scaffoldKey.currentState?.openDrawer();
   }
 
+  //역 검색시 역 정보 불러오는 함수
   Future<void> waitData(int searchStation) async {
     await dataProvider.searchData(searchStation);
     if (!dataProvider.found) {
@@ -56,20 +59,19 @@ class _InterFaceState extends State<InterFace> {
     }
   }
 
-//현재 스크롤어블 위젯 표시 컨테이너
+  //현재 메인메뉴 표시 컨테이너
+  //역 검색 할 경우 currentUI -> stationdata
+  //기본 메뉴 및 홈 아이콘 터치할 경우 currentUI -> home
   Widget buildContentWidget() {
     switch (currentUI) {
       case "home":
-        return const HomeUI();
-
+        return const Home();
       case "stationdata":
         return StationData(
           name: dataProvider.name,
           nRoom: dataProvider.nRoom,
           cStore: dataProvider.cStore,
-          isBkMk: dataProvider.isBkmk,
-          nCong: dataProvider.nCong,
-          pCong: dataProvider.pCong,
+          isBook: dataProvider.isBkmk,
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
@@ -80,10 +82,11 @@ class _InterFaceState extends State<InterFace> {
           },
         );
       default:
-        return const HomeUI();
+        return const Home();
     }
   }
 
+  //뒤로가기 누를 경우 로그아웃 확인 다이얼로그 팝업창 띄우는 메소드
   Future<bool> _onWillPop(BuildContext context) async {
     return (await showDialog(
           context: context,
@@ -132,12 +135,13 @@ class _InterFaceState extends State<InterFace> {
   }
 
   @override
+  //init함수
   void initState() {
     super.initState();
     updateUserProviderData();
   }
 
-  // 유저 포인트 값을 받기 위함
+  //사용자 정보 업데이트하는 메소드 -> 로그인 하면서 사용자 정보 패치
   Future<void> updateUserProviderData() async {
     await userProvider.fetchUserInfo();
     setState(() {});
@@ -211,13 +215,12 @@ class _InterFaceState extends State<InterFace> {
                               child: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    array = 0;
+                                    current_trans = 0;
                                     currentUI = 'home';
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const InterFace()),
+                                          builder: (context) => const Menu()),
                                     );
                                   });
                                 },
@@ -312,6 +315,7 @@ class _InterFaceState extends State<InterFace> {
             ),
           ],
         ),
+
         //__________드로어____________________________________________________________________
         //사용자 프로필, 설정, 스토어, 게시판 이동가능
         drawer: Drawer(
@@ -399,7 +403,7 @@ class _InterFaceState extends State<InterFace> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SettingsUI()),
+                            builder: (context) => const Settings()),
                       );
                     },
                     child: Icon(
@@ -546,7 +550,7 @@ class _InterFaceState extends State<InterFace> {
                       MaterialPageRoute(
                         builder: (context) => const StartPage(),
                       ),
-                      (Route<dynamic> route) => false, //네비게이터 초기화
+                      (Route<dynamic> route) => false,
                     );
                   },
                   child: Row(

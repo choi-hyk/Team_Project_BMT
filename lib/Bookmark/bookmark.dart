@@ -167,13 +167,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => StationDataPage(
+        builder: (context) => LinkStationData(
           name: dataProvider.name,
           nRoom: dataProvider.nRoom,
           cStore: dataProvider.cStore,
           isBkMk: dataProvider.isBkmk,
-          nCong: dataProvider.nCong,
-          pCong: dataProvider.pCong,
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
@@ -352,7 +350,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
         currentUI = 'home';
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const InterFace()),
+          MaterialPageRoute(builder: (context) => const Menu()),
         );
 
         return false;
@@ -370,7 +368,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const InterFace()), // 다음으로 이동할 페이지
+                    builder: (context) => const Menu()), // 다음으로 이동할 페이지
               );
             },
           ),

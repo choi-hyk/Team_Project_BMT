@@ -4,12 +4,28 @@ import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/algorithm_code/graph.dart';
 import 'package:test1/main.dart';
 
+//데이터 프로바이더 함수 -> 데이터 프로바이더 객체 선언후 함수 사용가능
 class DataProvider with ChangeNotifier {
   List<Map<String, dynamic>> documentDataList = [];
-  late Graph optmGraph;
-  late Graph timeGraph;
-  late Graph costGraph;
 
+  late Graph optmGraph; //최적 가중치 그래프
+  late Graph timeGraph; //시간 가중치 그래프
+  late Graph costGraph; //비용 가중치 그래프
+
+  //그래프 리턴하는 메소드
+  Graph getOptmGraph() {
+    return optmGraph;
+  }
+
+  Graph getTimeGraph() {
+    return timeGraph;
+  }
+
+  Graph getCostGraph() {
+    return costGraph;
+  }
+
+  //StationData를 빌드하기위해 SearchStation메소드에서 변수들을 저장하는 변수들
   bool found = false;
   String name = "";
   bool nRoom = false;
@@ -47,10 +63,10 @@ class DataProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//역정보 검색하는 메소드
-//Lines컬렉션 의 다큐먼트 호선 리스트를 역별 데이터로 변환
-//i : 다큐먼트 리스트 순회 i + 1 : 호선 번호
-//j : 각 필드의 배열 번호  Ex) widget.documentDataList[0]['station'][1] : 1호선의 첫번쨰 역 이름
+  //역정보 검색하는 메소드
+  //Lines컬렉션 의 다큐먼트 호선 리스트를 역별 데이터로 변환
+  //i : 다큐먼트 리스트 순회 i + 1 : 호선 번호
+  //j : 각 필드의 배열 번호  Ex) widget.documentDataList[0]['station'][1] : 1호선의 첫번쨰 역 이름
   Future<void> searchData(int searchStation) async {
     await fetchDocumentList();
     found = false;
@@ -97,22 +113,10 @@ class DataProvider with ChangeNotifier {
           }
           found = true;
           isBkmk = await userProvider.isStationBookmarked(name);
-          array = 0;
+          current_trans = 0;
           break;
         }
       }
     }
-  }
-
-  Graph getOptmGraph() {
-    return optmGraph;
-  }
-
-  Graph getTimeGraph() {
-    return timeGraph;
-  }
-
-  Graph getCostGraph() {
-    return costGraph;
   }
 }

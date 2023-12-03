@@ -7,27 +7,30 @@ import 'package:test1/Station/link_stationdata.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-class HomeUI extends StatefulWidget {
-  const HomeUI({super.key});
+//메인메뉴의 디폴트 화면
+//즐겨찾기 메뉴와 사용자 설정 역 게시파나 보여줌
+class Home extends StatefulWidget {
+  const Home({super.key});
   @override
-  State<HomeUI> createState() => _HomeUIState();
+  State<Home> createState() => _HomeState();
 }
 
-class _HomeUIState extends State<HomeUI> {
+class _HomeState extends State<Home> {
+  //프로바이더 객체 선언
   DataProvider dataProvider = DataProvider();
+  UserProvider userProvider = UserProvider();
 
+  //사용자가 즐겨찾기 탭할경우 stationdata빌드
   Future<void> returnStationData(String station) async {
     await dataProvider.searchData(int.parse(station));
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => StationDataPage(
+        builder: (context) => LinkStationData(
           name: dataProvider.name,
           nRoom: dataProvider.nRoom,
           cStore: dataProvider.cStore,
           isBkMk: dataProvider.isBkmk,
-          nCong: dataProvider.nCong,
-          pCong: dataProvider.pCong,
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
@@ -37,160 +40,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  UserProvider userProvider = UserProvider();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(13.0),
-          topRight: Radius.circular(13.0),
-        ),
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.5,
-        ),
-      ),
-      width: 379.5,
-      height: 723.0,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                  color: Theme.of(context).canvasColor),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/images/Fast1.png",
-                          fit: BoxFit.contain,
-                          width: 100,
-                          height: 100,
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        Text(
-                          "Fast UI!",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40,
-                              fontStyle: FontStyle.italic,
-                              color: Theme.of(context).cardColor),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Divider(
-              height: 0.5, //구분선의 높이
-              thickness: 0.5, //구분선의 두께
-              color: Theme.of(context).primaryColorDark, //구분선의 색상
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              "즐겨찾기",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColorDark),
-            ),
-            const SizedBox(
-              height: 4.3,
-            ),
-            Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: userProvider.getBookmarkList(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Text('에러: ${snapshot.error}');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('즐겨찾기가 없습니다.'));
-                  } else {
-                    List<Widget> bookmarkWidgets = snapshot.data!.map((item) {
-                      if (item['type'] == 'station') {
-                        return buildStationBookmark(item['data']);
-                      } else {
-                        return buildRouteBookmark(item['data']);
-                      }
-                    }).toList();
-
-                    return ListView(
-                      children: bookmarkWidgets,
-                    );
-                  }
-                },
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 0.5,
-              thickness: 0.5,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              '게시판',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColorDark),
-            ),
-            const SizedBox(
-              height: 4.3,
-            ),
-            Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: userProvider.getBulletinPosts(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Text('에러: ${snapshot.error}');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('해당 역의 게시글이 없습니다'));
-                  } else {
-                    return ListView(
-                      children: snapshot.data!.map((doc) {
-                        return buildBulletinPost(doc);
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  //역 즐겨찾기 위젯 생성
+  //역 즐겨찾기 위젯
   Widget buildStationBookmark(String station) {
     return Column(
       children: [
@@ -228,7 +78,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  //경로 즐겨찾기 위젯 생성
+  //경로 즐겨찾기 위젯
   Widget buildRouteBookmark(Map<String, dynamic> data) {
     final String station1 = data['station1_ID'];
     final String station2 = data['station2_ID'];
@@ -300,7 +150,7 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
-  //게시글 가져오기
+  //게시글 위젯
   Widget buildBulletinPost(Map<String, dynamic> data) {
     DateTime createdAt;
     if (data['created_at'] != null) {
@@ -381,4 +231,160 @@ class _HomeUIState extends State<HomeUI> {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(13.0),
+          topRight: Radius.circular(13.0),
+        ),
+        border: Border.all(
+          color: Colors.grey,
+          width: 1.5,
+        ),
+      ),
+      width: 379.5,
+      height: 723.0,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: Theme.of(context).canvasColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          "assets/images/Fast1.png",
+                          fit: BoxFit.contain,
+                          width: 100,
+                          height: 100,
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Text(
+                          "Fast UI!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                              fontStyle: FontStyle.italic,
+                              color: Theme.of(context).cardColor),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Divider(
+              height: 0.5, //구분선의 높이
+              thickness: 0.5, //구분선의 두께
+              color: Theme.of(context).primaryColorDark, //구분선의 색상
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              "즐겨찾기",
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark),
+            ),
+            const SizedBox(
+              height: 4.3,
+            ),
+            //즐겨찾기 스크롤 메뉴
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: userProvider.getBookmarkList(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('에러: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('즐겨찾기가 없습니다.'));
+                  } else {
+                    List<Widget> bookmarkWidgets = snapshot.data!.map((item) {
+                      if (item['type'] == 'station') {
+                        return buildStationBookmark(item['data']);
+                      } else {
+                        return buildRouteBookmark(item['data']);
+                      }
+                    }).toList();
+
+                    return ListView(
+                      children: bookmarkWidgets,
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Divider(
+              height: 0.5,
+              thickness: 0.5,
+              color: Theme.of(context).primaryColorDark,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              '게시판',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark),
+            ),
+            const SizedBox(
+              height: 4.3,
+            ),
+            //게시판 스크롤 메뉴
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: userProvider.getBulletinPosts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('에러: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('해당 역의 게시글이 없습니다'));
+                  } else {
+                    return ListView(
+                      children: snapshot.data!.map((doc) {
+                        return buildBulletinPost(doc);
+                      }).toList(),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //역 즐겨찾기 위젯 생성
 }

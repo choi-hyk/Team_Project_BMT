@@ -13,7 +13,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class StationRouteResult {
   final List<int> saveline; //경로의 호선
   final int transcount; //환승 횟수
-  final List<dynamic> station;
+  final List<dynamic> station; //역
 
   StationRouteResult(this.saveline, this.transcount, this.station);
 }
@@ -123,6 +123,7 @@ class _RouteResultsState extends State<RouteResults> {
     fetchData(); // 그래프 데이터 가져오기
   }
 
+  //경로 즐겨찾기 여부 확인
   void checkBookRoute() async {
     isBook = await userProvider.isRouteBookmarked(
         widget.startStation, widget.arrivStation);
@@ -269,6 +270,7 @@ class _RouteResultsState extends State<RouteResults> {
     return StationRouteResult(saveline, transcount, station);
   }
 
+  //경로에 따라 경로 그래프를 빌드하는 메소드
   Widget routeContainer(String text, bool isSelected) {
     return GestureDetector(
       onTap: () {
@@ -276,23 +278,12 @@ class _RouteResultsState extends State<RouteResults> {
           if (text == "앱 추천 경로") {
             currentSearch = "recommend";
             currentpath = optmPath;
-            // print("최적 경로: $optmPath");
-            // print("최적 경로의 비용 : $costOfOptmPath");
-            // print("최적 경로의 시간 : $timeOfOptmPath");
           } else if (text == "최단 시간") {
             currentSearch = "shortest";
             currentpath = timePath;
-            // print(
-            //     "${widget.startStation}역에서 ${widget.arrivStation}역 까지의 최단 시간: ${minTime[int.parse(widget.arrivStation)]}");
-            // print("경로: $timePath");
-            // print("최단 시간 경로의 비용 : $costOfTimePath");
           } else if (text == "최소 비용") {
             currentSearch = "cheapest";
             currentpath = costPath;
-            // print(
-            //     "${widget.startStation}역에서 ${widget.arrivStation}역 까지의 최소 비용: ${minCost[int.parse(widget.arrivStation)]}");
-            // print("경로: $costPath");
-            // print("최소 비용 경로의 시간 : $timeOfCostPath");
           }
         });
       },
@@ -513,7 +504,7 @@ class _RouteResultsState extends State<RouteResults> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProvConf(
+                              builder: (context) => Congestion(
                                 currentStaion:
                                     optmPath[timePath.length - 1].toString(),
                                 linkStaion:
@@ -528,7 +519,7 @@ class _RouteResultsState extends State<RouteResults> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProvConf(
+                              builder: (context) => Congestion(
                                 currentStaion:
                                     timePath[timePath.length - 1].toString(),
                                 linkStaion:
@@ -543,7 +534,7 @@ class _RouteResultsState extends State<RouteResults> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProvConf(
+                              builder: (context) => Congestion(
                                 currentStaion:
                                     costPath[timePath.length - 1].toString(),
                                 linkStaion:
@@ -590,6 +581,7 @@ class _RouteResultsState extends State<RouteResults> {
     );
   }
 
+  //경로 그래프 빌드하는 메소드
   Expanded routeGraph(
       List<dynamic> line, List<dynamic> currentpath, List<dynamic> station) {
     String currentTime = DateFormat('HH:mm').format(DateTime.now());
@@ -786,7 +778,7 @@ class _RouteResultsState extends State<RouteResults> {
           currentUI = 'home';
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const InterFace()),
+            MaterialPageRoute(builder: (context) => const Menu()),
           );
           return false; // 이벤트 처리를 여기서 막습니다.
         }
@@ -824,8 +816,7 @@ class _RouteResultsState extends State<RouteResults> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const InterFace()),
+                                        builder: (context) => const Menu()),
                                   );
                                 }
                               },

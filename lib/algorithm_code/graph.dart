@@ -1,8 +1,22 @@
+//그래프를 생성하고 다이스트랄 알고리즘을 제공하는 코드
+
+//그래프 클래스
 class Graph {
   final int vertices;
   final Map<int, List<Edge>> adjacencyList;
 
   Graph(this.vertices) : adjacencyList = <int, List<Edge>>{};
+
+  //양방향으로 정점을 이어주는 함수    start -- (weight) -- end  양방향 그래프로 이어줌
+  void addEdge(int start, int end, int weight) {
+    adjacencyList.putIfAbsent(start, () => []);
+    adjacencyList.putIfAbsent(end, () => []);
+
+    adjacencyList[start]!.add(Edge(end, weight));
+    adjacencyList[end]!.add(Edge(start, weight));
+  }
+
+  //파이어베이스 데이터에서 역과 가중치를 가져와 그래프를 만드는 메소드
   void makeGraph(List<Map<String, dynamic>> documentDataList, String weight) {
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < documentDataList[i]['station'].length - 1; j++) {
@@ -24,14 +38,7 @@ class Graph {
         documentDataList[5][weight][documentDataList[5]['station'].length - 1]);
   }
 
-  void addEdge(int start, int end, int weight) {
-    adjacencyList.putIfAbsent(start, () => []);
-    adjacencyList.putIfAbsent(end, () => []);
-
-    adjacencyList[start]!.add(Edge(end, weight));
-    adjacencyList[end]!.add(Edge(start, weight));
-  }
-
+  //다이스트랄 알고리즘
   List<int> dijkstra(int start, int end, List<int> path) {
     List<int> distances = List.filled(vertices, 10000000000000);
     distances[start] = 0;
@@ -71,10 +78,9 @@ class Graph {
 
     return distances;
   }
-
-//경유지 고려 메소드
 }
 
+//엣지 클래스
 class Edge {
   final int destination;
   final int weight;
@@ -82,6 +88,7 @@ class Edge {
   Edge(this.destination, this.weight);
 }
 
+//노드 클래스
 class Node {
   final int vertex;
   final int distance;
@@ -89,6 +96,7 @@ class Node {
   Node(this.vertex, this.distance);
 }
 
+//경로의 가중치를 리턴하는 메소드
 int weightOfPath(Graph weightGraph, List<int> path) {
   int weight = 0;
   for (int i = 0; i < path.length - 1; i++) {
@@ -98,6 +106,10 @@ int weightOfPath(Graph weightGraph, List<int> path) {
   }
   return weight;
 }
+
+//테스트 예시
+
+
 // void main() {
 //   Graph timeGraph = Graph(905);
 //   //Graph costGraph = Graph(6);
