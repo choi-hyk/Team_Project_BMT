@@ -16,11 +16,10 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  //이메일과 비밀번호 입력하는 텍스트필드 컨트롤러 선언
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  //프로바이더 객체 선언
+  //데이터 프로바이더 객체 선언
   DataProvider dataProvider = DataProvider();
 
   @override
@@ -93,7 +92,7 @@ class _LogInState extends State<LogIn> {
                                   ),
                                   onPressed: () async {
                                     var userProvider = context.read<
-                                        UserProvider>(); // user_provider에서 가져오기
+                                        UserProvider>(); //user_provider에서 가져오기
 
                                     String? errorMessage =
                                         await userProvider.handleSignIn(
@@ -165,8 +164,7 @@ class _LogInState extends State<LogIn> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                const JoinAccount(),
+                                            builder: (context) => const Join(),
                                           ),
                                         );
                                       },
@@ -204,12 +202,12 @@ class _LogInState extends State<LogIn> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const ResetPasswordScreen(),
+                                                const ResetPassword(),
                                           ),
                                         );
                                       },
                                       child: const Text(
-                                        "비밀번호 찾기",
+                                        "비밀번호 재설정",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white),

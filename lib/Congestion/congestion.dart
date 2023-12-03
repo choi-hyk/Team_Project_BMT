@@ -33,7 +33,7 @@ class CongestionState extends State<Congestion> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  //파이어베이스에 데이터 추가하는 함수
+  //Firestore에 데이터 추가하는 함수
   Future<void> addCongestionData(int congestionLevel) async {
     try {
       int station = int.parse(widget.currentStaion);
@@ -42,7 +42,7 @@ class CongestionState extends State<Congestion> {
       int hour = currentHour;
       int minute = getMinuteRange(currentMinute);
 
-      // Firestore에 데이터 추가
+      //Firestore에 데이터 추가
       await _firestore.collection('Congestion').add({
         'station': station,
         'line': line,
@@ -58,6 +58,7 @@ class CongestionState extends State<Congestion> {
     }
   }
 
+  //위젯
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,16 +282,15 @@ class CongestionState extends State<Congestion> {
                                         Radius.circular(30),
                                       ),
                                       color: selectedIconIndex == i
-                                          ? Theme.of(context)
-                                              .primaryColorDark // 선택된 아이콘 주변 컨테이너의 색상 변경
+                                          ? Theme.of(context).primaryColorDark
                                           : Theme.of(context).canvasColor,
                                     ),
                                     child: Icon(
                                       getIconForIndex(
-                                          i), // i에 따른 아이콘을 가져오는 함수 호출
+                                          i), //i에 따라 아이콘을 가져오는 함수 호출
                                       size: 40,
-                                      color: getColorForIndex(
-                                          i), // i에 따른 아이콘 색상 설정
+                                      color:
+                                          getColorForIndex(i), //i에 따라 아이콘 색상 설정
                                     ),
                                   ),
                                 ),
@@ -338,7 +338,7 @@ class CongestionState extends State<Congestion> {
                       ),
                       child: const Center(
                         child: Text(
-                          "정보 제공하고 리워드 받기!",
+                          "정보 제공하고 포인트 받기!",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,

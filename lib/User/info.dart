@@ -4,16 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test1/User/login.dart';
 
-class InfoPage extends StatefulWidget {
+class Info extends StatefulWidget {
   final User user;
 
-  const InfoPage({Key? key, required this.user}) : super(key: key);
+  const Info({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<InfoPage> createState() => _InfoPageState();
+  State<Info> createState() => _InfoState();
 }
 
-class _InfoPageState extends State<InfoPage> {
+class _InfoState extends State<Info> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
   bool service_check = false;

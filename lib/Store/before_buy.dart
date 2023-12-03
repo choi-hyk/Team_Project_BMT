@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/Provider/user_provider.dart';
-import 'package:test1/Store/after_gift.dart';
+import 'package:test1/Store/after_buy.dart';
 
-class BuyPage extends StatefulWidget {
+class BeforeBuy extends StatefulWidget {
   final String category;
   final String categoryname;
   final int pay;
@@ -12,7 +12,7 @@ class BuyPage extends StatefulWidget {
   final String name;
   final String giftUrl;
 
-  const BuyPage({
+  const BeforeBuy({
     Key? key,
     required this.category,
     required this.categoryname,
@@ -24,10 +24,10 @@ class BuyPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<BuyPage> createState() => _BuyPageState();
+  State<BeforeBuy> createState() => _BeforeBuyState();
 }
 
-class _BuyPageState extends State<BuyPage> {
+class _BeforeBuyState extends State<BeforeBuy> {
   UserProvider userProvider = UserProvider();
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _BuyPageState extends State<BuyPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text(
-          "상품정보",
+          "상품 정보",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -205,15 +205,15 @@ class _BuyPageState extends State<BuyPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                GiftPage(giftUrl: widget.giftUrl),
+                                AfterBuy(giftUrl: widget.giftUrl),
                           ),
                         );
                       } catch (e) {
                         print('포인트 차감 중 에러 발생: $e');
-                        // 에러 처리 로직 추가
+                        //에러 처리 로직 추가
                       }
                     } else {
-                      // 포인트 부족 메시지 또는 다른 처리 로직 추가
+                      //포인트 부족 메시지 또는 다른 처리 로직 추가
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('포인트가 부족하여 구매할 수 없습니다.'),

@@ -11,6 +11,7 @@ class Guide extends StatefulWidget {
 class _GuideState extends State<Guide> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //가이드 본문을 보여주는 다이얼로그
   void _showContentDialog(String title, String content) {
     showDialog(
       context: context,

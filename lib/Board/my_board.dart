@@ -4,14 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/Provider/user_provider.dart';
 
-class MyPost extends StatefulWidget {
-  const MyPost({super.key});
+class MyBoard extends StatefulWidget {
+  const MyBoard({super.key});
 
   @override
-  State<MyPost> createState() => _MyPostState();
+  State<MyBoard> createState() => _MyBoardState();
 }
 
-class _MyPostState extends State<MyPost> {
+class _MyBoardState extends State<MyBoard> {
   late Future<List<Map<String, dynamic>>> _writtenPosts;
 
   @override
@@ -96,13 +96,13 @@ class _MyPostState extends State<MyPost> {
     );
   }
 
+  //작성한 게시글을 가져오는 메소드
   Future<List<Map<String, dynamic>>> _fetchWrittenPosts() async {
-    // Use UserProvider to get the written posts
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     try {
       return await userProvider.getWrittenPosts();
     } catch (e) {
-      // Handle errors, such as displaying an error message
+      //에러 핸들링
       print('Error fetching written posts: $e');
       return [];
     }

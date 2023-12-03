@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test1/Store/before_buy.dart';
 
-class CategoryPage extends StatefulWidget {
+class Category extends StatefulWidget {
   final String category;
 
-  const CategoryPage({super.key, required this.category});
+  const Category({super.key, required this.category});
 
   @override
-  State<CategoryPage> createState() => _CategoryPageState();
+  State<Category> createState() => _CategoryState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
+class _CategoryState extends State<Category> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +34,6 @@ class _CategoryPageState extends State<CategoryPage> {
           }
 
           var stores = snapshot.data!.docs;
-
           return ListView.builder(
             itemCount: stores.length,
             itemBuilder: (context, index) {
@@ -46,11 +45,11 @@ class _CategoryPageState extends State<CategoryPage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        // 이미지를 탭하면 구매 페이지로 이동
+                        //이미지를 탭하면 구매 페이지로 이동
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BuyPage(
+                            builder: (context) => BeforeBuy(
                               category: store['category'],
                               categoryname: store['category_name'],
                               icon: store['icon'],

@@ -10,16 +10,16 @@ import 'package:test1/Route/route_result.dart';
 import 'package:test1/Station/link_stationdata.dart';
 import 'package:test1/main.dart';
 
-class BookmarkPage extends StatefulWidget {
-  const BookmarkPage({
+class Bookmark extends StatefulWidget {
+  const Bookmark({
     super.key,
   });
 
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  _BookmarkState createState() => _BookmarkState();
 }
 
-class _BookmarkPageState extends State<BookmarkPage> {
+class _BookmarkState extends State<Bookmark> {
   final TextEditingController stationController = TextEditingController();
   final TextEditingController station1Controller = TextEditingController();
   final TextEditingController station2Controller = TextEditingController();
@@ -27,7 +27,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   DataProvider dataProvider = DataProvider();
   UserProvider userProvider = UserProvider();
 
-  // 현재 로그인된 사용자의 UID를 가져오는 메소드
+  //현재 로그인된 사용자의 UID를 가져오는 메소드
   String? getCurrentUserUid() {
     final User? user = FirebaseAuth.instance.currentUser;
     return user?.uid;
@@ -48,7 +48,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.of(context).pop();
   }
 
-//경로 추가 메소드
+  //경로 추가 메소드
   Future<void> addRoute(String station1, String station2) async {
     await dataProvider.searchData(int.parse(station1));
     if (!dataProvider.found) {
@@ -71,15 +71,17 @@ class _BookmarkPageState extends State<BookmarkPage> {
     Navigator.of(context).pop();
   }
 
-//역 제거 메소드
+  //역 제거 메소드
   void removeStation(String station) async {
     await userProvider.removeBookmarkStation(station);
   }
 
+  //경로 제거 메소드
   void removeRoute(String station1, String station2) async {
     await userProvider.removeBookmarkRoute(station1, station2);
   }
 
+  //역 또는 경로 추가 다이어로그 메소드
   void showAddDialog(bool isRoute) {
     showDialog(
       context: context,
@@ -94,7 +96,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                if (!isRoute) // 역 추가
+                if (!isRoute) //False라면 역 추가
                   TextField(
                     controller: stationController,
                     decoration: const InputDecoration(
@@ -105,7 +107,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                   ),
-                if (isRoute) // 경로 추가
+                if (isRoute) //True라면 경로 추가
                   ...[
                   TextField(
                     controller: station1Controller,
@@ -162,6 +164,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
+  //역 데이터를 가져오는 메소드
   Future<void> returnStationData(String station) async {
     await dataProvider.searchData(int.parse(station));
     Navigator.push(
@@ -181,6 +184,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
+  //경로 데이터를 가져오는 메소드
   Future<void> returnRouteData(String statin1, String station2) async {
     Navigator.push(
       context,
@@ -191,7 +195,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 
-  // 즐겨찾기 목록을 보여주는 위젯
+  //즐겨찾기 목록을 보여주는 위젯
   Widget buildBookmarkList() {
     String? userUid = getCurrentUserUid();
 
@@ -223,7 +227,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   border: Border.all(
                     color: Colors.grey,
                     width: 0.5,
-                  ), // 컨테이너의 모서리를 둥글게 만듭니다.
+                  ),
                 ),
                 child: ListTile(
                   title: Text(
@@ -278,7 +282,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       border: Border.all(
                         color: Colors.grey,
                         width: 0.5,
-                      ), // 컨테이너의 모서리를 둥글게 만듭니다.
+                      ),
                     ),
                     child: ListTile(
                       title: Row(
@@ -367,8 +371,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
               currentUI = "home";
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const Menu()), // 다음으로 이동할 페이지
+                MaterialPageRoute(builder: (context) => const Menu()),
               );
             },
           ),
@@ -393,9 +396,9 @@ class _BookmarkPageState extends State<BookmarkPage> {
               child: IconButton(
                 icon: Icon(
                   FontAwesomeIcons.locationDot,
-                  color: Theme.of(context).primaryColorDark, // 아이콘 색상
+                  color: Theme.of(context).primaryColorDark,
                 ),
-                onPressed: () => showAddDialog(false), // 역 추가 다이얼로그
+                onPressed: () => showAddDialog(false), //역 추가 다이얼로그
               ),
             ),
             const SizedBox(
@@ -414,10 +417,10 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
               child: IconButton(
                 icon: Icon(
-                  FontAwesomeIcons.route, // 변경할 아이콘
-                  color: Theme.of(context).primaryColorDark, // 아이콘 색상
+                  FontAwesomeIcons.route,
+                  color: Theme.of(context).primaryColorDark,
                 ),
-                onPressed: () => showAddDialog(true), // 역 추가 다이얼로그
+                onPressed: () => showAddDialog(true), //경로 추가 다이얼로그
               ),
             ),
             const SizedBox(

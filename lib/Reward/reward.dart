@@ -22,13 +22,13 @@ class _ProvRewardState extends State<ProvReward> {
 
   void _updateUserPointAfterDelay() async {
     await Future.delayed(const Duration(seconds: 3), () async {
-      // 유저 아이디에 100 포인트 추가
+      //유저 아이디에 100 포인트 추가
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
       userProvider.addPointsToUser();
-      // 유저 아이디에 혼잡도 제보 1 추가
+      //유저 아이디에 혼잡도 제보 1 추가
       userProvider.addCountToUser();
-      // 3초 후에 화면 전환
+      //3초 후에 화면 전환
       _navigateToBack();
     });
   }
@@ -40,13 +40,12 @@ class _ProvRewardState extends State<ProvReward> {
 
   @override
   Widget build(BuildContext context) {
-    // UserProvider에서 정보를 가져옵니다.
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     userProvider.fetchUserInfo();
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
-        // 뒤로 가기 버튼 무시하고 아무 동작 안 함
+        //뒤로 가기 버튼 무시하고 아무 동작 안 함
         return false;
       },
       child: Scaffold(

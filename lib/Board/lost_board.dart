@@ -3,17 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class LostCommentPage extends StatefulWidget {
+class LostBoard extends StatefulWidget {
   final DocumentSnapshot postSnapshot;
 
-  const LostCommentPage({Key? key, required this.postSnapshot})
-      : super(key: key);
+  const LostBoard({Key? key, required this.postSnapshot}) : super(key: key);
 
   @override
-  State<LostCommentPage> createState() => _LostCommentPageState();
+  State<LostBoard> createState() => _LostCommentPageState();
 }
 
-class _LostCommentPageState extends State<LostCommentPage> {
+class _LostCommentPageState extends State<LostBoard> {
   late TextEditingController commentController;
 
   @override
@@ -59,7 +58,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
               style: const TextStyle(fontSize: 18.0),
             ),
             const SizedBox(height: 10),
-            // 게시글 작성자 정보 가져오기
+            //게시글 작성자 정보 가져오기
             FutureBuilder<DocumentSnapshot>(
               future: FirebaseFirestore.instance
                   .collection('Users')
@@ -70,7 +69,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
                 if (userSnapshot.hasData &&
                     userSnapshot.data != null &&
                     userSnapshot.data!.exists) {
-                  // 게시글 작성자의 닉네임 가져오기
+                  //게시글 작성자의 닉네임 가져오기
                   String? nickname = userSnapshot.data!['nickname'];
                   return Text(
                     '작성자: ${nickname ?? '사용자'}',
@@ -96,9 +95,9 @@ class _LostCommentPageState extends State<LostCommentPage> {
               '댓글',
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            // 댓글 목록을 표시하는 부분
+            //댓글 목록을 표시하는 부분
             buildCommentsSection(postSnapshot.id),
-            // 댓글 입력 필드 및 추가 버튼
+            //댓글 입력 필드 및 추가 버튼
             buildCommentInputField(postSnapshot.id),
           ],
         ),
@@ -106,6 +105,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
     );
   }
 
+  //댓글 관련 위젯
   Widget buildCommentsSection(String postId) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -121,7 +121,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
               for (QueryDocumentSnapshot<Map<String, dynamic>> commentSnapshot
                   in snapshot.data!.docs
                       .cast<QueryDocumentSnapshot<Map<String, dynamic>>>())
-                // 댓글 작성자 정보 가져오기
+                //댓글 작성자 정보 가져오기
                 FutureBuilder<DocumentSnapshot>(
                   future: FirebaseFirestore.instance
                       .collection('Users')
@@ -132,7 +132,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
                     if (userSnapshot.hasData &&
                         userSnapshot.data != null &&
                         userSnapshot.data!.exists) {
-                      // 댓글 작성자의 닉네임 가져오기
+                      //댓글 작성자의 닉네임 가져오기
                       String? nickname = userSnapshot.data!['nickname'];
                       return ListTile(
                         title: Text(commentSnapshot['text']),
@@ -152,6 +152,7 @@ class _LostCommentPageState extends State<LostCommentPage> {
     );
   }
 
+  //댓글 작성 위젯
   Widget buildCommentInputField(String postId) {
     return Row(
       children: [
