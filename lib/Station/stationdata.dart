@@ -7,17 +7,24 @@ import 'package:test1/Route/route_search.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
+//역 검색, 즐겨찾기에 탭, 노선도 해당 역 탭 -> StationData위젯 빌드
+//역 정보를 보여주는 클래스 코드
+//역 정보를 firestore데이터 베이스로 가져와서 매개변수로 받아옴
 class StationData extends StatefulWidget {
   final void Function(bool) updateIsBookmark;
-  final List line;
-  final String name;
-  final bool cStore;
-  final bool nRoom;
-  bool isBkMk;
-  final List nName;
-  final List pName;
-  final List nCong;
-  final List pCong;
+  final List line; //호선 정보 예) 101역 1호선과 2호선 존재 -> line[0] = 1, line[1] = 2
+  //201역 2호선만 존재 -> line[0] = 2, line[1]은 없음
+
+  final String name; //역 이름
+
+  //편의 시설 정보 -> 존재하면 true, 없으면 false
+  final bool cStore; //편의점
+  final bool nRoom; //수유실
+
+  bool isBook; //즐겨찾기 설정 여부
+
+  final List nName; //번호상 증가하는 역   예) 101역 -> 102역 nName[0] = 102 nName[1] = 201
+  final List pName; //번호상 감소하는 역                     pName[0] = 123 pName[1]은 없음
 
   // ignore: prefer_const_constructors_in_immutables
   StationData({
@@ -26,9 +33,7 @@ class StationData extends StatefulWidget {
     required this.name,
     required this.cStore,
     required this.nRoom,
-    required this.isBkMk,
-    required this.nCong,
-    required this.pCong,
+    required this.isBook,
     required this.nName,
     required this.pName,
     required this.updateIsBookmark,
@@ -52,7 +57,8 @@ class _StationDataState extends State<StationData> {
 
   bool isRunTime = false;
   bool isLoading = true;
-  // 게시글 목록을 가져오는 Future
+
+  //검색역 게시글 목록을 가져오는 객체 변수
   late Future<List<DocumentSnapshot>> bulletinBoardPosts;
 
   @override
@@ -71,7 +77,7 @@ class _StationDataState extends State<StationData> {
     bulletinBoardPosts = fetchBulletinBoardPosts();
   }
 
-  // Firestore 쿼리를 사용하여 특정 역의 게시글 가져오기
+  // Firestore 쿼리를 사용하여 특정 역의 게시글 가져오는 메소드
   Future<List<DocumentSnapshot>> fetchBulletinBoardPosts() async {
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
@@ -90,9 +96,10 @@ class _StationDataState extends State<StationData> {
     return userSnapshot['nickname'];
   }
 
+  //즐겨찾기 아이콘(star) 탭 로직 구현
   void toggleBookmark() {
     setState(() {
-      widget.updateIsBookmark(!widget.isBkMk); // isBkMk 값을 토글합니다.
+      widget.updateIsBookmark(!widget.isBook);
     });
   }
 
@@ -113,7 +120,7 @@ class _StationDataState extends State<StationData> {
   Future<int> getCongestionData(int link) async {
     int station = int.parse(widget.name);
     int next = link;
-    int line = widget.line[array];
+    int line = widget.line[current_trans];
     int hour = currentHour;
     int minute = getMinuteRange(currentMinute);
 
@@ -176,7 +183,7 @@ class _StationDataState extends State<StationData> {
                   InkWell(
                     onTap: () {
                       setState(() {
-                        array = 0;
+                        current_trans = 0;
                         loadCongestionData(0);
                       });
                     },
@@ -207,7 +214,7 @@ class _StationDataState extends State<StationData> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          array = 1;
+                          current_trans = 1;
                           loadCongestionData(1);
                         });
                       },
@@ -311,7 +318,7 @@ class _StationDataState extends State<StationData> {
                   InkWell(
                     onTap: () {
                       setState(() {
-                        if (widget.isBkMk) {
+                        if (widget.isBook) {
                           toggleBookmark();
                           userProvider.removeBookmarkStation(widget.name);
                         } else {
@@ -321,9 +328,9 @@ class _StationDataState extends State<StationData> {
                       });
                     },
                     child: Icon(
-                      widget.isBkMk ? Icons.star : Icons.star_border_outlined,
+                      widget.isBook ? Icons.star : Icons.star_border_outlined,
                       size: 35,
-                      color: widget.isBkMk
+                      color: widget.isBook
                           ? const Color.fromARGB(255, 224, 210, 91)
                           : null,
                     ),
@@ -349,7 +356,7 @@ class _StationDataState extends State<StationData> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: perlinedata(widget.line[array]),
+                        color: perlinedata(widget.line[current_trans]),
                         borderRadius: BorderRadius.circular(50.0),
                       ),
                       width: 400,
@@ -365,7 +372,7 @@ class _StationDataState extends State<StationData> {
                               color: Colors.white,
                             ),
                             Text(
-                              widget.pName[array],
+                              widget.pName[current_trans],
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -376,7 +383,7 @@ class _StationDataState extends State<StationData> {
                               width: 230,
                             ),
                             Text(
-                              widget.nName[array],
+                              widget.nName[current_trans],
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -396,7 +403,7 @@ class _StationDataState extends State<StationData> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: perlinedata(widget.line[array]),
+                    color: perlinedata(widget.line[current_trans]),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                   width: 160,
@@ -446,7 +453,7 @@ class _StationDataState extends State<StationData> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (widget.pName[array] == "종점역") ...[
+                  if (widget.pName[current_trans] == "종점역") ...[
                     Column(
                       children: [
                         Container(
@@ -516,11 +523,11 @@ class _StationDataState extends State<StationData> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProvConf(
+                                builder: (context) => Congestion(
                                   currentStaion: widget.name,
-                                  linkStaion: widget.pName[array],
+                                  linkStaion: widget.pName[current_trans],
                                   confg: congestionP.toString(),
-                                  line: widget.line[array],
+                                  line: widget.line[current_trans],
                                 ),
                               ),
                             );
@@ -537,7 +544,7 @@ class _StationDataState extends State<StationData> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "${widget.pName[array]}역 방면 혼잡도 정보 제공",
+                                "${widget.pName[current_trans]}역 방면 혼잡도 정보 제공",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 13),
                               ),
@@ -547,7 +554,7 @@ class _StationDataState extends State<StationData> {
                       ],
                     ),
                   ],
-                  if (widget.nName[array] == "종점역") ...[
+                  if (widget.nName[current_trans] == "종점역") ...[
                     Column(
                       children: [
                         Container(
@@ -618,11 +625,11 @@ class _StationDataState extends State<StationData> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProvConf(
+                                builder: (context) => Congestion(
                                   currentStaion: widget.name,
-                                  linkStaion: widget.nName[array],
+                                  linkStaion: widget.nName[current_trans],
                                   confg: congestionN.toString(),
-                                  line: widget.line[array],
+                                  line: widget.line[current_trans],
                                 ),
                               ),
                             );
@@ -639,7 +646,7 @@ class _StationDataState extends State<StationData> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "${widget.nName[array]}역 방면 혼잡도 정보 제공",
+                                "${widget.nName[current_trans]}역 방면 혼잡도 정보 제공",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 13),
                               ),

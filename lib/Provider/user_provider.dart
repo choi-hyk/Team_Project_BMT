@@ -2,13 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+//사용자 정보 프로바이더 클래스 -> 파이어베이스로 사용자 정보와 데이터베이스 정보 가져오는 클래스
+// FirebaseAuth : 사용자 정보
+// FirebaseFirestore : 데이터 베이스
 class UserProvider with ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance; //사용자 정보 객체 변수
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance; //데이터베이스 객체 변수
 
   User? _user;
   Map<String, dynamic>? _userInfo;
 
+  //유저 정보 할당
   User? get user => _user;
   Map<String, dynamic>? get userInfo => _userInfo;
 

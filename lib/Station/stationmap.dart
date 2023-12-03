@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//노선도 맵핑 구현 클래스 코드
 class StationMap extends StatefulWidget {
   final Function(String) onTapStation;
   const StationMap({
@@ -16,8 +17,10 @@ class _StationMapState extends State<StationMap> {
 
   String _tappedStationKey = '';
 
+  //터치된 좌표 값 할당
   String get tappedStationKey => _tappedStationKey;
 
+  //맵핑 좌표
   final Map<String, Offset> stationCoordinates = {
     //1호선
     '101': const Offset(17, 276),
@@ -141,6 +144,7 @@ class _StationMapState extends State<StationMap> {
     '904': const Offset(192, 197),
   };
 
+  //노선도 확대 축소 이동에 맞춰서 좌표값 설정하는 메소드
   void _onTapUp(TapUpDetails details) {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final Offset localPosition =

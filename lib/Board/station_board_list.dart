@@ -279,7 +279,7 @@ class _StationBulletinState extends State<StationBulletin> {
         currentUI = 'home';
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const InterFace()),
+          MaterialPageRoute(builder: (context) => const Menu()),
         );
 
         return false;
@@ -296,7 +296,7 @@ class _StationBulletinState extends State<StationBulletin> {
               currentUI = 'home';
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const InterFace()),
+                MaterialPageRoute(builder: (context) => const Menu()),
               );
             },
           ),
