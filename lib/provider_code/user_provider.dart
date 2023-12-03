@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:test1/menu_widgets/stationdata.dart';
-// import 'package:test1/provider_code/data_provider.dart';
 import 'package:flutter/material.dart';
-// import 'package:test1/search_widgets/route_result_UI.dart';
 
 class UserProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -82,7 +78,7 @@ class UserProvider with ChangeNotifier {
   //회원 탈퇴 함수
   Future<String?> handleDeleteAccount(String password) async {
     try {
-      String? email = _user?.email;
+      String? email = _user?.email; //오류 처리
       if (email == null || password.isEmpty) {
         return "이메일 또는 비밀번호가 없습니다.";
       }
@@ -98,7 +94,7 @@ class UserProvider with ChangeNotifier {
 
       await _user!.delete(); //Firebase Authentication에서 사용자 삭제
 
-      _user = null; // 사용자 정보 초기화
+      _user = null; //사용자 정보 초기화
       _userInfo = null;
       notifyListeners();
 
@@ -170,9 +166,9 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-//즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-//역 즐겨찾기 여부를 확인하는 메소드
+  //역 즐겨찾기 여부를 확인하는 메소드
   Future<bool> isStationBookmarked(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
@@ -187,7 +183,7 @@ class UserProvider with ChangeNotifier {
     return snapshot.docs.isNotEmpty; //즐겨찾기에 해당 역이 이미 존재하는지 여부 반환
   }
 
-//경로 즐겨찾기 여부를 확인하는 메소드
+  //경로 즐겨찾기 여부를 확인하는 메소드
   Future<bool> isRouteBookmarked(String station1, String station2) async {
     String? userUid = _user!.uid;
     QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -280,10 +276,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //역 또는 경로의 즐겨찾기 데이터를 가져오는 메소드
   Future<List<Map<String, dynamic>>> getBookmarkList() async {
     String? userUid = _user!.uid;
     List<Map<String, dynamic>> bookmarkList = [];
-    // 역 즐겨찾기 가져오기
+    //역 즐겨찾기 가져오기
     QuerySnapshot stationSnapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(userUid)
@@ -297,7 +294,7 @@ class UserProvider with ChangeNotifier {
       });
     }
 
-    // 경로 즐겨찾기 가져오기
+    //경로 즐겨찾기 가져오기
     QuerySnapshot routeSnapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(userUid)
