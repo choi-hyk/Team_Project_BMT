@@ -30,7 +30,6 @@ class UserProvider with ChangeNotifier {
   String get point => _userInfo?['point'].toString() ?? '0';
   String get age => (2024 - _userInfo?['age']).toString();
   String get mainStation => _userInfo?['mainStation'].toString() ?? "101";
-  //String uid = FirebaseAuth.instance.currentUser!.uid; //로그인한 사용자 uid
 
   //DB의 mainStaiton값을 변경하는 메소드
   Future<void> updateMainStation(int newStation) async {
@@ -173,7 +172,7 @@ class UserProvider with ChangeNotifier {
 
 //즐겨찾기 관련 메소드ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-//역 즐겨찾기 여부 확인
+//역 즐겨찾기 여부를 확인하는 메소드
   Future<bool> isStationBookmarked(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
@@ -185,10 +184,10 @@ class UserProvider with ChangeNotifier {
         await bookmarks.where('station', isEqualTo: station).get();
     notifyListeners();
 
-    return snapshot.docs.isNotEmpty; // 즐겨찾기에 해당 역이 이미 존재하는지 여부 반환
+    return snapshot.docs.isNotEmpty; //즐겨찾기에 해당 역이 이미 존재하는지 여부 반환
   }
 
-//경로 즐겨찾기 여부 확인
+//경로 즐겨찾기 여부를 확인하는 메소드
   Future<bool> isRouteBookmarked(String station1, String station2) async {
     String? userUid = _user!.uid;
     QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -201,16 +200,15 @@ class UserProvider with ChangeNotifier {
       String storedStation1 = doc['station1_ID'];
       String storedStation2 = doc['station2_ID'];
 
-      // 두 역의 값이 모두 일치하는 경우 true를 반환합니다.
+      //두 역의 값이 모두 일치하는 경우 true를 반환합니다.
       if (station1 == storedStation1 && station2 == storedStation2) {
         return true;
       }
     }
-
     return false;
   }
 
-//즐겨찾기 역 추가 매소드
+  //즐겨찾기 DB에 역을 추가하는 매소드
   Future<void> addBookmarkStation(String station) async {
     bool isBookmarked = await isStationBookmarked(station);
 
@@ -228,7 +226,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//즐겨찾기 역 제거 메소드
+  //즐겨찾기 DB에서 역을 제거하는 메소드
   Future<void> removeBookmarkStation(String station) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
@@ -244,7 +242,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//즐겨찾기 경로 추가 메소드
+  //즐겨찾기 DB에 경로를 추가하는 메소드
   Future<void> addBookmarkRoute(String station1, String station2) async {
     bool isBookmarked = await isRouteBookmarked(station1, station2);
 
@@ -263,7 +261,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //즐겨찾기 경로 제거 메소드
+  //즐겨찾기 DB에서 경로를 제거하는 메소드
   Future<void> removeBookmarkRoute(String station1, String station2) async {
     String? userUid = _user!.uid;
     CollectionReference bookmarks = FirebaseFirestore.instance
