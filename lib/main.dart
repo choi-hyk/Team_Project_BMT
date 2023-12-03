@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:test1/provider_code/user_provider.dart';
-import 'package:test1/startpage.dart';
-import 'firebase_options.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:test1/provider_code/data_provider.dart';
+import 'package:test1/Provider/data_provider.dart';
+import 'package:test1/Provider/user_provider.dart';
+import 'package:test1/Interface/startpage.dart';
+import 'firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 
 int array = 0; //역 정보 데이터 배열
 String currentUI = "login"; //home, stationdata, routesearch, routeresult
