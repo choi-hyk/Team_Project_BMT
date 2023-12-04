@@ -59,25 +59,30 @@ Issue가 있으면 해당 이슈를 커맨드에 설치
 
 vscode에 터미널에서 flutter pub get을 입력하여 필요한 패키지를 설치
 
-![Untitled](Untitled%203.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/443d84a7-ea29-4ccb-93a3-09cc880a9dc1)
+
 
 Select Device를 선택
 
-![Untitled](Untitled%204.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/42bad135-ec20-42b7-b29a-2cc89fb7eb46)
+
 
 프로젝트를 실행할 수 있는 Device 목록
 
 현재 설치된 에뮬레이터: Pixel 2 XL API 34를 선택
 
-![Untitled](Untitled%205.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/372a766b-110c-49fb-96c4-ad6394b961a6)
+
 
 Dart & Flutter를 선택
 
-![Untitled](Untitled%206.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/087e42ae-2469-4b73-a089-d7070974a80b)
+
 
 두 번째 에뮬레이터로 디버깅 실행
 
-![Untitled](Untitled%207.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/0173fa32-2429-4e9b-aaff-95d3b254bed7)
+
 
 첫 실행 화면
 
