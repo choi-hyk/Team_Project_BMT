@@ -44,18 +44,18 @@ AVD Manager를 통해 에뮬레이터 생성
 
 1. **Powershell에서 Flutter, Dart, Android studio 등패키지 설치 확인: flutter docor** 
 
-![Untitled](Untitled.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/c622600c-8199-4b58-b7b8-fa81eb80ddab)
 
 Issue가 있으면 해당 이슈를 커맨드에 설치
 
 1. **에뮬레이터 생성**
 - AVD Manager → Create Virtual Device → 하드웨어: Galaxy S21 → System Image: API34 → Finish (No skin)
     
-    ![Untitled](Untitled%201.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/c344b90f-1ff1-4380-a08b-4f9f78090ed2)
     
 1. **프로젝트 실행**
 
-![Untitled](Untitled%202.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/1f101fd4-0a15-4bc9-a395-3a8520247a51)
 
 vscode에 터미널에서 flutter pub get을 입력하여 필요한 패키지를 설치
 
