@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:test1/Board/station_board.dart';
 import 'package:test1/Interface/menu.dart';
+import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/main.dart';
 
 class StationBoardList extends StatefulWidget {
@@ -35,6 +36,7 @@ class _StationBulletinState extends State<StationBoardList> {
   Future<void> _update(DocumentSnapshot documentSnapshot) async {
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
+    DataProvider dataProvider = DataProvider();
 
     //게시글 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (documentSnapshot['User_ID'] == currentUserId) {
@@ -86,15 +88,19 @@ class _StationBulletinState extends State<StationBoardList> {
                       final int station =
                           int.tryParse(stationController.text) ?? 0;
 
-                      await product.doc(documentSnapshot.id).update(
-                        {
-                          "title": title,
-                          "content": content,
-                          "station_ID": station,
-                          "updated_at": FieldValue.serverTimestamp(),
-                          "User_ID": currentUserId,
-                        },
-                      );
+                      await dataProvider.searchData(station);
+
+                      if (dataProvider.found) {
+                        await product.add({
+                          'title': title,
+                          'content': content,
+                          'station_ID': station,
+                          'created_at': FieldValue.serverTimestamp(),
+                          'User_ID': currentUserId,
+                        });
+                      } else {
+                        showSnackBar(context, const Text("존재하지 않는 역입니다"));
+                      }
 
                       titleController.text = "";
                       contentController.text = "";
@@ -133,20 +139,16 @@ class _StationBulletinState extends State<StationBoardList> {
   Future<void> _create() async {
     User? currentUser = _auth.currentUser;
     String? currentUserId = currentUser?.uid;
+    DataProvider dataProvider = DataProvider();
 
     await showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         return Container(
-          color: const Color.fromARGB(255, 108, 159, 164),
+          color: Theme.of(context).canvasColor,
           child: Padding(
-            padding: EdgeInsets.only(
-              top: 20,
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
+            padding: const EdgeInsets.all(30.0),
             child: Column(
               children: [
                 TextField(
@@ -160,7 +162,9 @@ class _StationBulletinState extends State<StationBoardList> {
                   controller: stationController,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: '역 번호'),
+                  decoration: const InputDecoration(
+                    labelText: '역 번호',
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -169,7 +173,6 @@ class _StationBulletinState extends State<StationBoardList> {
                   controller: contentController,
                   maxLines: 8,
                   decoration: InputDecoration(
-                    labelText: '본문',
                     filled: true,
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -188,20 +191,31 @@ class _StationBulletinState extends State<StationBoardList> {
                     final int station =
                         int.tryParse(stationController.text) ?? 0;
 
-                    await product.add({
-                      'title': title,
-                      'content': content,
-                      'station_ID': station,
-                      'created_at': FieldValue.serverTimestamp(),
-                      'User_ID': currentUserId,
-                    });
+                    await dataProvider.searchData(station);
+
+                    if (dataProvider.found) {
+                      await product.add({
+                        'title': title,
+                        'content': content,
+                        'station_ID': station,
+                        'created_at': FieldValue.serverTimestamp(),
+                        'User_ID': currentUserId,
+                      });
+                    } else {
+                      showSnackBar(context, const Text("존재하지 않는 역입니다"));
+                    }
 
                     titleController.text = "";
                     contentController.text = "";
                     stationController.text = "";
                     Navigator.of(context).pop();
                   },
-                  child: const Text('작성'),
+                  child: Text(
+                    '작성',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColorDark),
+                  ),
                 ),
               ],
             ),
