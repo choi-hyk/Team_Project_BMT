@@ -146,14 +146,9 @@ class LostBoardListState extends State<LostBoardList> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          color: const Color.fromARGB(255, 108, 159, 164),
+          color: Theme.of(context).canvasColor,
           child: Padding(
-            padding: EdgeInsets.only(
-              top: 20,
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
+            padding: const EdgeInsets.all(30.0),
             child: Column(
               children: [
                 TextField(
@@ -174,7 +169,6 @@ class LostBoardListState extends State<LostBoardList> {
                   controller: contentController,
                   maxLines: 8,
                   decoration: InputDecoration(
-                    labelText: '본문',
                     filled: true,
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -212,7 +206,12 @@ class LostBoardListState extends State<LostBoardList> {
                     stationController.text = "";
                     Navigator.of(context).pop();
                   },
-                  child: const Text('작성'),
+                  child: Text(
+                    '작성',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColorDark),
+                  ),
                 ),
               ],
             ),
@@ -321,30 +320,35 @@ class LostBoardListState extends State<LostBoardList> {
         ),
         body: Column(
           children: [
-            Center(
-              child: DropdownButton<int>(
-                value: selectedStation,
-                items: stationIds.map((int stationId) {
-                  return DropdownMenuItem<int>(
-                    value: stationId,
-                    child: Text(
-                      '$stationId',
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: Center(
+                child: DropdownButton<int>(
+                  value: selectedStation,
+                  items: stationIds.map((int stationId) {
+                    return DropdownMenuItem<int>(
+                      value: stationId,
+                      child: Text(
+                        '$stationId',
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                underline: Container(),
-                onChanged: (int? value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedStation = value;
-                    });
-                  }
-                },
-                iconSize: 30.0,
+                    );
+                  }).toList(),
+                  underline: Container(),
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedStation = value;
+                      });
+                    }
+                  },
+                  iconSize: 30.0,
+                ),
               ),
             ),
             Expanded(
@@ -376,7 +380,7 @@ class LostBoardListState extends State<LostBoardList> {
                             createdAt = createdAt.add(const Duration(hours: 9));
 
                             String formattedDate =
-                                DateFormat('yyyy년-MM월-dd일 a h시 mm분', 'ko_KR')
+                                DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
                                     .format(createdAt);
 
                             return GestureDetector(
@@ -392,107 +396,115 @@ class LostBoardListState extends State<LostBoardList> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          width: 1.0,
-                                          color: Colors.black,
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1,
                                         ),
                                       ),
-                                    ),
-                                    child: ListTile(
-                                      title: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: Text(
-                                          documentSnapshot['title'],
-                                          style: const TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
+                                      child: ListTile(
+                                        title: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8.0),
+                                          child: Text(
+                                            documentSnapshot['title'],
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      subtitle: Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 5.0,
-                                          bottom: 5.0,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            FutureBuilder<DocumentSnapshot>(
-                                              future: FirebaseFirestore.instance
-                                                  .collection('Users')
-                                                  .doc(documentSnapshot[
-                                                      'User_ID'])
-                                                  .get(),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot<
-                                                          DocumentSnapshot>
-                                                      userSnapshot) {
-                                                if (userSnapshot.hasData &&
-                                                    userSnapshot.data != null &&
-                                                    userSnapshot.data!.exists) {
-                                                  //Users 테이블에서 해당 사용자의 닉네임 가져오기
-                                                  Map<String, dynamic>
-                                                      userData =
-                                                      userSnapshot.data!.data()
-                                                          as Map<String,
-                                                              dynamic>;
-                                                  String nickname =
-                                                      userData['nickname'];
-                                                  //닉네임으로 사용자 구분
-                                                  return Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 5.0),
-                                                    child: Text(
-                                                      '작성자: $nickname',
-                                                      style: const TextStyle(
-                                                          fontSize: 13),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  return const SizedBox();
-                                                }
-                                              },
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5.0),
-                                              child: Text(
-                                                '작성일: $formattedDate',
-                                                style: const TextStyle(
-                                                    fontSize: 13),
+                                        subtitle: Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 5.0,
+                                            bottom: 5.0,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FutureBuilder<DocumentSnapshot>(
+                                                future: FirebaseFirestore
+                                                    .instance
+                                                    .collection('Users')
+                                                    .doc(documentSnapshot[
+                                                        'User_ID'])
+                                                    .get(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<
+                                                            DocumentSnapshot>
+                                                        userSnapshot) {
+                                                  if (userSnapshot.hasData &&
+                                                      userSnapshot.data !=
+                                                          null &&
+                                                      userSnapshot
+                                                          .data!.exists) {
+                                                    //Users 테이블에서 해당 사용자의 닉네임 가져오기
+                                                    Map<String, dynamic>
+                                                        userData = userSnapshot
+                                                                .data!
+                                                                .data()
+                                                            as Map<String,
+                                                                dynamic>;
+                                                    String nickname =
+                                                        userData['nickname'];
+                                                    //닉네임으로 사용자 구분
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 5.0),
+                                                      child: Text(
+                                                        '작성자: $nickname',
+                                                        style: const TextStyle(
+                                                            fontSize: 13),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return const SizedBox();
+                                                  }
+                                                },
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5.0),
+                                                child: Text(
+                                                  '작성일: $formattedDate',
+                                                  style: const TextStyle(
+                                                      fontSize: 13),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      trailing: SizedBox(
-                                        width: 100,
-                                        child: Row(
-                                          children: [
-                                            IconButton(
-                                              onPressed: () {
-                                                _update(documentSnapshot);
-                                              },
-                                              icon: const Icon(Icons.edit),
-                                              color: Theme.of(context)
-                                                  .primaryColorDark,
-                                            ),
-                                            IconButton(
-                                              onPressed: () {
-                                                _delete(documentSnapshot.id);
-                                              },
-                                              icon: const Icon(Icons.delete),
-                                              color: Theme.of(context)
-                                                  .primaryColorDark,
-                                            ),
-                                          ],
+                                        trailing: SizedBox(
+                                          width: 100,
+                                          child: Row(
+                                            children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  _update(documentSnapshot);
+                                                },
+                                                icon: const Icon(Icons.edit),
+                                                color: Theme.of(context)
+                                                    .primaryColorDark,
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  _delete(documentSnapshot.id);
+                                                },
+                                                icon: const Icon(Icons.delete),
+                                                color: Theme.of(context)
+                                                    .primaryColorDark,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -535,13 +547,12 @@ class LostBoardListState extends State<LostBoardList> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
+                    child: SizedBox(
                       //광고배너 컨테이너
                       width: double.infinity,
                       height: 60.0,
-                      color: Colors.green,
                       child: Image.asset(
-                        'assets/images/광고1.png',
+                        'assets/images/광고2.png',
                         fit: BoxFit.fill,
                       ),
                     ),
