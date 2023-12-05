@@ -183,6 +183,32 @@ class _ProvRewardState extends State<ProvReward> {
 
 ---
 
+
+## UI테마 색 구성
+
+[호선]
+-1  : Color.fromARGB(255, 225, 213, 213)
+1 : Colors.green;
+2 : Color.fromARGB(255, 14, 67, 111)
+3 : Colors.brown
+4 : Colors.red
+5 : Color.fromARGB(255, 24, 99, 134)
+6 : Color.fromARGB(255, 218, 206, 95)
+7 : Color.fromARGB(255, 115, 216, 118)
+8 : Color.fromARGB(255, 54, 181, 240)
+9 : Colors.purple;
+기본값 : Colors.white;
+
+
+[테마]
+primaryColorLight: Color.fromARGB(255, 117, 154, 167)
+primaryColor: Color.fromARGB(255, 108, 159, 164)
+primaryColorDark: Color.fromARGB(255, 22, 73, 79)
+cardColor: Color.fromARGB(255, 233, 255, 243)
+
+
+---
+
 # 3. 데이터 및 데이터 메소드
 
 ## 1. Lines컬렉션 : 역 정보
