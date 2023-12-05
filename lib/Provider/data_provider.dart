@@ -33,8 +33,8 @@ class DataProvider with ChangeNotifier {
   bool isBkmk = false;
   List<String> nName = [];
   List<String> pName = [];
-  List<String> nCong = [];
-  List<String> pCong = [];
+  List<int> nCong = [];
+  List<int> pCong = [];
   List<int> line = [];
 
   UserProvider userProvider = UserProvider();
@@ -77,6 +77,8 @@ class DataProvider with ChangeNotifier {
     line.clear();
     nName.clear();
     pName.clear();
+    nCong.clear();
+    pCong.clear();
     for (int i = 0; i < 9; i++) {
       int leng = documentDataList[i]['station'].length;
       for (int j = 0; j < leng; j++) {
@@ -112,11 +114,85 @@ class DataProvider with ChangeNotifier {
             }
           }
           found = true;
+          if (nName[0] != "종점역") {
+            nCong.add(await getCongestionData(
+              int.parse(name),
+              int.parse(nName[0]),
+            ));
+          } else {
+            nCong.add(-1);
+          }
+
+          if (pName[0] != "종점역") {
+            pCong.add(await getCongestionData(
+              int.parse(name),
+              int.parse(pName[0]),
+            ));
+          } else {
+            pCong.add(-1);
+          }
+
+          //환승역 존재
+          if (line.length == 2) {
+            if (nName[1] != "종점역") {
+              nCong.add(await getCongestionData(
+                int.parse(name),
+                int.parse(nName[1]),
+              ));
+            } else {
+              nCong.add(-1);
+            }
+            if (pName[1] != "종점역") {
+              pCong.add(await getCongestionData(
+                int.parse(name),
+                int.parse(pName[1]),
+              ));
+            } else {
+              pCong.add(-1);
+            }
+          }
           isBkmk = await userProvider.isStationBookmarked(name);
           current_trans = 0;
           break;
         }
       }
+    }
+  }
+
+  Future<int> getCongestionData(int current, int link) async {
+    int currentHour = DateTime.now().hour;
+    int currentMinute = DateTime.now().minute;
+
+    int station = current;
+    int next = link;
+    int hour = currentHour;
+    int minute = getMinuteRange(currentMinute);
+
+    CollectionReference congestionCollection =
+        FirebaseFirestore.instance.collection('Congestion');
+
+    QuerySnapshot snapshot = await congestionCollection
+        .where('station', isEqualTo: station)
+        .where('next', isEqualTo: next)
+        .where('hour', isEqualTo: hour)
+        .where('minute', isEqualTo: minute)
+        .get();
+
+    int totalCongestion = 0;
+    int numberOfMatchingDocuments = snapshot.docs.length;
+    notifyListeners();
+    if (numberOfMatchingDocuments > 0) {
+      // 매칭되는 문서들의 cong 값 합산
+      for (var doc in snapshot.docs) {
+        totalCongestion += doc['cong'] as int;
+      }
+
+      print('일치하는 문서 수: $numberOfMatchingDocuments');
+      print('총 혼잡도 값: $totalCongestion');
+
+      return totalCongestion ~/ numberOfMatchingDocuments;
+    } else {
+      return -1;
     }
   }
 }

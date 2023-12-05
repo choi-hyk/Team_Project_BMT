@@ -178,6 +178,8 @@ class _BookmarkState extends State<Bookmark> {
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
           check: true,
         ),
       ),

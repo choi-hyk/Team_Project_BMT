@@ -65,7 +65,7 @@ class _MenuState extends State<Menu> {
   Widget buildContentWidget() {
     switch (currentUI) {
       case "home":
-        return const Home();
+        return Home(mainStation: mainStation);
       case "stationdata":
         return StationData(
           name: dataProvider.name,
@@ -75,6 +75,8 @@ class _MenuState extends State<Menu> {
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
           updateIsBookmark: (bool newValue) {
             setState(() {
               dataProvider.isBkmk = newValue; // isBkMk 값을 업데이트합니다.
@@ -82,7 +84,9 @@ class _MenuState extends State<Menu> {
           },
         );
       default:
-        return const Home();
+        return Home(
+          mainStation: mainStation,
+        );
     }
   }
 
@@ -144,8 +148,15 @@ class _MenuState extends State<Menu> {
   //사용자 정보 업데이트하는 메소드 -> 로그인 하면서 사용자 정보 패치
   Future<void> updateUserProviderData() async {
     await userProvider.fetchUserInfo();
-    setState(() {});
+    setState(() {
+      point = userProvider.point;
+      mainStation = userProvider.mainStation;
+      currentUI = 'home';
+    });
   }
+
+  String mainStation = "";
+  String point = "";
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +250,7 @@ class _MenuState extends State<Menu> {
                                   int? searchStation = int.tryParse(value);
                                   if (searchStation != null) {
                                     setState(() {
+                                      current_trans = 0;
                                       waitData(searchStation);
                                     });
                                   }
@@ -384,7 +396,8 @@ class _MenuState extends State<Menu> {
                         ),
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "${userProvider.point}p",
+                          "${point}p",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
