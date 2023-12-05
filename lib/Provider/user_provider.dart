@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:test1/Provider/data_provider.dart';
+import 'package:test1/main.dart';
 
 //사용자 정보 프로바이더 클래스 -> 파이어베이스로 사용자 정보와 데이터베이스 정보 가져오는 클래스
 //FirebaseAuth : 사용자 정보
@@ -33,14 +35,21 @@ class UserProvider with ChangeNotifier {
   String get count => _userInfo?['count'].toString() ?? '0';
 
   //DB의 mainStaiton값을 변경하는 메소드
-  Future<void> updateMainStation(int newStation) async {
-    try {
-      await _firestore
-          .collection('Users')
-          .doc(_user!.uid)
-          .update({'mainStation': newStation});
-    } catch (e) {
-      print(e);
+  Future<bool> updateMainStation(int newStation) async {
+    DataProvider dataProvider = DataProvider();
+    await dataProvider.searchData(newStation);
+    if (dataProvider.found) {
+      try {
+        await _firestore
+            .collection('Users')
+            .doc(_user!.uid)
+            .update({'mainStation': newStation});
+      } catch (e) {
+        print(e);
+      }
+      return true;
+    } else {
+      return false;
     }
   }
 

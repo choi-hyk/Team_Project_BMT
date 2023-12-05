@@ -10,7 +10,12 @@ import 'package:intl/intl.dart';
 //메인메뉴의 디폴트 화면
 //즐겨찾기 메뉴와 사용자 설정 역 게시파나 보여줌
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final String mainStation;
+
+  const Home({
+    super.key,
+    required this.mainStation,
+  });
   @override
   State<Home> createState() => _HomeState();
 }
@@ -34,6 +39,8 @@ class _HomeState extends State<Home> {
           line: dataProvider.line,
           nName: dataProvider.nName,
           pName: dataProvider.pName,
+          nCong: dataProvider.nCong,
+          pCong: dataProvider.pCong,
           check: false,
         ),
       ),
@@ -350,7 +357,7 @@ class _HomeState extends State<Home> {
               height: 10,
             ),
             Text(
-              '게시판',
+              '${widget.mainStation}역 게시판',
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -359,6 +366,7 @@ class _HomeState extends State<Home> {
             const SizedBox(
               height: 4.3,
             ),
+
             //게시판 스크롤 메뉴
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(

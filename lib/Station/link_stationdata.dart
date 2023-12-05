@@ -12,6 +12,8 @@ class LinkStationData extends StatefulWidget {
   final bool isBkMk;
   final List nName;
   final List pName;
+  final List nCong;
+  final List pCong;
 
   final bool check;
 
@@ -25,6 +27,8 @@ class LinkStationData extends StatefulWidget {
     required this.pName,
     required this.isBkMk,
     required this.check,
+    required this.nCong,
+    required this.pCong,
   });
 
   @override
@@ -98,6 +102,8 @@ class _LinkStationDataState extends State<LinkStationData> {
                     line: widget.line,
                     nName: widget.nName,
                     pName: widget.pName,
+                    nCong: widget.nCong,
+                    pCong: widget.pCong,
                     updateIsBookmark: (bool newValue) {
                       setState(() {
                         isBkMk = newValue;

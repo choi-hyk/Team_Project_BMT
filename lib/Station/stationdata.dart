@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/number_symbols_data.dart';
+import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/main.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/Congestion/congestion.dart';
@@ -26,6 +28,10 @@ class StationData extends StatefulWidget {
   final List nName; //번호상 증가하는 역   예) 101역 -> 102역 nName[0] = 102 nName[1] = 201
   final List pName; //번호상 감소하는 역                     pName[0] = 123 pName[1]은 없음
 
+  //혼잡도
+  final List nCong;
+  final List pCong;
+
   // ignore: prefer_const_constructors_in_immutables
   StationData({
     Key? key,
@@ -37,6 +43,8 @@ class StationData extends StatefulWidget {
     required this.nName,
     required this.pName,
     required this.updateIsBookmark,
+    required this.nCong,
+    required this.pCong,
   }) : super(key: key);
 
   @override
@@ -46,17 +54,12 @@ class StationData extends StatefulWidget {
 class _StationDataState extends State<StationData> {
   UserProvider userProvider = UserProvider();
 
-  DateTime nowtime = DateTime.now();
-
   String currentTime = DateFormat('HH:mm').format(DateTime.now());
-  int currentHour = DateTime.now().hour;
-  int currentMinute = DateTime.now().minute;
 
   int congestionN = -1;
   int congestionP = -1;
 
   bool isRunTime = false;
-  bool isLoading = true;
 
   //검색역 게시글 목록을 가져오는 객체 변수
   late Future<List<DocumentSnapshot>> bulletinBoardPosts;
@@ -64,16 +67,7 @@ class _StationDataState extends State<StationData> {
   @override
   void initState() {
     super.initState();
-
     calculateIsRunTime();
-
-    loadCongestionData(0).then((_) {
-      // 데이터 로딩 완료 후 상태 변경
-      setState(() {
-        isLoading = false;
-      });
-    });
-
     bulletinBoardPosts = fetchBulletinBoardPosts();
   }
 
@@ -84,7 +78,6 @@ class _StationDataState extends State<StationData> {
         .collection('Bulletin_Board')
         .where('station_ID', isEqualTo: int.parse(widget.name))
         .get();
-
     return snapshot.docs;
   }
 
@@ -92,7 +85,6 @@ class _StationDataState extends State<StationData> {
   Future<String?> getUserNickname(String userId) async {
     DocumentSnapshot userSnapshot =
         await FirebaseFirestore.instance.collection('Users').doc(userId).get();
-
     return userSnapshot['nickname'];
   }
 
@@ -103,56 +95,8 @@ class _StationDataState extends State<StationData> {
     });
   }
 
-  Future<void> loadCongestionData(int array) async {
-    int congestionDataN =
-        await getCongestionData(int.parse(widget.nName[array]));
-    int congestionDataP =
-        await getCongestionData(int.parse(widget.pName[array]));
-
-    congestionN = congestionDataN;
-    congestionP = congestionDataP;
-
-    print(congestionDataN);
-    print(congestionN);
-    print(congestionP);
-  }
-
-  Future<int> getCongestionData(int link) async {
-    int station = int.parse(widget.name);
-    int next = link;
-    int line = widget.line[current_trans];
-    int hour = currentHour;
-    int minute = getMinuteRange(currentMinute);
-
-    CollectionReference congestionCollection =
-        FirebaseFirestore.instance.collection('Congestion');
-
-    QuerySnapshot snapshot = await congestionCollection
-        .where('station', isEqualTo: station)
-        .where('next', isEqualTo: next)
-        .where('line', isEqualTo: line)
-        .where('hour', isEqualTo: hour)
-        .where('minute', isEqualTo: minute)
-        .get();
-
-    int totalCongestion = 0;
-    int numberOfMatchingDocuments = snapshot.docs.length;
-
-    if (numberOfMatchingDocuments > 0) {
-      // 매칭되는 문서들의 cong 값 합산
-      for (var doc in snapshot.docs) {
-        totalCongestion += doc['cong'] as int;
-      }
-
-      print('일치하는 문서 수: $numberOfMatchingDocuments');
-      print('총 혼잡도 값: $totalCongestion');
-
-      return totalCongestion ~/ numberOfMatchingDocuments;
-    } else {
-      return -1;
-    }
-  }
-
+  int currentHour = DateTime.now().hour;
+  int currentMinute = DateTime.now().minute;
   void calculateIsRunTime() {
     setState(() {
       isRunTime = currentHour < 22 && currentHour >= 8;
@@ -184,7 +128,6 @@ class _StationDataState extends State<StationData> {
                     onTap: () {
                       setState(() {
                         current_trans = 0;
-                        loadCongestionData(0);
                       });
                     },
                     child: Container(
@@ -215,7 +158,6 @@ class _StationDataState extends State<StationData> {
                       onTap: () {
                         setState(() {
                           current_trans = 1;
-                          loadCongestionData(1);
                         });
                       },
                       child: Container(
@@ -485,74 +427,18 @@ class _StationDataState extends State<StationData> {
                       ],
                     ),
                   ] else ...[
-                    Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).canvasColor,
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
-                          width: 160,
-                          height: 120,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(
-                                  getIconForIndex(
-                                    congestionP,
-                                  ),
-                                  color: getColorForIndex(congestionP),
-                                  size: 40,
-                                ),
-                                getConfText(congestionP),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Congestion(
-                                  currentStaion: widget.name,
-                                  linkStaion: widget.pName[current_trans],
-                                  confg: congestionP.toString(),
-                                  line: widget.line[current_trans],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 0.5,
-                                ),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                color: Theme.of(context).canvasColor),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "${widget.pName[current_trans]}역 방면 혼잡도 정보 제공",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    if (current_trans == 0)
+                      CongestionWidget(
+                        congestion: widget.pCong[0],
+                        name: widget.pName,
+                        widget: widget,
+                      ),
+                    if (current_trans == 1)
+                      CongestionWidget(
+                        congestion: widget.pCong[1],
+                        name: widget.nName,
+                        widget: widget,
+                      ),
                   ],
                   if (widget.nName[current_trans] == "종점역") ...[
                     Column(
@@ -587,74 +473,18 @@ class _StationDataState extends State<StationData> {
                       ],
                     ),
                   ] else ...[
-                    Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).canvasColor,
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
-                          width: 160,
-                          height: 120,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(
-                                  getIconForIndex(
-                                    congestionN,
-                                  ),
-                                  color: getColorForIndex(congestionN),
-                                  size: 40,
-                                ),
-                                getConfText(congestionN),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Congestion(
-                                  currentStaion: widget.name,
-                                  linkStaion: widget.nName[current_trans],
-                                  confg: congestionN.toString(),
-                                  line: widget.line[current_trans],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 0.5,
-                                ),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                color: Theme.of(context).canvasColor),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "${widget.nName[current_trans]}역 방면 혼잡도 정보 제공",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    if (current_trans == 0)
+                      CongestionWidget(
+                        congestion: widget.nCong[0],
+                        name: widget.nName,
+                        widget: widget,
+                      ),
+                    if (current_trans == 1)
+                      CongestionWidget(
+                        congestion: widget.nCong[1],
+                        name: widget.nName,
+                        widget: widget,
+                      ),
                   ]
                 ],
               ),
@@ -822,6 +652,94 @@ class _StationDataState extends State<StationData> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CongestionWidget extends StatefulWidget {
+  final int congestion;
+  final List name;
+  final StationData widget;
+  const CongestionWidget({
+    super.key,
+    required this.congestion,
+    required this.widget,
+    required this.name,
+  });
+
+  @override
+  State<CongestionWidget> createState() => _CongestionWidgetState();
+}
+
+class _CongestionWidgetState extends State<CongestionWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: BorderRadius.circular(15.0),
+            border: Border.all(
+              color: Colors.grey,
+              width: 0.5,
+            ),
+          ),
+          width: 160,
+          height: 120,
+          child: Align(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(
+                  getIconForIndex(
+                    widget.congestion - 1,
+                  ),
+                  color: getColorForIndex(widget.congestion - 1),
+                  size: 40,
+                ),
+                getConfText(widget.congestion - 1),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Congestion(
+                  currentStaion: widget.widget.name,
+                  linkStaion: widget.name[current_trans],
+                  confg: (widget.congestion - 1).toString(),
+                  line: widget.widget.line[current_trans],
+                ),
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 0.5,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                color: Theme.of(context).canvasColor),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "${widget.name[current_trans]}역 방면 혼잡도 정보 제공",
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

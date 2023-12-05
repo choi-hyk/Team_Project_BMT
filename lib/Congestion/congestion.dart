@@ -37,7 +37,6 @@ class CongestionState extends State<Congestion> {
   Future<void> addCongestionData(int congestionLevel) async {
     try {
       int station = int.parse(widget.currentStaion);
-      int line = widget.line;
       int next = int.parse(widget.linkStaion);
       int hour = currentHour;
       int minute = getMinuteRange(currentMinute);
@@ -45,7 +44,6 @@ class CongestionState extends State<Congestion> {
       //Firestore에 데이터 추가
       await _firestore.collection('Congestion').add({
         'station': station,
-        'line': line,
         'next': next,
         'hour': hour,
         'minute': minute,
