@@ -77,7 +77,7 @@ Color perlinedata(int currentLine) {
 Color getColorForIndex(int index) {
   switch (index) {
     case 0:
-      return const Color.fromARGB(255, 244, 238, 54);
+      return const Color.fromARGB(255, 7, 172, 80);
     case 1:
       return const Color.fromARGB(255, 244, 206, 54);
     case 2:
