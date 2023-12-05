@@ -33,8 +33,8 @@ class DataProvider with ChangeNotifier {
   bool isBkmk = false;
   List<String> nName = [];
   List<String> pName = [];
-  List<int> nCong = [];
-  List<int> pCong = [];
+  int nCong = 0;
+  int pCong = 0;
   List<int> line = [];
 
   UserProvider userProvider = UserProvider();
@@ -77,8 +77,8 @@ class DataProvider with ChangeNotifier {
     line.clear();
     nName.clear();
     pName.clear();
-    nCong.clear();
-    pCong.clear();
+    nCong = 0;
+    pCong = 0;
     for (int i = 0; i < 9; i++) {
       int leng = documentDataList[i]['station'].length;
       for (int j = 0; j < leng; j++) {
@@ -115,42 +115,68 @@ class DataProvider with ChangeNotifier {
           }
           found = true;
           if (nName[0] != "종점역") {
-            nCong.add(await getCongestionData(
+            nCong = await getCongestionData(
               int.parse(name),
               int.parse(nName[0]),
-            ));
+            );
           } else {
-            nCong.add(-1);
+            nCong = -1;
           }
-
           if (pName[0] != "종점역") {
-            pCong.add(await getCongestionData(
-              int.parse(name),
-              int.parse(pName[0]),
-            ));
+            pCong =
+                await getCongestionData(int.parse(name), int.parse(pName[0]));
           } else {
-            pCong.add(-1);
+            pCong = -1;
           }
 
-          //환승역 존재
-          if (line.length == 2) {
-            if (nName[1] != "종점역") {
-              nCong.add(await getCongestionData(
-                int.parse(name),
-                int.parse(nName[1]),
-              ));
+          isBkmk = await userProvider.isStationBookmarked(name);
+          current_trans = 0;
+          break;
+        }
+      }
+    }
+  }
+
+  Future<void> searchRoute(int searchStation) async {
+    await fetchDocumentList();
+    name = "";
+    isBkmk = false;
+    line.clear();
+    nName.clear();
+    pName.clear();
+    for (int i = 0; i < 9; i++) {
+      int leng = documentDataList[i]['station'].length;
+      for (int j = 0; j < leng; j++) {
+        if (documentDataList[i]['station'][j] == searchStation) {
+          name = documentDataList[i]['station'][j].toString();
+          line.add(i + 1);
+          //순환하는 호선인 1호선과 6호선 처리 과정
+          //순환하는 호선이면 맨처음 역과 마지막역을 이어줘야함
+          if (i == 0 || i == 5) {
+            if (j == 0) {
+              nName.add(documentDataList[i]['station'][j + 1].toString());
+              pName.add(documentDataList[i]['station'][leng - 1].toString());
+            } else if (j == leng - 1) {
+              nName.add(documentDataList[i]['station'][0].toString());
+              pName.add(documentDataList[i]['station'][j - 1].toString());
             } else {
-              nCong.add(-1);
+              nName.add(documentDataList[i]['station'][j + 1].toString());
+              pName.add(documentDataList[i]['station'][j - 1].toString());
             }
-            if (pName[1] != "종점역") {
-              pCong.add(await getCongestionData(
-                int.parse(name),
-                int.parse(pName[1]),
-              ));
+            //순환하지 않는 호선인 경우
+          } else {
+            if (j == 0) {
+              nName.add(documentDataList[i]['station'][j + 1].toString());
+              pName.add("종점역");
+            } else if (j == leng - 1) {
+              nName.add("종점역");
+              pName.add(documentDataList[i]['station'][j - 1].toString());
             } else {
-              pCong.add(-1);
+              nName.add(documentDataList[i]['station'][j + 1].toString());
+              pName.add(documentDataList[i]['station'][j - 1].toString());
             }
           }
+          found = true;
           isBkmk = await userProvider.isStationBookmarked(name);
           current_trans = 0;
           break;

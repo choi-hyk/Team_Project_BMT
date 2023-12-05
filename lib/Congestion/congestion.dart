@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:test1/Provider/user_provider.dart';
+import 'package:test1/Reward/not_reward.dart';
 import 'package:test1/Reward/reward.dart';
 import 'package:test1/main.dart';
 
@@ -59,6 +62,8 @@ class CongestionState extends State<Congestion> {
   //위젯
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.fetchUserInfo();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -310,41 +315,71 @@ class CongestionState extends State<Congestion> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: InkWell(
-                    onTap: () {
-                      if (selectedIconIndex != -1) {
-                        addCongestionData(selectedIconIndex + 1);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProvReward(),
-                          ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: 45,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 0.5,
-                        ),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "정보 제공하고 포인트 받기!",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
+                      onTap: () {
+                        if (selectedIconIndex != -1) {
+                          addCongestionData(selectedIconIndex + 1);
+                          if (int.parse(userProvider.count) < 2) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ProvReward()),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const NotReward()),
+                            );
+                          }
+                        }
+                      },
+                      child: int.parse(userProvider.count) < 2
+                          ? Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.5,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "정보 제공하고 포인트 받기!",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.5,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "정보 제공하기!",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )),
                 )
               ],
             ),
