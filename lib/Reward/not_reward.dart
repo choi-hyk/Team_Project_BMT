@@ -93,7 +93,7 @@ class _NotRewardState extends State<NotReward> {
                       ),
                     ),
                     Text(
-                      "오늘 혼잡도 정보를 총 ${userProvider.count}회 제공하셨어요!",
+                      "현재까지 혼잡도 정보를 총 ${userProvider.count}회 제공하셨어요!",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
