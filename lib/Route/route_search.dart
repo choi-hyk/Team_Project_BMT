@@ -65,8 +65,8 @@ class _RouteSearchState extends State<RouteSearch> {
     String startStation = _searchStartController.text;
     String arrivStation = _searchArrivController.text;
 
-    await dataProvider1.searchData(int.parse(startStation));
-    await dataProvider2.searchData(int.parse(arrivStation));
+    await dataProvider1.searchRoute(int.parse(startStation));
+    await dataProvider2.searchRoute(int.parse(arrivStation));
 
     if (!dataProvider1.found || !dataProvider2.found) {
       showSnackBar(context, const Text("존재하지 않는 역입니다"));

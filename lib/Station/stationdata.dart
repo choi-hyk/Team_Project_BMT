@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/number_symbols_data.dart';
-import 'package:test1/Provider/data_provider.dart';
+import 'package:test1/Board/station_board.dart';
 import 'package:test1/main.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/Congestion/congestion.dart';
@@ -12,6 +11,7 @@ import 'package:intl/intl.dart';
 //역 검색, 즐겨찾기에 탭, 노선도 해당 역 탭 -> StationData위젯 빌드
 //역 정보를 보여주는 클래스 코드
 //역 정보를 firestore데이터 베이스로 가져와서 매개변수로 받아옴
+// ignore: must_be_immutable
 class StationData extends StatefulWidget {
   final void Function(bool) updateIsBookmark;
   final List line; //호선 정보 예) 101역 1호선과 2호선 존재 -> line[0] = 1, line[1] = 2
@@ -29,8 +29,8 @@ class StationData extends StatefulWidget {
   final List pName; //번호상 감소하는 역                     pName[0] = 123 pName[1]은 없음
 
   //혼잡도
-  final List nCong;
-  final List pCong;
+  final int nCong;
+  final int pCong;
 
   // ignore: prefer_const_constructors_in_immutables
   StationData({
@@ -427,18 +427,11 @@ class _StationDataState extends State<StationData> {
                       ],
                     ),
                   ] else ...[
-                    if (current_trans == 0)
-                      CongestionWidget(
-                        congestion: widget.pCong[0],
-                        name: widget.pName,
-                        widget: widget,
-                      ),
-                    if (current_trans == 1)
-                      CongestionWidget(
-                        congestion: widget.pCong[1],
-                        name: widget.nName,
-                        widget: widget,
-                      ),
+                    CongestionWidget(
+                      congestion: widget.pCong,
+                      name: widget.pName,
+                      widget: widget,
+                    )
                   ],
                   if (widget.nName[current_trans] == "종점역") ...[
                     Column(
@@ -473,18 +466,11 @@ class _StationDataState extends State<StationData> {
                       ],
                     ),
                   ] else ...[
-                    if (current_trans == 0)
-                      CongestionWidget(
-                        congestion: widget.nCong[0],
-                        name: widget.nName,
-                        widget: widget,
-                      ),
-                    if (current_trans == 1)
-                      CongestionWidget(
-                        congestion: widget.nCong[1],
-                        name: widget.nName,
-                        widget: widget,
-                      ),
+                    CongestionWidget(
+                      congestion: widget.nCong,
+                      name: widget.nName,
+                      widget: widget,
+                    ),
                   ]
                 ],
               ),
@@ -599,44 +585,57 @@ class _StationDataState extends State<StationData> {
                                   DateFormat('yyyy.MM.dd  hh : mm', 'ko_KR')
                                       .format(createdAt);
 
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(20),
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          StationBoard(postSnapshot: post),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(20),
+                                            ),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .primaryColorDark, // 테두리 색상
+                                              width: 0.5, // 테두리 두께
+                                            ),
+                                            color:
+                                                Theme.of(context).canvasColor),
+                                        child: ListTile(
+                                          title: Text(
+                                            post['title'],
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                          border: Border.all(
-                                            color: Theme.of(context)
-                                                .primaryColorDark, // 테두리 색상
-                                            width: 0.5, // 테두리 두께
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text("작성자: $nickname"),
+                                              Text("작성일: $formattedCreatedAt"),
+                                            ],
                                           ),
-                                          color: Theme.of(context).canvasColor),
-                                      child: ListTile(
-                                        title: Text(
-                                          post['title'],
-                                          style: const TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("작성자: $nickname"),
-                                            Text("작성일: $formattedCreatedAt"),
-                                          ],
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10.5,
-                                  ),
-                                ],
+                                    const SizedBox(
+                                      height: 10.5,
+                                    ),
+                                  ],
+                                ),
                               );
                             },
                           );

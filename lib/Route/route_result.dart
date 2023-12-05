@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test1/Algorithm/graph.dart';
+import 'package:test1/Interface/isLoadgin.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
@@ -13,9 +14,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class StationRouteResult {
   final List<int> saveline; //경로의 호선
   final int transcount; //환승 횟수
+  final int congestion;
   final List<dynamic> station; //역
 
-  StationRouteResult(this.saveline, this.transcount, this.station);
+  StationRouteResult(
+      this.saveline, this.transcount, this.station, this.congestion);
 }
 
 class RouteResults extends StatefulWidget {
@@ -78,6 +81,12 @@ class _RouteResultsState extends State<RouteResults> {
   late int travelTime;
   late bool isBook;
 
+  late int optmCong;
+  late int timeCong;
+  late int costCong;
+
+  bool isRunTime = false;
+
   //클래스 진입 시 초기화
   @override
   void initState() {
@@ -120,7 +129,21 @@ class _RouteResultsState extends State<RouteResults> {
 
     travelTime = 0;
 
+    optmCong = -1;
+    timeCong = -1;
+    costCong = -1;
+
     fetchData(); // 그래프 데이터 가져오기
+
+    calculateIsRunTime();
+  }
+
+  int currentHour = DateTime.now().hour;
+  int currentMinute = DateTime.now().minute;
+  void calculateIsRunTime() {
+    setState(() {
+      isRunTime = currentHour < 22 && currentHour >= 8;
+    });
   }
 
   //경로 즐겨찾기 여부 확인
@@ -173,14 +196,17 @@ class _RouteResultsState extends State<RouteResults> {
       optmcount = optm.transcount;
       optmtrans = optm.saveline;
       optmstation = optm.station;
+      optmCong = optm.congestion;
 
       timecount = time.transcount;
       timetrans = time.saveline;
       timestation = time.station;
+      timeCong = time.congestion;
 
       costcount = cost.transcount;
       costtrans = cost.saveline;
       coststation = cost.station;
+      costCong = cost.congestion;
     });
 
     // 데이터 가져온 후 UI 업데이트
@@ -195,10 +221,11 @@ class _RouteResultsState extends State<RouteResults> {
     int prevline; //환승여부 판정할때 전역의 호선과 다른지 판단하기 위한 전역 호선 번호
     List<int> saveline = [];
     List<dynamic> station = [];
+    int congestion = -1;
     transcount = 0; //환승횟수
 
     //첫번쨰 역 처리
-    await dataProvider.searchData(path[leng]);
+    await dataProvider.searchRoute(path[leng]);
 
     if (217 == path[leng]) {
       saveline.add(dataProvider.line[0]);
@@ -215,7 +242,7 @@ class _RouteResultsState extends State<RouteResults> {
     }
     //첫번째역의 호선을 저장하고 그호선을 다음 역과 비교
     for (int i = 1; i < leng; i++) {
-      await dataProvider.searchData(path[leng - i]);
+      await dataProvider.searchRoute(path[leng - i]);
 
       //환승 여부
       //환승 불가 역
@@ -267,7 +294,10 @@ class _RouteResultsState extends State<RouteResults> {
 
     saveline.add(prevline);
 
-    return StationRouteResult(saveline, transcount, station);
+    congestion =
+        await dataProvider.getCongestionData(path[leng], path[leng - 1]);
+
+    return StationRouteResult(saveline, transcount, station, congestion);
   }
 
   //경로에 따라 경로 그래프를 빌드하는 메소드
@@ -447,133 +477,166 @@ class _RouteResultsState extends State<RouteResults> {
                 color: Colors.grey, // 선의 색상 설정 (옵션)
               ),
               const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: () async {
-                      if (currentpath == optmPath) {
-                        travelTime = timeOfOptmPath;
-                      } else if (currentpath == timePath) {
-                        travelTime = timeOfCostPath;
-                      } else if (currentpath == costPath) {
-                        travelTime = timeOfCostPath;
-                      }
-                      //_scheduleAlarm(10);
-                      NotificationService.showDelayedNotification(
-                          travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
-                      print("알림 시작 버튼 터치");
-                      //팝업 표시
-                      bool confirm = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('알림 시작'),
-                                content: const Text(
-                                    '알림이 시작되었습니다!\n도착 1분전에 알람이 울립니다.\n혼잡도 정보를 제공하시겠습니까?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('아니오'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(false); // 아니오를 누르면 false를 반환
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('예'),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(true); // 예를 누르면 true를 반환
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          ) ??
-                          false;
-
-                      if (confirm) {
-                        if (currentpath == optmPath) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Congestion(
-                                currentStaion:
-                                    optmPath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    optmPath[timePath.length - 2].toString(),
-                                line: line[0],
-                                confg: '0',
-                              ),
-                            ),
-                          );
-                        } else if (currentpath == timePath) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Congestion(
-                                currentStaion:
-                                    timePath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    timePath[timePath.length - 2].toString(),
-                                line: line[0],
-                                confg: '0',
-                              ),
-                            ),
-                          );
-                        } else if (currentpath == costPath) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Congestion(
-                                currentStaion:
-                                    costPath[timePath.length - 1].toString(),
-                                linkStaion:
-                                    costPath[timePath.length - 2].toString(),
-                                line: line[0],
-                                confg: '0',
-                              ),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: const Row(
-                      children: [
-                        SizedBox(
-                          width: 80,
+              isRunTime
+                  ? Container(
+                      width: double.infinity,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).primaryColor,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
                         ),
-                        SizedBox(
-                          width: 50,
-                          child: Icon(
-                            FontAwesomeIcons.bell,
-                            color: Colors.white,
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: TextButton(
+                          onPressed: () async {
+                            if (currentpath == optmPath) {
+                              travelTime = timeOfOptmPath;
+                            } else if (currentpath == timePath) {
+                              travelTime = timeOfCostPath;
+                            } else if (currentpath == costPath) {
+                              travelTime = timeOfCostPath;
+                            }
+                            //_scheduleAlarm(10);
+                            NotificationService.showDelayedNotification(
+                                travelTime - 60, '곧 도착 예정', '잠시 후 역에 도착합니다.');
+                            print("알림 시작 버튼 터치");
+                            //팝업 표시
+                            bool confirm = await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('알림 시작'),
+                                      content: const Text(
+                                          '알림이 시작되었습니다!\n도착 1분전에 알람이 울립니다.\n혼잡도 정보를 제공하시겠습니까?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: const Text('아니오'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(
+                                                false); // 아니오를 누르면 false를 반환
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: const Text('예'),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(true); // 예를 누르면 true를 반환
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ) ??
+                                false;
+
+                            if (confirm) {
+                              if (currentpath == optmPath) {
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Congestion(
+                                      currentStaion:
+                                          optmPath[optmPath.length - 1]
+                                              .toString(),
+                                      linkStaion: optmPath[optmPath.length - 2]
+                                          .toString(),
+                                      line: line[0],
+                                      confg: (optmCong - 1).toString(),
+                                    ),
+                                  ),
+                                );
+                              } else if (currentpath == timePath) {
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Congestion(
+                                      currentStaion:
+                                          timePath[timePath.length - 1]
+                                              .toString(),
+                                      linkStaion: timePath[timePath.length - 2]
+                                          .toString(),
+                                      line: line[0],
+                                      confg: (timeCong - 1).toString(),
+                                    ),
+                                  ),
+                                );
+                              } else if (currentpath == costPath) {
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Congestion(
+                                      currentStaion:
+                                          costPath[costPath.length - 1]
+                                              .toString(),
+                                      linkStaion: costPath[costPath.length - 2]
+                                          .toString(),
+                                      line: line[0],
+                                      confg: (costCong - 1).toString(),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: const Row(
+                            children: [
+                              SizedBox(
+                                width: 80,
+                              ),
+                              SizedBox(
+                                width: 50,
+                                child: Icon(
+                                  FontAwesomeIcons.bell,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 100,
+                                child: Text(
+                                  "알림 시작",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 20,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(
-                          width: 100,
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).primaryColor,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 150,
                           child: Text(
-                            "알림 시작",
+                            "지하철 운행 종료",
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
-                                fontSize: 20,
+                                fontSize: 19,
                                 color: Colors.white),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
+                      ),
+                    )
             ],
           ),
         ),
@@ -787,7 +850,7 @@ class _RouteResultsState extends State<RouteResults> {
         backgroundColor: Theme.of(context).canvasColor,
         body: isLoading // 로딩 중일 때
             ? const Center(
-                child: CircularProgressIndicator(), // 로딩 인디케이터를 보여줍니다.
+                child: isLoad(), // 로딩 인디케이터를 보여줍니다.
               )
             : Column(
                 children: [

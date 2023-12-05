@@ -91,7 +91,7 @@ class _StationBulletinState extends State<StationBoardList> {
                       await dataProvider.searchData(station);
 
                       if (dataProvider.found) {
-                        await product.add({
+                        await product.doc(documentSnapshot.id).update({
                           'title': title,
                           'content': content,
                           'station_ID': station,

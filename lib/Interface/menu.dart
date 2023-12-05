@@ -151,6 +151,7 @@ class _MenuState extends State<Menu> {
     setState(() {
       point = userProvider.point;
       mainStation = userProvider.mainStation;
+      currentUI = "";
       currentUI = 'home';
     });
   }
@@ -250,8 +251,15 @@ class _MenuState extends State<Menu> {
                                   int? searchStation = int.tryParse(value);
                                   if (searchStation != null) {
                                     setState(() {
-                                      current_trans = 0;
                                       waitData(searchStation);
+
+                                      current_trans = 0;
+                                    });
+                                    Future.delayed(
+                                        const Duration(milliseconds: 1500), () {
+                                      setState(() {
+                                        current_trans = 0;
+                                      });
                                     });
                                   }
                                 },
@@ -388,16 +396,17 @@ class _MenuState extends State<Menu> {
                         width: 40.0,
                       ),
                       Container(
-                        width: 60,
-                        height: 35,
                         decoration: BoxDecoration(
                           color: Colors.deepPurple[200],
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "${point}p",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "${point}p",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ],

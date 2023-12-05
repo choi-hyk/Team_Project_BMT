@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:test1/Board/home%20_%20station_board.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/Route/route_result.dart';
@@ -172,7 +173,14 @@ class _HomeState extends State<Home> {
         DateFormat('yyyy.MM.dd  hh :  mm', 'ko_KR').format(createdAt);
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StationBoardHome(bulletinData: data),
+          ),
+        );
+      },
       child: Container(
         color: Colors.white,
         child: Column(
