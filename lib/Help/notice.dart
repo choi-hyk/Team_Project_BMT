@@ -37,7 +37,16 @@ class _NoticeState extends State<Notice> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('공지사항'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text('공지 사항',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).primaryColor,
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -57,10 +66,25 @@ class _NoticeState extends State<Notice> {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
-              return ListTile(
-                title: Text(data['title'] ?? '제목 없음'),
-                onTap: () => _showContentDialog(
-                    data['title'] ?? '제목 없음', data['content'] ?? '내용 없음'),
+              return Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 0.5,
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(data['title'] ?? '제목 없음'),
+                    onTap: () => _showContentDialog(
+                        data['title'] ?? '제목 없음', data['content'] ?? '내용 없음'),
+                  ),
+                ),
               );
             }).toList(),
           );

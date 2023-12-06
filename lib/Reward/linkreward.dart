@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test1/Interface/menu.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
 
-class NotReward extends StatefulWidget {
-  const NotReward({super.key});
+//리워드 받을때 화면 빌드 페이지
+//3초 후 메뉴화면으로 이동
+class LinkReward extends StatefulWidget {
+  const LinkReward({super.key});
 
   @override
-  State<NotReward> createState() => _NotRewardState();
+  State<LinkReward> createState() => _LinkRewardState();
 }
 
-class _NotRewardState extends State<NotReward> {
+class _LinkRewardState extends State<LinkReward> {
   @override
   void initState() {
     super.initState();
@@ -19,25 +20,22 @@ class _NotRewardState extends State<NotReward> {
     _updateUserPointAfterDelay();
   }
 
-  void _navigateToBack() {
-    Navigator.pop(context);
-    currentUI = 'home';
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Menu()),
-    );
-  }
-
   void _updateUserPointAfterDelay() async {
     await Future.delayed(const Duration(seconds: 3), () async {
       //유저 아이디에 100 포인트 추가
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
+      userProvider.addPointsToUser();
       //유저 아이디에 혼잡도 제보 1 추가
       userProvider.addCountToUser();
       //3초 후에 화면 전환
       _navigateToBack();
     });
+  }
+
+  void _navigateToBack() {
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 
   @override
@@ -97,7 +95,7 @@ class _NotRewardState extends State<NotReward> {
                       ),
                     ),
                     Text(
-                      "오늘 혼잡도 정보를 총 ${int.parse(userProvider.count) + 1}회 제공하셨어요!",
+                      "혼잡도 정보를 총 ${int.parse(userProvider.count) + 1}회 제공하셨어요!",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -108,14 +106,14 @@ class _NotRewardState extends State<NotReward> {
               ),
             ),
             Text(
-              "오늘은 아쉽지만 더이상 리워드를 못받아요...",
+              "현재 포인트 : ${userProvider.point}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).primaryColorDark),
             ),
             Text(
-              "잠시 후 홈 화면으로 이동합니다",
+              "잠시 후 경로 화면으로 이동합니다",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

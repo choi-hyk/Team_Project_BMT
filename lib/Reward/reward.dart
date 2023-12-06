@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test1/Interface/menu.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
 
@@ -35,7 +36,11 @@ class _ProvRewardState extends State<ProvReward> {
 
   void _navigateToBack() {
     Navigator.pop(context);
-    Navigator.pop(context);
+    currentUI = 'home';
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Menu()),
+    );
   }
 
   @override
@@ -95,7 +100,7 @@ class _ProvRewardState extends State<ProvReward> {
                       ),
                     ),
                     Text(
-                      "혼잡도 정보를 총 ${userProvider.count}회 제공하셨어요!",
+                      "혼잡도 정보를 총 ${int.parse(userProvider.count) + 1}회 제공하셨어요!",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -113,7 +118,7 @@ class _ProvRewardState extends State<ProvReward> {
                   color: Theme.of(context).primaryColorDark),
             ),
             Text(
-              "잠시 후 이전 화면으로 이동합니다",
+              "잠시 후 홈 화면으로 이동합니다",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

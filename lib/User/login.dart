@@ -31,7 +31,7 @@ class _LogInState extends State<LogIn> {
           Container(
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0)),
             width: 500,
-            height: 400,
+            height: 310,
             child: Center(
               child: Image.asset(
                 "assets/images/Fast2.png",
@@ -50,7 +50,7 @@ class _LogInState extends State<LogIn> {
                 children: [
                   Form(
                     child: Container(
-                      padding: const EdgeInsets.all(40.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Builder(
                         builder: (context) {
                           return Column(

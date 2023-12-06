@@ -288,7 +288,7 @@ class _SettingsState extends State<Settings> {
                       },
                     ),
                     sectionTitle("약관 및 정책"),
-                    settingsOption("서비스 이용약관", onTap: () {
+                    settingsOption("서비스 이용 약관", onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
