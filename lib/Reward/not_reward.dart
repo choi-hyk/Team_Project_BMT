@@ -98,6 +98,7 @@ class _NotRewardState extends State<NotReward> {
                     ),
                     Text(
                       "오늘 혼잡도 정보를 총 ${int.parse(userProvider.count) + 1}회 제공하셨어요!",
+
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

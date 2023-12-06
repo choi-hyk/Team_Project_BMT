@@ -7,10 +7,11 @@
 
 *팀프로젝트 MJU_2023_2_BMT*
 
-*BMT ( Best Move Transfer in subway)는 사용자가 지하철을 효율적으로 이용하기 위한 프로젝트입니다. ‘최고의 이동’이라는 키워드에 초점을 맞추어 사용자에게 어플 UI/UX 커스터마이징을 통해 사용자 마다 편한 구성의 앱 사용과 다양한 경로들을 최단 시간, 최단 거리, 최소비용, 앱 추천 경로를 안내하여 복잡한 지하철 이용에 편리함을 제공해주는것과 역 내 혼잡도 정보제공 및 리워드 제공이 주기능입니다.*
+*Fast는 사용자가 지하철을 효율적으로 이용하기 위한 프로젝트입니다. ‘최고의 이동’이라는 키워드에 초점을 맞추어 사용자에게 어플 UI/UX 커스터마이징을 통해 사용자 마다 편한 구성의 앱 사용과 다양한 경로들을 최단 시간, 최단 거리, 최소비용, 앱 추천 경로를 안내하여 복잡한 지하철 이용에 편리함을 제공해주는것과 역 내 혼잡도 정보제공 및 리워드 제공이 주기능입니다.*
 
  *본 프로젝트의 기간은 설계 포함 10주이며 이 기간 안에는 설계, 개발, 그리고 테스트 및 디버깅 과정이 모두 포함되어 있습니다.*
 
+![Fast2](https://github.com/choi-hyk/Team_Project_BMT/assets/73456884/57128559-623a-4d1b-a0c0-3e56e7be2313)
 
 😺*사용 언어*🐶
 
@@ -43,40 +44,45 @@ AVD Manager를 통해 에뮬레이터 생성
 
 1. **Powershell에서 Flutter, Dart, Android studio 등패키지 설치 확인: flutter docor** 
 
-![Untitled](Untitled.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/c622600c-8199-4b58-b7b8-fa81eb80ddab)
 
 Issue가 있으면 해당 이슈를 커맨드에 설치
 
 1. **에뮬레이터 생성**
 - AVD Manager → Create Virtual Device → 하드웨어: Galaxy S21 → System Image: API34 → Finish (No skin)
     
-    ![Untitled](Untitled%201.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/c344b90f-1ff1-4380-a08b-4f9f78090ed2)
     
 1. **프로젝트 실행**
 
-![Untitled](Untitled%202.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/1f101fd4-0a15-4bc9-a395-3a8520247a51)
 
 vscode에 터미널에서 flutter pub get을 입력하여 필요한 패키지를 설치
 
-![Untitled](Untitled%203.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/443d84a7-ea29-4ccb-93a3-09cc880a9dc1)
+
 
 Select Device를 선택
 
-![Untitled](Untitled%204.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/42bad135-ec20-42b7-b29a-2cc89fb7eb46)
+
 
 프로젝트를 실행할 수 있는 Device 목록
 
 현재 설치된 에뮬레이터: Pixel 2 XL API 34를 선택
 
-![Untitled](Untitled%205.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/372a766b-110c-49fb-96c4-ad6394b961a6)
+
 
 Dart & Flutter를 선택
 
-![Untitled](Untitled%206.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/087e42ae-2469-4b73-a089-d7070974a80b)
+
 
 두 번째 에뮬레이터로 디버깅 실행
 
-![Untitled](Untitled%207.png)
+![Untitled](https://github.com/choi-hyk/Team_Project_BMT/assets/144649271/0173fa32-2429-4e9b-aaff-95d3b254bed7)
+
 
 첫 실행 화면
 
@@ -177,11 +183,52 @@ class _ProvRewardState extends State<ProvReward> {
 
 ---
 
+
+## UI테마 색 구성
+
+[호선]
+
+-1  : Color.fromARGB(255, 225, 213, 213)
+
+1 : Colors.green;
+
+2 : Color.fromARGB(255, 14, 67, 111)
+
+3 : Colors.brown
+
+4 : Colors.red
+
+5 : Color.fromARGB(255, 24, 99, 134)
+
+6 : Color.fromARGB(255, 218, 206, 95)
+
+7 : Color.fromARGB(255, 115, 216, 118)
+
+8 : Color.fromARGB(255, 54, 181, 240)
+
+9 : Colors.purple;
+
+기본값 : Colors.white;
+
+
+[테마]
+
+primaryColorLight: Color.fromARGB(255, 117, 154, 167)
+
+primaryColor: Color.fromARGB(255, 108, 159, 164)
+
+primaryColorDark: Color.fromARGB(255, 22, 73, 79)
+
+cardColor: Color.fromARGB(255, 233, 255, 243)
+
+
+---
+
 # 3. 데이터 및 데이터 메소드
 
 ## 1. Lines컬렉션 : 역 정보
 
-Lines컬렉션 → 총 9개의 다큐먼트가 존재합니다.  
+ － Lines컬렉션 → 총 9개의 다큐먼트가 존재합니다.  
 
 다큐먼트 : Line1 ~ Line2 각 호선을 나타냅니다.
 
