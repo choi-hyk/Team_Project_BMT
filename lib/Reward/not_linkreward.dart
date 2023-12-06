@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test1/Interface/menu.dart';
 import 'package:test1/Provider/user_provider.dart';
 import 'package:test1/main.dart';
 
-class NotReward extends StatefulWidget {
-  const NotReward({super.key});
+class NotLinkReward extends StatefulWidget {
+  const NotLinkReward({super.key});
 
   @override
-  State<NotReward> createState() => _NotRewardState();
+  State<NotLinkReward> createState() => _NotLinkRewardState();
 }
 
-class _NotRewardState extends State<NotReward> {
+class _NotLinkRewardState extends State<NotLinkReward> {
   @override
   void initState() {
     super.initState();
@@ -21,11 +20,7 @@ class _NotRewardState extends State<NotReward> {
 
   void _navigateToBack() {
     Navigator.pop(context);
-    currentUI = 'home';
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Menu()),
-    );
+    Navigator.pop(context);
   }
 
   void _updateUserPointAfterDelay() async {
@@ -98,7 +93,6 @@ class _NotRewardState extends State<NotReward> {
                     ),
                     Text(
                       "오늘 혼잡도 정보를 총 ${int.parse(userProvider.count) + 1}회 제공하셨어요!",
-
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -116,7 +110,7 @@ class _NotRewardState extends State<NotReward> {
                   color: Theme.of(context).primaryColorDark),
             ),
             Text(
-              "잠시 후 홈 화면으로 이동합니다",
+              "잠시 후 경로 화면으로 이동합니다",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

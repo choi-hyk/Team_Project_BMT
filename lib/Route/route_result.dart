@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test1/Algorithm/graph.dart';
+import 'package:test1/Congestion/congestion_route.dart';
 import 'package:test1/Interface/isLoadgin.dart';
 import 'package:test1/Provider/data_provider.dart';
 import 'package:test1/Provider/user_provider.dart';
@@ -539,7 +540,7 @@ class _RouteResultsState extends State<RouteResults> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Congestion(
+                                    builder: (context) => CongestionRoute(
                                       currentStaion:
                                           optmPath[optmPath.length - 1]
                                               .toString(),
@@ -555,7 +556,7 @@ class _RouteResultsState extends State<RouteResults> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Congestion(
+                                    builder: (context) => CongestionRoute(
                                       currentStaion:
                                           timePath[timePath.length - 1]
                                               .toString(),
@@ -571,7 +572,7 @@ class _RouteResultsState extends State<RouteResults> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Congestion(
+                                    builder: (context) => CongestionRoute(
                                       currentStaion:
                                           costPath[costPath.length - 1]
                                               .toString(),
